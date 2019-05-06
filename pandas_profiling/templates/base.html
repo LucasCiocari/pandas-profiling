@@ -211,12 +211,39 @@
             .pp-anchor{
 
             }
+			
+		/*Warnings and Suggestions collapses*/
+			.panel-heading .collapseButton:after {
+				font-family: 'FontAwesome';
+				content: "\f106";
+				font-size:14px;
+				font-weight: bold;
+			}
+			
+			.panel-heading .collapseButton.collapsed:after {
+				-webkit-transform: rotate(180deg);
+				-moz-transform: rotate(180deg);
+				transform: rotate(180deg);
+				display: inline-block;
+			}
+			
+			.btn-hover-dark {
+				background-color: #eeeeee;
+			}
+			
+			.btn-hover-dark:hover {
+				background-color: #dddddd;
+			}
+			
+			.btn:focus {
+				outline: none;
+			}
 
 </style>
-
 <div class="container pandas-profiling">
     <div class="row headerrow highlight">
         <h1>Overview</h1>
+		<h4>Details for your dataset</h4>
     </div>
     {{ overview_html }}
     <div class="row headerrow highlight">
