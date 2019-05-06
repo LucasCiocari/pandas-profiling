@@ -241,20 +241,32 @@
 
 </style>
 <div class="container pandas-profiling">
-    <div class="row headerrow highlight">
+	<div class="row headerrow highlight">
+		<h1 style="font-size: 36px;">Data Profiling</h1>
+	</div>
+	<div class="row variablerow">
+		<p class="h4" style="font-weight: bold;">Contents</p>
+		<ul>
+			<li><a href="#overview">Overview</a></li>
+			<li><a href="#variables">Variables</a></li>
+			<li><a href="#correlations">Correlations</a></li>
+			<li><a href="#sample">Sample</a></li>
+		</ul>
+	</div>
+    <div id="overview" class="row headerrow highlight">
         <h1>Overview</h1>
 		<h4>Details for your dataset</h4>
     </div>
     {{ overview_html }}
-    <div class="row headerrow highlight">
+    <div id="variables" class="row headerrow highlight">
         <h1>Variables</h1>
     </div>
     {{ rows_html }}
-    <div class="row headerrow highlight">
+    <div id="correlations" class="row headerrow highlight">
         <h1>Correlations</h1>
     </div>
     {{ correlation_html }}
-    <div class="row headerrow highlight">
+    <div id="sample" class="row headerrow highlight">
         <h1>Sample</h1>
     </div>
     {{ sample_html }}
