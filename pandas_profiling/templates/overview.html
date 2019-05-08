@@ -85,9 +85,9 @@
 					.style("border-color", "black")
 					.style("border-width", "thin")
 					.style("padding", "2px");
-				svg.attr("height", height/2 + 52).attr("width", width);
+				svg.attr("height", height/2 + 38).attr("width", width);
 				var g = svg.append("g")
-					.attr("transform", `translate(${width/2}, ${height/2 + 52})`);
+					.attr("transform", `translate(${width/2}, ${height/2 + 38})`);
 				var arc = d3.arc()
 					.innerRadius(50)
 					.outerRadius(Math.min(width, height) / 2 - 1);
