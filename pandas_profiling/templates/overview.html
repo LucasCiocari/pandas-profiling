@@ -115,7 +115,7 @@
 				var svg = d3.select("svg.MissingValuesBar");
 				var missing_str = "{{ values['total_missing'] }}";
 				var missing = parseFloat(missing_str.substring(0, missing_str.length - 1));
-				var valid = 100 - missing;
+				var valid = parseFloat((100 - missing).toFixed(1));
 				var validBarWidth = (valid * 3) - ((valid * 3) % 1);
 				var missingBarWidth = 300 - validBarWidth;
 				svg.append("rect")
@@ -124,6 +124,12 @@
 					.attr("width", validBarWidth)
 					.attr("height", "25")
 					.attr("fill", "rgb(126, 201, 166)");
+				svg.append("rect")
+					.attr("x", validBarWidth)
+					.attr("y", "0")
+					.attr("width", missingBarWidth)
+					.attr("height", "25")
+					.attr("fill", "rgb(209, 60, 75)");
 				svg.append("text")
 					.attr("x", "5")
 					.attr("y", "20")
@@ -134,12 +140,6 @@
 					.attr("y", "40")
 					.attr("fill", "rgb(126, 201, 166)")
 					.text("Valid");
-				svg.append("rect")
-					.attr("x", validBarWidth)
-					.attr("y", "0")
-					.attr("width", missingBarWidth)
-					.attr("height", "25")
-					.attr("fill", "rgb(209, 60, 75)");
 				svg.append("text")
 					.attr("x", "255")
 					.attr("y", "20")
