@@ -1,69 +1,120 @@
 {% include '_row_header.html' %}
-<div class="col-md-6">
-    <div class="row">
-        <div class="col-sm-6">
-            <table class="stats ">
-                <tr>
-                    <th>Distinct count</th>
-                    <td>{{ values['distinct_count'] }}</td>
-                </tr>
-                <tr>
-                    <th>Unique (%)</th>
-                    <td>{{ values['p_unique'] }}</td>
-                </tr>
-                <tr class="{{ row_classes['p_missing'] }}">
-                    <th>Missing (%)</th>
-                    <td>{{ values['p_missing'] }}</td>
-                </tr>
-                <tr class="{{ row_classes['p_missing'] }}">
-                    <th>Missing (n)</th>
-                    <td>{{ values['n_missing'] }}</td>
-                </tr>
-                <tr class="{{ row_classes['p_infinite'] }}">
-                    <th>Infinite (%)</th>
-                    <td>{{ values['p_infinite'] }}</td>
-                </tr>
-                <tr class="{{ row_classes['p_infinite'] }}">
-                    <th>Infinite (n)</th>
-                    <td>{{ values['n_infinite'] }}</td>
-                </tr>
-            </table>
-
-        </div>
-        <div class="col-sm-6">
-            <table class="stats ">
-
-                <tr>
-                    <th>Mean</th>
-                    <td>{{ values['mean'] }}</td>
-                </tr>
-                <tr>
-                    <th>Minimum</th>
-                    <td>{{ values['min'] }}</td>
-                </tr>
-                <tr>
-                    <th>Maximum</th>
-                    <td>{{ values['max'] }}</td>
-                </tr>
-                <tr class="{{ row_classes['p_zeros'] }}">
-                    <th>Zeros (%)</th>
-                    <td>{{ values['p_zeros'] }}</td>
-                </tr>
-            </table>
-        </div>
-    </div>
+<div class="col-md-3">
+	<svg class="MissingValuesBar{{ values['varid'] }}" width="143" height="40">
+		<script>
+			var svg = d3.select("svg.MissingValuesBar{{ values['varid'] }}");
+			var missing_str = "{{ values['p_missing'] }}";
+			var missing = parseFloat(missing_str.substring(0, missing_str.length - 1));
+			var valid = parseFloat((100 - missing).toFixed(1));
+			var validBarWidth = (valid * 1.43) - ((valid * 1.43) % 1);
+			var missingBarWidth = 143 - validBarWidth;
+			svg.append("rect")
+				.attr("x", "0")
+				.attr("y", "0")
+				.attr("width", validBarWidth)
+				.attr("height", "20")
+				.attr("fill", "rgb(126, 201, 166)");
+			svg.append("rect")
+				.attr("x", validBarWidth)
+				.attr("y", "0")
+				.attr("width", missingBarWidth)
+				.attr("height", "20")
+				.attr("fill", "rgb(209, 60, 75)");
+			svg.append("text")
+				.attr("x", "5")
+				.attr("y", "16")
+				.attr("fill", "white")
+				.text(valid+"%")
+				.attr("font-size", "12px");
+			svg.append("text") 
+				.attr("x", "5")
+				.attr("y", "35")
+				.attr("fill", "rgb(126, 201, 166)")
+				.text("Valid")
+				.attr("font-size", "12px");
+			svg.append("text")
+				.attr("x", "105")
+				.attr("y", "16")
+				.attr("fill", "white")
+				.text(missing+"%")
+				.attr("font-size", "12px");
+			svg.append("text")
+				.attr("x", "100")
+				.attr("y", "35")
+				.attr("fill", "rgb(209, 60, 75)")
+				.text("Missing")
+				.attr("font-size", "12px");
+			svg.append("path")
+				.attr("d", "M -0.5 -0.5 L -0.5 3 S -0.5 -0.5 3 -0.5 Z")
+				.attr("stroke", "white")
+				.attr("fill", "white");
+			svg.append("path")
+				.attr("d", "M -0.5 20.5 L -0.5 17 S -0.5 20.5 3 20.5 Z")
+				.attr("stroke", "white")
+				.attr("fill", "white");
+			svg.append("path")
+				.attr("d", "M 143.5 -0.5 L 143.5 3 S 143.5 -0.5 140 -0.5 Z")
+				.attr("stroke", "white")
+				.attr("fill", "white");
+			svg.append("path")
+				.attr("d", "M 143.5 20.5 L 143.5 17 S 143.5 20.5 140 20.5 Z")
+				.attr("stroke", "white")
+				.attr("fill", "white");
+		</script>
+	</svg>
+    <table class="stats ">
+        <tr>
+            <th>Distinct count</th>
+            <td>{{ values['distinct_count'] }}</td>
+        </tr>
+        <tr>
+            <th>Unique (%)</th>
+            <td>{{ values['p_unique'] }}</td>
+        </tr>
+        <tr class="{{ row_classes['p_missing'] }}">
+            <th>Missing (%)</th>
+            <td>{{ values['p_missing'] }}</td>
+        </tr>
+        <tr class="{{ row_classes['p_missing'] }}">
+            <th>Missing (n)</th>
+            <td>{{ values['n_missing'] }}</td>
+        </tr>
+        <tr class="{{ row_classes['p_infinite'] }}">
+            <th>Infinite (%)</th>
+            <td>{{ values['p_infinite'] }}</td>
+        </tr>
+        <tr class="{{ row_classes['p_infinite'] }}">
+            <th>Infinite (n)</th>
+            <td>{{ values['n_infinite'] }}</td>
+        </tr>
+        <tr>
+            <th>Mean</th>
+            <td>{{ values['mean'] }}</td>
+        </tr>
+        <tr>
+            <th>Minimum</th>
+            <td>{{ values['min'] }}</td>
+        </tr>
+        <tr>
+            <th>Maximum</th>
+            <td>{{ values['max'] }}</td>
+        </tr>
+        <tr class="{{ row_classes['p_zeros'] }}">
+            <th>Zeros (%)</th>
+            <td>{{ values['p_zeros'] }}</td>
+        </tr>
+    </table>
 </div>
-<div class="col-md-3 collapse in" id="minihistogram{{ values['varid'] }}">
-    <img src="{{ values['mini_histogram'] }}">
-
+<div class="col-md-6 collapse in" id="minihistogram{{ values['varid'] }}">
+    <img src="{{ values['mini_histogram'] }}" align="right">
 </div>
-<div class="col-md-12 text-right">
-    <a role="button" data-toggle="collapse" data-target="#descriptives{{ values['varid'] }},#minihistogram{{ values['varid'] }}"
-       aria-expanded="false" aria-controls="collapseExample">
-        Toggle details
-    </a>
+<div class="panel-heading col-md-12 text-right" style="padding:0;">
+    <p style="text-align: right; font-size: 12px;">
+        Show details
+		<button data-toggle="collapse" data-target="#descriptives{{ values['varid'] }},#minihistogram{{ values['varid'] }}" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+    </p>
 </div>
-<div class="row collapse col-md-12" id="descriptives{{ values['varid'] }}">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives{{ values['varid'] }}">
     <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" class="active"><a href="#quantiles{{ values['varid'] }}"
                                                   aria-controls="quantiles{{ values['varid'] }}" role="tab"
@@ -176,4 +227,5 @@
         </div>
     </div>
 </div>
+
 {% include '_row_footer.html' %}

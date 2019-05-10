@@ -1,11 +1,75 @@
 {% include '_row_header.html' %}
-<div class="col-md-3 collapse in" id="minivalues{{ values['varid'] }}">{{ values['firstn'] }}</div>
+<div class="col-md-3 collapse in" id="minivalues{{ values['varid'] }}">
+	<svg class="MissingValuesBar{{ values['varid'] }}" width="143" height="40">
+		<script>
+			var svg = d3.select("svg.MissingValuesBar{{ values['varid'] }}");
+			var missing_str = "{{ values['p_missing'] }}";
+			var missing = parseFloat(missing_str.substring(0, missing_str.length - 1));
+			var valid = parseFloat((100 - missing).toFixed(1));
+			var validBarWidth = (valid * 1.43) - ((valid * 1.43) % 1);
+			var missingBarWidth = 143 - validBarWidth;
+			svg.append("rect")
+				.attr("x", "0")
+				.attr("y", "0")
+				.attr("width", validBarWidth)
+				.attr("height", "20")
+				.attr("fill", "rgb(126, 201, 166)");
+			svg.append("rect")
+				.attr("x", validBarWidth)
+				.attr("y", "0")
+				.attr("width", missingBarWidth)
+				.attr("height", "20")
+				.attr("fill", "rgb(209, 60, 75)");
+			svg.append("text")
+				.attr("x", "5")
+				.attr("y", "16")
+				.attr("fill", "white")
+				.text(valid+"%")
+				.attr("font-size", "12px");
+			svg.append("text") 
+				.attr("x", "5")
+				.attr("y", "35")
+				.attr("fill", "rgb(126, 201, 166)")
+				.text("Valid")
+				.attr("font-size", "12px");
+			svg.append("text")
+				.attr("x", "105")
+				.attr("y", "16")
+				.attr("fill", "white")
+				.text(missing+"%")
+				.attr("font-size", "12px");
+			svg.append("text")
+				.attr("x", "100")
+				.attr("y", "35")
+				.attr("fill", "rgb(209, 60, 75)")
+				.text("Missing")
+				.attr("font-size", "12px");
+			svg.append("path")
+				.attr("d", "M -0.5 -0.5 L -0.5 3 S -0.5 -0.5 3 -0.5 Z")
+				.attr("stroke", "white")
+				.attr("fill", "white");
+			svg.append("path")
+				.attr("d", "M -0.5 20.5 L -0.5 17 S -0.5 20.5 3 20.5 Z")
+				.attr("stroke", "white")
+				.attr("fill", "white");
+			svg.append("path")
+				.attr("d", "M 143.5 -0.5 L 143.5 3 S 143.5 -0.5 140 -0.5 Z")
+				.attr("stroke", "white")
+				.attr("fill", "white");
+			svg.append("path")
+				.attr("d", "M 143.5 20.5 L 143.5 17 S 143.5 20.5 140 20.5 Z")
+				.attr("stroke", "white")
+				.attr("fill", "white");
+		</script>
+	</svg>
+	{{ values['firstn'] }}
+</div>
 <div class="col-md-6 collapse in" id="minivalues{{ values['varid'] }}">{{ values['lastn'] }}</div>
-<div class="col-md-12 text-right">
-    <a role="button" data-toggle="collapse" data-target="#values{{ values['varid'] }},#minivalues{{ values['varid'] }}" aria-expanded="false"
-       aria-controls="collapseExample">
-        Toggle details
-    </a>
+<div class="panel-heading col-md-12 text-right" style="padding:0;">
+    <p style="text-align: right; font-size: 12px;">
+        Show details
+		<button data-toggle="collapse" data-target="#values{{ values['varid'] }},#minivalues{{ values['varid'] }}" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+    </p>
 </div>
 <div class="col-md-12 collapse" id="values{{ values['varid'] }}">
     <p class="h4">First 10 values</p>

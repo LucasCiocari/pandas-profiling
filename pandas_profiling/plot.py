@@ -94,8 +94,9 @@ def mini_histogram(series, **kwargs):
         The resulting image encoded as a string.
     """
     imgdata = BytesIO()
-    plot = _plot_histogram(series, figsize=(2, 0.75), **kwargs)
-    plot.axes.get_yaxis().set_visible(False)
+    #plot = _plot_histogram(series, figsize=(2, 0.75), **kwargs)
+    plot = _plot_histogram(series, figsize=(4, 2), **kwargs)
+    #plot.axes.get_yaxis().set_visible(False)
 
     if LooseVersion(matplotlib.__version__) <= '1.5.9':
         plot.set_axis_bgcolor("w")
@@ -103,12 +104,17 @@ def mini_histogram(series, **kwargs):
         plot.set_facecolor("w")
 
     xticks = plot.xaxis.get_major_ticks()
-    for tick in xticks[1:-1]:
-        tick.set_visible(False)
-        tick.label.set_visible(False)
+    #for tick in xticks[1:-1]:
+    #    tick.set_visible(False)
+    #    tick.label.set_visible(False)
     for tick in (xticks[0], xticks[-1]):
         tick.label.set_fontsize(8)
-    plot.figure.subplots_adjust(left=0.15, right=0.85, top=1, bottom=0.35, wspace=0, hspace=0)
+    every_nth = 2
+    for n, label in enumerate(plot.xaxis.get_ticklabels()):
+        if n % every_nth == 0:
+            label.set_visible(False)
+    #plot.figure.subplots_adjust(left=0.15, right=0.85, top=1, bottom=0.35, wspace=0, hspace=0)
+    plot.figure.subplots_adjust(left=0.2, right=0.95, top=0.95 , wspace=0, hspace=0)
     plot.figure.savefig(imgdata)
     imgdata.seek(0)
     result_string = 'data:image/png;base64,' + quote(base64.b64encode(imgdata.getvalue()))

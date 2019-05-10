@@ -25,7 +25,9 @@ templates = {'freq_table_row': 'freq_table_row.html',
              'sample': 'sample.html',
              'base': 'base.html',
              'wrapper': 'wrapper.html',
-             'correlations' : 'correlations.html'
+             'correlations' : 'correlations.html',
+             'more_variables_header' : 'more_variables_header.html',
+             'more_variables_footer' : 'more_variables_footer.html'
              }
 
 # Mapping between row type and var type
