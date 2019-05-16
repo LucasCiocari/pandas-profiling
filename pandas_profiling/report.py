@@ -134,11 +134,12 @@ def to_html(sample, stats_object):
     # Variables
     rows_html = u""
     messages = []
-    rows = 0
+    variable = 0
 
     for idx, row in stats_object['variables'].iterrows():
 
-        formatted_values = {'varname': idx, 'varid': hash(idx)}
+        df = stats_object['dataframe']
+        formatted_values = {'varname': idx, 'varid': hash(idx), 'column_values': df[idx].dropna().tolist()}
         row_classes = {}
 
         for col, value in six.iteritems(row):
@@ -179,11 +180,11 @@ def to_html(sample, stats_object):
             formatted_values['firstn_expanded'] = extreme_obs_table(stats_object['freq'][idx], templates.template('freq_table'), templates.template('freq_table_row'), 5, n_obs, ascending = True)
             formatted_values['lastn_expanded'] = extreme_obs_table(stats_object['freq'][idx], templates.template('freq_table'), templates.template('freq_table_row'), 5, n_obs, ascending = False)
 
-        if rows == 3:
+        if variable == 3:
             rows_html += templates.template('more_variables_header').render()
         rows_html += templates.row_templates_dict[row['type']].render(values=formatted_values, row_classes=row_classes)
-        rows += 1
-    if rows > 3:
+        variable += 1
+    if variable > 3:
         rows_html += templates.template('more_variables_footer').render()
     # Overview
     formatted_values = {k: fmt(v, k) for k, v in six.iteritems(stats_object['table'])}

@@ -418,5 +418,6 @@ def describe(df, bins=10, check_correlation=True, correlation_threshold=0.9, cor
         'table': table_stats,
         'variables': variable_stats.T,
         'freq': {k: (base.get_groupby_statistic(df[k])[0] if variable_stats[k].type != base.S_TYPE_UNSUPPORTED else None) for k in df.columns},
-        'correlations': {'pearson': dfcorrPear, 'spearman': dfcorrSpear}
+        'correlations': {'pearson': dfcorrPear, 'spearman': dfcorrSpear},
+		'dataframe': df
     }
