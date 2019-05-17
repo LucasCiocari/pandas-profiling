@@ -136,24 +136,20 @@
 			x.domain([data[0].x0, data[data.length - 1].x1]);
 			y.domain([0, d3.max(data, function(d) { return d.length; })]);
 			
-			// Add the x Axis
 			svg.append("g")
 				.attr("transform", "translate(0," + cHeight + ")")
 				.call(d3.axisBottom(x).ticks(6));
 
-			  // text label for the x axis
 			svg.append("text")             
 				.attr("transform",
 					"translate(" + (cWidth/2) + " ," + 
 					(cHeight + 20) + ")")
 				.style("text-anchor", "middle");
 
-			// Add the y Axis
 			svg.append("g")
 				.attr("transform", "translate("+lWidth+", 0)")
 				.call(d3.axisLeft(y));
 
-			// text label for the y axis
 			svg.append("text")
 				.attr("transform", "rotate(-90)")
 				.attr("y", 0 - lWidth)

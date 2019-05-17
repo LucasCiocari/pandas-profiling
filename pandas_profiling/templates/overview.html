@@ -2,11 +2,11 @@
 	<div class="col-md-6">
 		<div class="col-md-2 col-md-offset-3">
 			<h2 class="text-center">{{ values['nvar'] }}</h2>
-			<p style="text-align:center;line-height:1">Number of</br>variables</br>(columns)</p>
+			<p style="text-align:center;line-height:1">Columns</p>
 		</div>
 		<div class="col-md-2 col-md-offset-2">
 			<h2 class="text-center">{{ values['n'] }}</h2>
-			<p style="text-align:center;line-height:1">Number of</br>observations</br>(rows)</p>
+			<p style="text-align:center;line-height:1">Rows</p>
 		</div>
 		<div class="col-md-4 col-md-offset-3">
 			<br/>
@@ -29,10 +29,10 @@
 			</div>
 		</div>
 	</div>
-	<div class="col-md-2 namecol">
+	<div class="col-md-6 row">
         <p class="h4">Variables Types</p>
-        <table class="stats" style="margin-left: 1em;">
-            <tbody class="variableTypesTable">
+		<div class="col-sm-12">
+			<svg class="VariableTypesChart">
 				<script>
 					var data = [
 						{name: "Numeric", number: {{ values['NUM'] }}}, 
@@ -43,67 +43,130 @@
 						{name: "Rejected", number: {{ values['REJECTED'] }}}, 
 						{name: "Unsupported", number: {{ values['UNSUPPORTED'] }}}
 					];
+					var barHeight = 25;
 					var color = d3.scaleOrdinal()
 						.domain(data.map(d => d.name))
 						.range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), data.length).reverse());
-					var table = d3.select("tbody.variableTypesTable");
-					var join = table.selectAll("tr")
+					var margin = {left: 20, right: 20}
+					var width = 400;
+					var height = 60;
+					var svg = d3.select("svg.VariableTypesChart");
+					svg
+						.attr("width", width + margin.left + margin.right)
+						.attr("height", height);
+					var tooltip = d3.select("body")
+						.append("div")
+						.style("position", "absolute")
+						.style("z-index", "10")
+						.style("visibility", "hidden")
+						.style("background-color", "white")
+						.style("border-radius", "3px")
+						.style("border-style", "solid")
+						.style("border-color", "black")
+						.style("border-width", "thin")
+						.style("padding", "2px");
+					var total = 0;
+					for(var i = 0; i < data.length; i++) {
+						data[i].start = total;
+						total += data[i].number;
+					}
+					var curWidth = 0;
+					svg.append("g")
+						.selectAll("rect")
 						.data(data)
-						.join("tr");
-					join.append("svg")
-						.attr("width", 13)
-						.attr("height", 13)
-						.append("circle")
-						.attr("cy", 6.5)
-						.attr("cx", 6.5)
-						.attr("r", 6)
-						.attr("stroke", "black")
-						.attr("stroke-width", 0.5)
-						.attr("fill", d => color(d.name));
-					join.append("th")
-						.text(d => d.name);
-					join.append("td")
-						.text(d => d.number);
+						.join("rect")
+						.attr("height", barHeight)
+						.attr("width", d => (d.number / total * width))
+						.attr("x", d => (margin.left + d.start / total * width))
+						.attr("y", height - barHeight)
+						.attr("fill", d => color(d.name))
+						.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name+": "+d.number))
+						.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+						.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+					
+					svg.append("path")
+						.attr("d", "M "+(margin.left - 0.5)+" "+(height - barHeight - 0.5)+" L "+(margin.left - 0.5)+" "+(height - barHeight + 7)+" S "+(margin.left - 0.5)+" "+(height - barHeight - 0.5)+" "+(margin.left + 7)+" "+(height - barHeight - 0.5)+" Z")
+						.attr("stroke", "white")
+						.attr("fill", "white");
+					svg.append("path")
+						.attr("d", "M "+(margin.left - 0.5)+" "+(height + 0.5)+" L "+(margin.left - 0.5)+" "+(height - 7)+" S "+(margin.left - 0.5)+" "+(height + 0.5)+" "+(margin.left + 7)+" "+(height + 0.5)+" Z")
+						.attr("stroke", "white")
+						.attr("fill", "white");
+					svg.append("path")
+						.attr("d", "M "+(width + margin.right + 0.5)+" "+(height - barHeight - 0.5)+" L "+(width + margin.right + 0.5)+" "+(height - barHeight + 7)+" S "+(width + margin.right + 0.5)+" "+(height - barHeight - 0.5)+" "+(width + margin.right - 7)+" "+(height - barHeight - 0.5)+" Z")
+						.attr("stroke", "white")
+						.attr("fill", "white");
+					svg.append("path")
+						.attr("d", "M "+(width + margin.right + 0.5)+" "+(height + 0.5)+" L "+(width + margin.right + 0.5)+" "+(height - 7)+" S "+(width + margin.right + 0.5)+" "+(height + 0.5)+" "+(width + margin.right - 7)+" "+(height + 0.5)+" Z")
+						.attr("stroke", "white")
+						.attr("fill", "white");
+						
+					svg.append("g")
+						.selectAll("text")
+						.data(data)
+						.join("text")
+						.attr("x", d => (margin.left + 5 + d.start / total * width))
+						.attr("y", height - 5)
+						.attr("fill", "white")
+						.text(function(d){if(d.number / total * width >= 50){return (d.number / total * 100).toFixed(1)+"%";} return "";})
+						.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name+": "+d.number))
+						.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+						.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
 				</script>
-            </tbody>
-        </table>
-    </div>
-	<div class="col-md-4">
-		<svg class="VariableTypesChart">
-			<script>
-				var width = 200;
-				var height = 200;
-				var svg = d3.select("svg.VariableTypesChart");
-				var tooltip = d3.select("body")
-					.append("div")
-					.style("position", "absolute")
-					.style("z-index", "10")
-					.style("visibility", "hidden")
-					.style("background-color", "white")
-					.style("border-radius", "3px")
-					.style("border-style", "solid")
-					.style("border-color", "black")
-					.style("border-width", "thin")
-					.style("padding", "2px");
-				svg.attr("height", height/2 + 38).attr("width", width);
-				var g = svg.append("g")
-					.attr("transform", `translate(${width/2}, ${height/2 + 38})`);
-				var arc = d3.arc()
-					.innerRadius(50)
-					.outerRadius(Math.min(width, height) / 2 - 1);
-				var pie = d3.pie().sortValues(null).startAngle(-90 * (Math.PI/180)).endAngle(90 * (Math.PI/180)).value(d => d.number);
-				var arcs = pie(data);
-				g.selectAll("path")
-					.data(arcs)
-					.enter().append("path")
-					.attr("fill", d => color(d.data.name))
-					.attr("stroke", "white")
-					.attr("d", arc)
-					.on("mouseover", d => tooltip.style("visibility", "visible").text(d.data.name+": "+d.data.number))
-					.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-					.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
-			</script>
-		</svg>
+			</svg>
+		</div>
+		<div class="col-sm-4" style="margin-left:60px">
+			<table class="stats" style="margin-left: 1em;">
+				<tbody class="variableTypesTableLeft">
+					<script>
+						var table = d3.select("tbody.variableTypesTableLeft");
+						var join = table.selectAll("tr")
+							.data(data.slice(0, 4))
+							.join("tr");
+						join.append("svg")
+							.attr("width", 13)
+							.attr("height", 13)
+							.append("circle")
+							.attr("cy", 6.5)
+							.attr("cx", 6.5)
+							.attr("r", 6)
+							.attr("stroke", "black")
+							.attr("stroke-width", 0.5)
+							.attr("fill", d => color(d.name));
+						join.append("th")
+							.text(d => d.name);
+						join.append("td")
+							.text(d => d.number);
+					</script>
+				</tbody>
+			</table>
+		</div>
+		<div class="col-sm-4">
+			<table class="stats" style="margin-left: 1em;">
+				<tbody class="variableTypesTableRight">
+					<script>
+						var table = d3.select("tbody.variableTypesTableRight");
+						var join = table.selectAll("tr")
+							.data(data.slice(4, 7))
+							.join("tr");
+						join.append("svg")
+							.attr("width", 13)
+							.attr("height", 13)
+							.append("circle")
+							.attr("cy", 6.5)
+							.attr("cx", 6.5)
+							.attr("r", 6)
+							.attr("stroke", "black")
+							.attr("stroke-width", 0.5)
+							.attr("fill", d => color(d.name));
+						join.append("th")
+							.text(d => d.name);
+						join.append("td")
+							.text(d => d.number);
+					</script>
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
 <div class="row variablerow">
