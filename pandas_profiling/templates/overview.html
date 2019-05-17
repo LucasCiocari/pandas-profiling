@@ -112,6 +112,56 @@
 						.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name+": "+d.number))
 						.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
 						.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
+					
+					var groups = [];
+					var aux = [];
+					for(var i = 0; i < data.length; i++) {
+						if(data[i].number / total * width >= 50) {
+							if(aux.length > 0) {
+								groups.push(aux);
+								aux = [];
+							}
+						} else {
+							if(data[i].number != 0){
+								aux.push(data[i]);
+							}
+						}
+					}
+					if(aux.length > 0) {
+						groups.push(aux);
+					}
+					var labelLength = 45;
+					var group = [];
+					var groupLength = 0;
+					var center = 0, start = 0;
+					var labels = [];
+					for(var i = 0; i < groups.length; i++) {
+						group = groups[i];
+						groupLength = labelLength * group.length;
+						center = margin.left + (group[0].start / total * width + (group[group.length-1].start / total * width + (group[group.length-1].number / total * width))) / 2;
+						start = center - groupLength / 2;
+						for(var j = 0; j < group.length; j++) {
+							group[j].labelX = start + j * labelLength;
+							labels.push(group[j]);
+						}
+					}
+					
+					svg.append("g")
+						.selectAll("text")
+						.data(labels)
+						.join("text")
+						.attr("x", d => d.labelX)
+						.attr("y", 15)
+						.text(d => ((d.number / total * 100).toFixed(1)+"%"));
+					
+					svg.append("g")
+						.selectAll("path")
+						.data(labels)
+						.join("path")
+						.attr("d", d => ("M " + (margin.left + d.start / total * width + (d.number / total * width) / 2) + " " + (height - barHeight / 2) + "L " + (d.labelX + labelLength / 2) + " " + (17)))
+						.attr("stroke", "black")
+						.text(d => ((d.number / total * 100).toFixed(1)+"%"));
+					
 				</script>
 			</svg>
 		</div>
