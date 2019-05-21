@@ -110,8 +110,8 @@
 		<script>
 			var width = 400;
 			var height = 200;
-			var lWidth = 50;
-			var lHeight = 20;
+			var lWidth = 60;
+			var lHeight = 30;
 			var cWidth = width - lWidth;
 			var cHeight = height - lHeight;
 			var svg = d3.select("svg.minihistogram{{ values['varid'] }}");
@@ -136,26 +136,37 @@
 			x.domain([data[0].x0, data[data.length - 1].x1]);
 			y.domain([0, d3.max(data, function(d) { return d.length; })]);
 			
+			var xAxis = d3.axisBottom(x).ticks(6);
+			var xTicks = x.ticks();
+			if(xTicks[0] < -1000000 || xTicks[xTicks.length - 1] >= 1000000 || xTicks[0] + 0.001 > xTicks[xTicks.length - 1]) {
+				xAxis.tickFormat(d3.format(".1e"));
+			}
 			svg.append("g")
 				.attr("transform", "translate(0," + cHeight + ")")
-				.call(d3.axisBottom(x).ticks(6));
+				.call(xAxis);
 
 			svg.append("text")             
-				.attr("transform",
-					"translate(" + (cWidth/2) + " ," + 
-					(cHeight + 20) + ")")
-				.style("text-anchor", "middle");
+				.attr("transform", "translate(" + (lWidth+cWidth/2) + " ," + (cHeight + lHeight) + ")")
+				.style("text-anchor", "middle")
+				.text("Value");
 
+			var yAxis = d3.axisLeft(y);
+			var yTicks = y.ticks();
+			if(yTicks[yTicks.length - 1] >= 10000) {
+				yAxis.tickFormat(d3.format(".1e"));
+			}
 			svg.append("g")
 				.attr("transform", "translate("+lWidth+", 0)")
-				.call(d3.axisLeft(y));
-
+				.call(yAxis);
+			
 			svg.append("text")
 				.attr("transform", "rotate(-90)")
-				.attr("y", 0 - lWidth)
-				.attr("x",0 - (cHeight / 2))
+				.attr("y", 0)
+				.attr("x", 0 - cHeight / 2)
 				.attr("dy", "1em")
-				.style("text-anchor", "middle");
+				.style("text-anchor", "middle")
+				.text("Frequency");
+			svg.selectAll(".tick").filter(function(d){return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr("transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(/[0-9]+/g)[1] < 5);}).attr("transform", "translate(-1000,-1000)");
 		</script>
 	</svg>
 </div>

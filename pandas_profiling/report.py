@@ -6,6 +6,7 @@ import pandas as pd
 import pandas_profiling.formatters as formatters
 import pandas_profiling.templates as templates
 import pandas_profiling.plot as plot
+import datetime as dt
 
 
 def to_html(sample, stats_object):
@@ -168,6 +169,13 @@ def to_html(sample, stats_object):
 
             formatted_values['firstn'] = pd.DataFrame(obs[0:3], columns=["First 3 values"]).to_html(classes="example_values", index=False)
             formatted_values['lastn'] = pd.DataFrame(obs[-3:], columns=["Last 3 values"]).to_html(classes="example_values", index=False)
+        
+        aux = []
+        if row['type'] == 'DATE':
+            for date in formatted_values['column_values']:
+                aux.append((date - dt.datetime(1970,1,1)).total_seconds())
+            formatted_values['column_values'] = aux
+        
         if row['type'] == 'UNSUPPORTED':
             formatted_values['varname'] = idx
             messages.append(templates.messages[row['type']].format(formatted_values))
