@@ -130,38 +130,76 @@
 					if(aux.length > 0) {
 						groups.push(aux);
 					}
-					var labelLength = 45;
-					var group = [];
-					var groupLength = 0;
-					var center = 0, start = 0;
-					var labels = [];
-					for(var i = 0; i < groups.length; i++) {
-						group = groups[i];
-						groupLength = labelLength * group.length;
-						center = margin.left + (group[0].start / total * width + (group[group.length-1].start / total * width + (group[group.length-1].number / total * width))) / 2;
-						start = center - groupLength / 2;
-						for(var j = 0; j < group.length; j++) {
-							group[j].labelX = start + j * labelLength;
-							labels.push(group[j]);
+					if(groups.length > 0) {
+						var labelLength = 45;
+						var group = [];
+						var groupLength = 0;
+						var center = 0, start = 0;
+						var labels = [];
+						for(var i = 0; i < groups.length; i++) {
+							group = groups[i];
+							groupLength = labelLength * group.length;
+							center = margin.left + (group[0].start / total * width + (group[group.length-1].start / total * width + (group[group.length-1].number / total * width))) / 2;
+							start = center - groupLength / 2;
+							for(var j = 0; j < group.length; j++) {
+								group[j].labelX = start + j * labelLength;
+								labels.push(group[j]);
+							}
 						}
+						var offset;
+						group = groups[0];
+						if(group[0].labelX < 0) {
+							offset = group[0].labelX;
+							for(var i = 0; i < group.length; i++) {
+								group[i].labelX = group[i].labelX - offset;
+							}
+						}
+						var leftGroupEnd;
+						for(var i = 1; i < groups.length; i++) {
+							group = groups[i];
+							leftGroupEnd = groups[i - 1][0].labelX + labelLength * groups[i - 1].length;
+							if(group[0].labelX < leftGroupEnd) {
+								offset = leftGroupEnd - group[0].labelX;
+								for(var j = 0; j < group.length; j++) {
+									group[j].labelX = group[j].labelX + offset;
+								}
+							}
+						}
+						group = groups[groups.length - 1];
+						if(group[0].labelX + labelLength * group.length > width + margin.right + margin.left) {
+							offset = group[0].labelX + labelLength * group.length - (width + margin.right + margin.left);
+							for(var i = 0; i < group.length; i++) {
+								group[i].labelX = group[i].labelX - offset;
+							}
+						}
+						var rightGroupStart;
+						for(var i = groups.length - 2; i >= 0; i--) {
+							group = groups[i];
+							rightGroupStart = groups[i + 1][0].labelX;
+							if(group[0].labelX + group.length * labelLength > rightGroupStart) {
+								offset = group[0].labelX + group.length * labelLength - rightGroupStart;
+								for(var j = 0; j < group.length; j++) {
+									group[j].labelX = group[j].labelX - offset;
+								}
+							}
+						}
+						
+						svg.append("g")
+							.selectAll("text")
+							.data(labels)
+							.join("text")
+							.attr("x", d => d.labelX)
+							.attr("y", 15)
+							.text(d => ((d.number / total * 100).toFixed(1)+"%"));
+						
+						svg.append("g")
+							.selectAll("path")
+							.data(labels)
+							.join("path")
+							.attr("d", d => ("M " + (margin.left + d.start / total * width + (d.number / total * width) / 2) + " " + (height - barHeight / 2) + "L " + (d.labelX + labelLength / 2) + " " + (17)))
+							.attr("stroke", "black")
+							.text(d => ((d.number / total * 100).toFixed(1)+"%"));
 					}
-					
-					svg.append("g")
-						.selectAll("text")
-						.data(labels)
-						.join("text")
-						.attr("x", d => d.labelX)
-						.attr("y", 15)
-						.text(d => ((d.number / total * 100).toFixed(1)+"%"));
-					
-					svg.append("g")
-						.selectAll("path")
-						.data(labels)
-						.join("path")
-						.attr("d", d => ("M " + (margin.left + d.start / total * width + (d.number / total * width) / 2) + " " + (height - barHeight / 2) + "L " + (d.labelX + labelLength / 2) + " " + (17)))
-						.attr("stroke", "black")
-						.text(d => ((d.number / total * 100).toFixed(1)+"%"));
-					
 				</script>
 			</svg>
 		</div>
