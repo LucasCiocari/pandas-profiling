@@ -241,16 +241,34 @@
 
 </style>
 <div class="container pandas-profiling">
+	<script>
+		if (typeof id !== 'undefined') {
+			id++;
+		} else {
+			var id = 0;
+		}
+	</script>
+	{% include 'plot.html' %}
 	<div class="row headerrow highlight">
 		<h1 style="font-size: 36px;">Data Profiling</h1>
 	</div>
+	<script>
+		d3.select("#overviewLink").attr("href", "#overview"+id).attr("id", "overviewLink"+id);
+		d3.select("#variablesLink").attr("href", "#variables"+id).attr("id", "variablesLink"+id);
+		d3.select("#correlationsLink").attr("href", "#correlations"+id).attr("id", "correlationsLink"+id);
+		d3.select("#sampleLink").attr("href", "#sample"+id).attr("id", "sampleLink"+id);
+		d3.select("#overview").attr("id", "overview"+id);
+		d3.select("#variables").attr("id", "variables"+id);
+		d3.select("#correlations").attr("id", "correlations"+id);
+		d3.select("#sample").attr("id", "sample"+id);
+	</script>
 	<div class="row variablerow">
 		<p class="h4" style="font-weight: bold;">Contents</p>
 		<ul>
-			<li><a href="#overview">Overview</a></li>
-			<li><a href="#variables">Variables</a></li>
-			<li><a href="#correlations">Correlations</a></li>
-			<li><a href="#sample">Sample</a></li>
+			<li><a id="overviewLink" href="#overview">Overview</a></li>
+			<li><a id="variablesLink" href="#variables">Variables</a></li>
+			<li><a id="correlationsLink" href="#correlations">Correlations</a></li>
+			<li><a id="sampleLink" href="#sample">Sample</a></li>
 		</ul>
 	</div>
     <div id="overview" class="row headerrow highlight">

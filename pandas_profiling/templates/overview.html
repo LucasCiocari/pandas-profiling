@@ -10,8 +10,12 @@
 		</div>
 		<div class="col-md-4 col-md-offset-3">
 			<br/>
+			<script>
+				d3.select("#statsToggle").attr("data-target", "#stats"+id).attr("id", "statsToggle"+id);
+				d3.select("#stats").attr("id", "stats"+id);
+			</script>
 			<div class="panel-heading" style="width: 260px">
-				<p style="text-align:center;font-size:13px">More Info <button data-toggle="collapse" data-target="#stats" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button></p>
+				<p style="text-align:center;font-size:13px">More Info <button id="statsToggle" data-toggle="collapse" data-target="#stats" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button></p>
 			</div>
 			<div id="stats" class="pannel-collapse list-unstyled collapse" style="width: 260px">
 				<table class="stats" style="width: 260px;">
@@ -43,163 +47,9 @@
 						{name: "Rejected", number: {{ values['REJECTED'] }}}, 
 						{name: "Unsupported", number: {{ values['UNSUPPORTED'] }}}
 					];
-					var barHeight = 25;
-					var color = d3.scaleOrdinal()
-						.domain(data.map(d => d.name))
-						.range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), data.length).reverse());
-					var margin = {left: 20, right: 20}
-					var width = 400;
-					var height = 60;
 					var svg = d3.select("svg.VariableTypesChart");
-					svg
-						.attr("width", width + margin.left + margin.right)
-						.attr("height", height);
-					var tooltip = d3.select("body")
-						.append("div")
-						.style("position", "absolute")
-						.style("z-index", "10")
-						.style("visibility", "hidden")
-						.style("background-color", "white")
-						.style("border-radius", "3px")
-						.style("border-style", "solid")
-						.style("border-color", "black")
-						.style("border-width", "thin")
-						.style("padding", "2px");
-					var total = 0;
-					for(var i = 0; i < data.length; i++) {
-						data[i].start = total;
-						total += data[i].number;
-					}
-					var curWidth = 0;
-					svg.append("g")
-						.selectAll("rect")
-						.data(data)
-						.join("rect")
-						.attr("height", barHeight)
-						.attr("width", d => (d.number / total * width))
-						.attr("x", d => (margin.left + d.start / total * width))
-						.attr("y", height - barHeight)
-						.attr("fill", d => color(d.name))
-						.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name+": "+d.number))
-						.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-						.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
-					
-					svg.append("path")
-						.attr("d", "M "+(margin.left - 0.5)+" "+(height - barHeight - 0.5)+" L "+(margin.left - 0.5)+" "+(height - barHeight + 7)+" S "+(margin.left - 0.5)+" "+(height - barHeight - 0.5)+" "+(margin.left + 7)+" "+(height - barHeight - 0.5)+" Z")
-						.attr("stroke", "white")
-						.attr("fill", "white");
-					svg.append("path")
-						.attr("d", "M "+(margin.left - 0.5)+" "+(height + 0.5)+" L "+(margin.left - 0.5)+" "+(height - 7)+" S "+(margin.left - 0.5)+" "+(height + 0.5)+" "+(margin.left + 7)+" "+(height + 0.5)+" Z")
-						.attr("stroke", "white")
-						.attr("fill", "white");
-					svg.append("path")
-						.attr("d", "M "+(width + margin.right + 0.5)+" "+(height - barHeight - 0.5)+" L "+(width + margin.right + 0.5)+" "+(height - barHeight + 7)+" S "+(width + margin.right + 0.5)+" "+(height - barHeight - 0.5)+" "+(width + margin.right - 7)+" "+(height - barHeight - 0.5)+" Z")
-						.attr("stroke", "white")
-						.attr("fill", "white");
-					svg.append("path")
-						.attr("d", "M "+(width + margin.right + 0.5)+" "+(height + 0.5)+" L "+(width + margin.right + 0.5)+" "+(height - 7)+" S "+(width + margin.right + 0.5)+" "+(height + 0.5)+" "+(width + margin.right - 7)+" "+(height + 0.5)+" Z")
-						.attr("stroke", "white")
-						.attr("fill", "white");
-						
-					svg.append("g")
-						.selectAll("text")
-						.data(data)
-						.join("text")
-						.attr("x", d => (margin.left + 5 + d.start / total * width))
-						.attr("y", height - 5)
-						.attr("fill", "white")
-						.text(function(d){if(d.number / total * width >= 50){return (d.number / total * 100).toFixed(1)+"%";} return "";})
-						.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name+": "+d.number))
-						.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-						.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
-					
-					var groups = [];
-					var aux = [];
-					for(var i = 0; i < data.length; i++) {
-						if(data[i].number / total * width >= 50) {
-							if(aux.length > 0) {
-								groups.push(aux);
-								aux = [];
-							}
-						} else {
-							if(data[i].number != 0){
-								aux.push(data[i]);
-							}
-						}
-					}
-					if(aux.length > 0) {
-						groups.push(aux);
-					}
-					if(groups.length > 0) {
-						var labelLength = 45;
-						var group = [];
-						var groupLength = 0;
-						var center = 0, start = 0;
-						var labels = [];
-						for(var i = 0; i < groups.length; i++) {
-							group = groups[i];
-							groupLength = labelLength * group.length;
-							center = margin.left + (group[0].start / total * width + (group[group.length-1].start / total * width + (group[group.length-1].number / total * width))) / 2;
-							start = center - groupLength / 2;
-							for(var j = 0; j < group.length; j++) {
-								group[j].labelX = start + j * labelLength;
-								labels.push(group[j]);
-							}
-						}
-						var offset;
-						group = groups[0];
-						if(group[0].labelX < 0) {
-							offset = group[0].labelX;
-							for(var i = 0; i < group.length; i++) {
-								group[i].labelX = group[i].labelX - offset;
-							}
-						}
-						var leftGroupEnd;
-						for(var i = 1; i < groups.length; i++) {
-							group = groups[i];
-							leftGroupEnd = groups[i - 1][0].labelX + labelLength * groups[i - 1].length;
-							if(group[0].labelX < leftGroupEnd) {
-								offset = leftGroupEnd - group[0].labelX;
-								for(var j = 0; j < group.length; j++) {
-									group[j].labelX = group[j].labelX + offset;
-								}
-							}
-						}
-						group = groups[groups.length - 1];
-						if(group[0].labelX + labelLength * group.length > width + margin.right + margin.left) {
-							offset = group[0].labelX + labelLength * group.length - (width + margin.right + margin.left);
-							for(var i = 0; i < group.length; i++) {
-								group[i].labelX = group[i].labelX - offset;
-							}
-						}
-						var rightGroupStart;
-						for(var i = groups.length - 2; i >= 0; i--) {
-							group = groups[i];
-							rightGroupStart = groups[i + 1][0].labelX;
-							if(group[0].labelX + group.length * labelLength > rightGroupStart) {
-								offset = group[0].labelX + group.length * labelLength - rightGroupStart;
-								for(var j = 0; j < group.length; j++) {
-									group[j].labelX = group[j].labelX - offset;
-								}
-							}
-						}
-						
-						svg.append("g")
-							.selectAll("text")
-							.data(labels)
-							.join("text")
-							.attr("x", d => d.labelX)
-							.attr("y", 15)
-							.text(d => ((d.number / total * 100).toFixed(1)+"%"));
-						
-						svg.append("g")
-							.selectAll("path")
-							.data(labels)
-							.join("path")
-							.attr("d", d => ("M " + (margin.left + d.start / total * width + (d.number / total * width) / 2) + " " + (height - barHeight / 2) + "L " + (d.labelX + labelLength / 2) + " " + (17)))
-							.attr("stroke", "black")
-							.text(d => ((d.number / total * 100).toFixed(1)+"%"));
-					}
+					svg.attr("class", "VariableTypesChart"+id);
+					plotVaribleTypesChart(svg, data);
 				</script>
 			</svg>
 		</div>
@@ -208,6 +58,10 @@
 				<tbody class="variableTypesTableLeft">
 					<script>
 						var table = d3.select("tbody.variableTypesTableLeft");
+						table.attr("class", "variableTypesTableLeft"+id);
+						var color = d3.scaleOrdinal()
+							.domain(data.map(d => d.name))
+							.range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), data.length).reverse());
 						var join = table.selectAll("tr")
 							.data(data.slice(0, 4))
 							.join("tr");
@@ -234,6 +88,7 @@
 				<tbody class="variableTypesTableRight">
 					<script>
 						var table = d3.select("tbody.variableTypesTableRight");
+						table.attr("class", "variableTypesTableRight"+id);
 						var join = table.selectAll("tr")
 							.data(data.slice(4, 7))
 							.join("tr");
@@ -260,63 +115,11 @@
 <div class="row variablerow">
     <div class="col-md-6" style="padding-left: 1em;">
 		<p class="h4">Missing Values</p>
-		
-        <svg class="MissingValuesBar" width="300" height="50">
+        <svg class="MissingValuesBar">
 			<script>
 				var svg = d3.select("svg.MissingValuesBar");
-				var missing_str = "{{ values['total_missing'] }}";
-				var missing = parseFloat(missing_str.substring(0, missing_str.length - 1));
-				var valid = parseFloat((100 - missing).toFixed(1));
-				var validBarWidth = (valid * 3) - ((valid * 3) % 1);
-				var missingBarWidth = 300 - validBarWidth;
-				svg.append("rect")
-					.attr("x", "0")
-					.attr("y", "0")
-					.attr("width", validBarWidth)
-					.attr("height", "25")
-					.attr("fill", "rgb(126, 201, 166)");
-				svg.append("rect")
-					.attr("x", validBarWidth)
-					.attr("y", "0")
-					.attr("width", missingBarWidth)
-					.attr("height", "25")
-					.attr("fill", "rgb(209, 60, 75)");
-				svg.append("text")
-					.attr("x", "5")
-					.attr("y", "20")
-					.attr("fill", "white")
-					.text(valid+"%");
-				svg.append("text")
-					.attr("x", "5")
-					.attr("y", "40")
-					.attr("fill", "rgb(126, 201, 166)")
-					.text("Valid");
-				svg.append("text")
-					.attr("x", "255")
-					.attr("y", "20")
-					.attr("fill", "white")
-					.text(missing_str);
-				svg.append("text")
-					.attr("x", "250")
-					.attr("y", "40")
-					.attr("fill", "rgb(209, 60, 75)")
-					.text("Missing");
-				svg.append("path")
-					.attr("d", "M -0.5 -0.5 L -0.5 7 S -0.5 -0.5 7 -0.5 Z")
-					.attr("stroke", "white")
-					.attr("fill", "white");
-				svg.append("path")
-					.attr("d", "M -0.5 25.5 L -0.5 18 S -0.5 25.5 7 25.5 Z")
-					.attr("stroke", "white")
-					.attr("fill", "white");
-				svg.append("path")
-					.attr("d", "M 300.5 -0.5 L 300.5 7 S 300.5 -0.5 293 -0.5 Z")
-					.attr("stroke", "white")
-					.attr("fill", "white");
-				svg.append("path")
-					.attr("d", "M 300.5 25.5 L 300.5 18 S 300.5 25.5 293 25.5 Z")
-					.attr("stroke", "white")
-					.attr("fill", "white");
+				svg.attr("class", "MissingValuesBar"+id);
+				plotMissingValuesBar(svg, "{{ values['total_missing'] }}", 300, 50);
 			</script>
 		</svg>
 		<p>Explore missing data? <a>Yes, open Viz</a></p>
@@ -349,15 +152,23 @@
     {% if messages %}
 </div>
 <div class="row variablerow">
+	<script>
+		d3.select("#warningsToggle").attr("data-target", "#warnings"+id).attr("id", "warningsToggle"+id);
+		d3.select("#warnings").attr("id", "warnings"+id);
+	</script>
     <div class="col-md-6" style="padding-left: 1em;">
 		<div class="panel-heading">
-			<p class="h4">Warnings <button data-toggle="collapse" data-target="#warnings" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button></p>
+			<p class="h4">Warnings <button id="warningsToggle" data-toggle="collapse" data-target="#warnings" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button></p>
 		</div>
 		<ul id="warnings" class="pannel-collapse list-unstyled collapse">{{ messages }} </ul>
     </div>
+	<script>
+		d3.select("#recommendationsToggle").attr("data-target", "#recommendations"+id).attr("id", "recommendationsToggle"+id);
+		d3.select("#recommendations").attr("id", "recommendations"+id);
+	</script>
     <div class="col-md-6" style="padding-left: 1em;">
         <div class="panel-heading">
-			<p class="h4">Recommendations <button data-toggle="collapse" data-target="#recommendations" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button></p>
+			<p class="h4">Recommendations <button id="recommendationsToggle" data-toggle="collapse" data-target="#recommendations" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button></p>
 		</div>
 		<ul id="recommendations" class="pannel-collapse list-unstyled collapse">
 			<li>Which are good practices for data wrangling?</li>

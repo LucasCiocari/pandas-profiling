@@ -1,65 +1,9 @@
 {% include '_row_header.html' %}
 <div class="col-md-3">
-	<svg class="MissingValuesBar{{ values['varid'] }}" width="143" height="40">
+	<svg class="MissingValuesBar{{ values['varid'] }}">
 		<script>
 			var svg = d3.select("svg.MissingValuesBar{{ values['varid'] }}");
-			var missing_str = "{{ values['p_missing'] }}";
-			var missing = parseFloat(missing_str.substring(0, missing_str.length - 1));
-			var valid = parseFloat((100 - missing).toFixed(1));
-			var validBarWidth = (valid * 1.43) - ((valid * 1.43) % 1);
-			var missingBarWidth = 143 - validBarWidth;
-			svg.append("rect")
-				.attr("x", "0")
-				.attr("y", "0")
-				.attr("width", validBarWidth)
-				.attr("height", "20")
-				.attr("fill", "rgb(126, 201, 166)");
-			svg.append("rect")
-				.attr("x", validBarWidth)
-				.attr("y", "0")
-				.attr("width", missingBarWidth)
-				.attr("height", "20")
-				.attr("fill", "rgb(209, 60, 75)");
-			svg.append("text")
-				.attr("x", "5")
-				.attr("y", "16")
-				.attr("fill", "white")
-				.text(valid+"%")
-				.attr("font-size", "12px");
-			svg.append("text") 
-				.attr("x", "5")
-				.attr("y", "35")
-				.attr("fill", "rgb(126, 201, 166)")
-				.text("Valid")
-				.attr("font-size", "12px");
-			svg.append("text")
-				.attr("x", "105")
-				.attr("y", "16")
-				.attr("fill", "white")
-				.text(missing+"%")
-				.attr("font-size", "12px");
-			svg.append("text")
-				.attr("x", "100")
-				.attr("y", "35")
-				.attr("fill", "rgb(209, 60, 75)")
-				.text("Missing")
-				.attr("font-size", "12px");
-			svg.append("path")
-				.attr("d", "M -0.5 -0.5 L -0.5 3 S -0.5 -0.5 3 -0.5 Z")
-				.attr("stroke", "white")
-				.attr("fill", "white");
-			svg.append("path")
-				.attr("d", "M -0.5 20.5 L -0.5 17 S -0.5 20.5 3 20.5 Z")
-				.attr("stroke", "white")
-				.attr("fill", "white");
-			svg.append("path")
-				.attr("d", "M 143.5 -0.5 L 143.5 3 S 143.5 -0.5 140 -0.5 Z")
-				.attr("stroke", "white")
-				.attr("fill", "white");
-			svg.append("path")
-				.attr("d", "M 143.5 20.5 L 143.5 17 S 143.5 20.5 140 20.5 Z")
-				.attr("stroke", "white")
-				.attr("fill", "white");
+			plotMissingValuesBar(svg, "{{ values['p_missing'] }}", 143, 40)
 		</script>
 	</svg>
     <table class="stats ">
@@ -100,130 +44,26 @@
 <div class="col-md-6 collapse in" id="minihistogram{{ values['varid'] }}" style="text-align:right;">
 	<svg class="minihistogram{{ values['varid'] }}">
 		<script>
-			var width = 400;
-			var height = 200;
-			var lWidth = 60;
-			var lHeight = 30;
-			var cWidth = width - lWidth;
-			var cHeight = height - lHeight;
-			var svg = d3.select("svg.minihistogram{{ values['varid'] }}");
-			svg.attr("width", width)
-				.attr("height", height);
 			var data = d3.histogram()({{ values['column_values'] }}.map(function(s){return new Date(s * 1000)}));
-			var bWidth = cWidth / data.length;
-			var yMax = data.reduce(function(a, b){if (a.length > b.length){return a;}return b;}).length;
-			
-			svg.append("g")
-				.selectAll("rect")
-				.data(data)
-				.join("rect")
-				.attr("height", d => (d.length / yMax * cHeight))
-				.attr("width", bWidth + 1)
-				.attr("x", (d, i) => lWidth + i * bWidth)
-				.attr("y", d => (cHeight - (d.length / yMax * cHeight)))
-				.attr("fill", "rgb(66, 136, 181)");
-			
-			var x = d3.scaleTime().range([lWidth, width - 1]);
-			var y = d3.scaleLinear().range([cHeight, 0]);
-			x.domain([data[0].x0, data[data.length - 1].x1]);
-			y.domain([0, d3.max(data, function(d) { return d.length; })]);
-			
-			svg.append("g")
-				.attr("transform", "translate(0," + cHeight + ")")
-				.call(d3.axisBottom(x).ticks(6));
-
-			svg.append("text")             
-				.attr("transform", "translate(" + (lWidth+cWidth/2) + " ," + (cHeight + lHeight) + ")")
-				.style("text-anchor", "middle")
-				.style("font-size", "12px")
-				.text("Value");
-
-			var yAxis = d3.axisLeft(y);
-			var yTicks = y.ticks();
-			if(yTicks[yTicks.length - 1] >= 10000) {
-				yAxis.tickFormat(d3.format(".1e"));
-			}
-			svg.append("g")
-				.attr("transform", "translate("+lWidth+", 0)")
-				.call(yAxis);
-
-			svg.append("text")
-				.attr("transform", "rotate(-90)")
-				.attr("y", 0)
-				.attr("x", 0 - cHeight / 2)
-				.attr("dy", "1em")
-				.style("text-anchor", "middle")
-				.style("font-size", "12px")
-				.text("Frequency");
-			svg.selectAll(".tick").filter(function(d){return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr("transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(/[0-9]+/g)[1] < 5);}).attr("transform", "translate(-1000,-1000)");
+			var svg = d3.select("svg.minihistogram{{ values['varid'] }}");
+			plotHistogramDate(svg, data, 400, 200);
 		</script>
 	</svg>
 </div>
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button data-toggle="collapse" data-target="#descriptives{{ values['varid'] }},#minihistogram{{ values['varid'] }}" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails{{ values['varid'] }}" data-toggle="collapse" data-target="#descriptives{{ values['varid'] }},#minihistogram{{ values['varid'] }}" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<script>
+			d3.select("#toggleDetails{{ values['varid'] }}").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+		</script>
     </p>
 </div>
-<div class="tab-pane col-md-10 col-md-offset-1" id="descriptives{{ values['varid'] }}" style="margin-top:20px">
+<div class="tab-pane col-md-10 col-md-offset-1 collapse" id="descriptives{{ values['varid'] }}" style="margin-top:20px">
     <svg class="histogram{{ values['varid'] }}">
 		<script>
-			var width = 700;
-			var height = 350;
-			var lWidth = 60;
-			var lHeight = 30;
-			var cWidth = width - lWidth;
-			var cHeight = height - lHeight;
 			var svg = d3.select("svg.histogram{{ values['varid'] }}");
-			svg.attr("width", width)
-				.attr("height", height);
-			var data = d3.histogram()({{ values['column_values'] }}.map(function(s){return new Date(s * 1000)}));
-			var bWidth = cWidth / data.length;
-			var yMax = data.reduce(function(a, b){if (a.length > b.length){return a;}return b;}).length;
-			
-			svg.append("g")
-				.selectAll("rect")
-				.data(data)
-				.join("rect")
-				.attr("height", d => (d.length / yMax * cHeight))
-				.attr("width", bWidth + 1)
-				.attr("x", (d, i) => lWidth + i * bWidth)
-				.attr("y", d => (cHeight - (d.length / yMax * cHeight)))
-				.attr("fill", "rgb(66, 136, 181)");
-			
-			var x = d3.scaleTime().range([lWidth, width - 1]);
-			var y = d3.scaleLinear().range([cHeight, 0]);
-			x.domain([data[0].x0, data[data.length - 1].x1]);
-			y.domain([0, d3.max(data, function(d) { return d.length; })]);
-			
-			svg.append("g")
-				.attr("transform", "translate(0," + cHeight + ")")
-				.call(d3.axisBottom(x).ticks(6));
-
-			svg.append("text")             
-				.attr("transform", "translate(" + (lWidth+cWidth/2) + " ," + (cHeight + lHeight) + ")")
-				.style("text-anchor", "middle")
-				.style("font-size", "12px")
-				.text("Value");
-
-			var yAxis = d3.axisLeft(y);
-			var yTicks = y.ticks();
-			if(yTicks[yTicks.length - 1] >= 10000) {
-				yAxis.tickFormat(d3.format(".1e"));
-			}
-			svg.append("g")
-				.attr("transform", "translate("+lWidth+", 0)")
-				.call(yAxis);
-
-			svg.append("text")
-				.attr("transform", "rotate(-90)")
-				.attr("y", 0)
-				.attr("x", 0 - cHeight / 2)
-				.attr("dy", "1em")
-				.style("text-anchor", "middle")
-				.style("font-size", "12px")
-				.text("Frequency");
-			svg.selectAll(".tick").filter(function(d){return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr("transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(/[0-9]+/g)[1] < 5);}).attr("transform", "translate(-1000,-1000)");
+			plotHistogramDate(svg, data, 700, 350);
 		</script>
     </svg>
 </div>
