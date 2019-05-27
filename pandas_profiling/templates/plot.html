@@ -277,7 +277,7 @@
 	
 	function plotMissingValuesBar(svg, missing_str, width, height) {
 		var bHeight = height / 2;
-		var missing = parseFloat(missing_str.substring(0, missing_str.length - 1));
+		var missing = parseFloat(parseFloat(missing_str.substring(0, missing_str.length - 1)).toFixed(1));
 		var valid = parseFloat((100 - missing).toFixed(1));
 		var validBarWidth = valid * (width / 100);
 		var missingBarWidth = width - validBarWidth;
@@ -309,7 +309,7 @@
 			.attr("x", width - 45)
 			.attr("y", bHeight - 5)
 			.attr("fill", "white")
-			.text(missing_str);
+			.text(missing+"%");
 		svg.append("text")
 			.attr("x", width - 50)
 			.attr("y", height - 5)
