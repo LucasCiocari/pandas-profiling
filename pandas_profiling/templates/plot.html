@@ -66,7 +66,7 @@
 			.attr("x", d => (margin.left + 5 + d.start / total * width))
 			.attr("y", height - 5)
 			.attr("fill", "white")
-			.text(function(d){if(d.number / total * width >= 50){return (d.number / total * 100).toFixed(1)+"%";} return "";})
+			.text(function(d){if(d.number / total * width >= 50){return parseFloat((d.number / total * 100).toFixed(1))+"%";} return "";})
 			.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name+": "+d.number))
 			.on("mousemove", function(){return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
 			.on("mouseout", function(){return tooltip.style("visibility", "hidden");});
@@ -148,15 +148,14 @@
 				.join("text")
 				.attr("x", d => d.labelX)
 				.attr("y", 15)
-				.text(d => ((d.number / total * 100).toFixed(1)+"%"));
+				.text(d => (parseFloat((d.number / total * 100).toFixed(1))+"%"));
 			
 			svg.append("g")
 				.selectAll("path")
 				.data(labels)
 				.join("path")
 				.attr("d", d => ("M " + (margin.left + d.start / total * width + (d.number / total * width) / 2) + " " + (height - barHeight / 2) + "L " + (d.labelX + labelLength / 2) + " " + (17)))
-				.attr("stroke", "black")
-				.text(d => ((d.number / total * 100).toFixed(1)+"%"));
+				.attr("stroke", "black");
 		}
 	}
 	
