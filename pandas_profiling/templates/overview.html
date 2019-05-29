@@ -1,36 +1,27 @@
 <div class="row variablerow">
 	<div class="col-md-6 col-md-offset-3" style="text-align:center;">
-		<div class="col-md-6" style="text-align:center;">
+		<div class="col-sm-6" style="text-align:center;">
 			<h2 class="text-center">{{ values['nvar'] }}</h2>
 			<p style="text-align:center;line-height:1">Columns</p>
 		</div>
-		<div class="col-md-6" style="text-align:center;">
+		<div class="col-sm-6" style="text-align:center;">
 			<h2 class="text-center">{{ values['n'] }}</h2>
 			<p style="text-align:center;line-height:1">Rows</p>
 		</div>
-		<div class="col-md-4 col-md-offset-3">
+		<div class="col-sm-12">
 			<br/>
-			<script>
-				d3.select("#statsToggle").attr("data-target", "#stats"+id).attr("id", "statsToggle"+id);
-				d3.select("#stats").attr("id", "stats"+id);
-			</script>
-			<div class="panel-heading" style="width: 260px">
-				<p style="text-align:center;font-size:13px">More Info <button id="statsToggle" data-toggle="collapse" data-target="#stats" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button></p>
-			</div>
-			<div id="stats" class="pannel-collapse list-unstyled collapse" style="width: 260px">
-				<table class="stats" style="width: 260px;">
-					<tbody>
-						<tr>
-							<th style="width: 210px;">Total size in memory</th>
-							<td style="width: 50px;">{{ values['memsize'] }} </td>
-						</tr>
-						<tr>
-							<th style="width: 210px;">Average record size in memory</th>
-							<td style="width: 50px;">{{ values['recordsize'] }} </td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+			<table class="stats" style="width: 260px;margin-left:106.25px">
+				<tbody>
+					<tr>
+						<th style="width: 210px;">Total size in memory</th>
+						<td style="width: 50px;">{{ values['memsize'] }} </td>
+					</tr>
+					<tr>
+						<th style="width: 210px;">Average record size in memory</th>
+						<td style="width: 50px;">{{ values['recordsize'] }} </td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>
