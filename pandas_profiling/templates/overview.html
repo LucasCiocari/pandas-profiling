@@ -26,8 +26,8 @@
 	</div>
 </div>
 <div class="row variablerow">
-	<div class="col-md-6 row col-md-offset-3">
-        <p class="h4" style="text-align:center;">Variables Types</p>
+	<div class="col-md-6 row">
+        <p class="h4">Variables Types</p>
 		<div class="col-sm-12">
 			<svg class="VariableTypesChart">
 				<script>
@@ -106,18 +106,18 @@
 	</div>
 </div>
 <div class="row variablerow">
-    <div class="col-md-6" style="padding-left: 1em;">
+    <div class="col-md-6">
 		<p class="h4">Missing Values</p>
-        <svg class="MissingValuesBar">
+        <svg class="MissingValuesBar" style="margin-left:20px">
 			<script>
 				var svg = d3.select("svg.MissingValuesBar");
 				svg.attr("class", "MissingValuesBar"+id);
-				plotMissingValuesBar(svg, "{{ values['total_missing'] }}", 300, 50);
+				plotMissingValuesBar(svg, "{{ values['total_missing'] }}", 400, 50);
 			</script>
 		</svg>
 		<p>Explore missing data? <a>Yes, open Viz</a></p>
     </div>
-	<div class="col-md-6" style="padding-left: 1em;">
+	<div class="col-md-6">
 		<p class="h4" style="font-size:14px">Breakdown of Types</p>
 		<table class="stats" style="width: 100px">
 			<tr>
@@ -149,8 +149,8 @@
 		d3.select("#warningsToggle").attr("data-target", "#warnings"+id).attr("id", "warningsToggle"+id);
 		d3.select("#warnings").attr("id", "warnings"+id);
 	</script>
-    <div class="col-md-6" style="padding-left: 1em;">
-		<div class="panel-heading">
+    <div class="col-md-6">
+		<div class="panel-heading" style="padding:0">
 			<p class="h4">Warnings <button id="warningsToggle" data-toggle="collapse" data-target="#warnings" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button></p>
 		</div>
 		<ul id="warnings" class="pannel-collapse list-unstyled collapse">{{ messages }} </ul>
@@ -159,8 +159,8 @@
 		d3.select("#recommendationsToggle").attr("data-target", "#recommendations"+id).attr("id", "recommendationsToggle"+id);
 		d3.select("#recommendations").attr("id", "recommendations"+id);
 	</script>
-    <div class="col-md-6" style="padding-left: 1em;">
-        <div class="panel-heading">
+    <div class="col-md-6">
+        <div class="panel-heading" style="padding:0">
 			<p class="h4">Recommendations <button id="recommendationsToggle" data-toggle="collapse" data-target="#recommendations" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button></p>
 		</div>
 		<ul id="recommendations" class="pannel-collapse list-unstyled collapse">
