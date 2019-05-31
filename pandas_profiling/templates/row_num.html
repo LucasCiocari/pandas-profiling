@@ -40,9 +40,10 @@
 <div class="col-md-6 collapse in" id="minihistogram{{ values['varid'] }}" style="text-align:right;">
 	<svg class="minihistogram{{ values['varid'] }}">
 		<script>
-			var data = d3.histogram()({{ values['column_values'] }});
+			var data = {{ values['column_values'] }};
+			var bins = d3.histogram()(data);
 			var svg = d3.select("svg.minihistogram{{ values['varid'] }}");
-			plotHistogramNum(svg, data, 400, 200);
+			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
 </div>
@@ -66,7 +67,8 @@
                                    role="tab" data-toggle="tab">Common Values</a></li>
         <li role="presentation"><a href="#extreme{{ values['varid'] }}" aria-controls="extreme{{ values['varid'] }}"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-
+        <li role="presentation"><a href="#boxplot{{ values['varid'] }}" aria-controls="boxplot{{ values['varid'] }}"
+                                   role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
@@ -158,7 +160,7 @@
             <svg class="histogram{{ values['varid'] }}">
 				<script>
 					var svg = d3.select("svg.histogram{{ values['varid'] }}");
-					plotHistogramNum(svg, data, 700, 350);
+					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
@@ -171,6 +173,14 @@
             <p class="h4">Maximum 5 values</p>
             {{ values['lastn_expanded'] }}
         </div>
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot{{ values['varid'] }}">
+			<svg class="boxplot{{ values['varid'] }}">
+				<script>
+					var svg = d3.select(".boxplot{{ values['varid'] }}");
+					plotBox(svg, data);
+				</script>
+			</svg>
+		</div>
     </div>
 </div>
 {% include '_row_footer.html' %}
