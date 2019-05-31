@@ -5,7 +5,7 @@
 			.domain(data.map(d => d.name))
 			.range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), data.length).reverse());
 		var margin = {left: 20, right: 20}
-		var width = 400;
+		var width = 350;
 		var height = 60;
 		svg
 			.attr("width", width + margin.left + margin.right)
