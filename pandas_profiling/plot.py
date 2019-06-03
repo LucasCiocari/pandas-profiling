@@ -6,6 +6,7 @@ from distutils.version import LooseVersion
 import pandas_profiling.base as base
 import matplotlib
 import numpy as np
+import missingno as msno
 # Fix #68, this call is not needed and brings side effects in some use cases
 # Backend name specifications are not case-sensitive; e.g., ‘GTKAgg’ and ‘gtkagg’ are equivalent.
 # See https://matplotlib.org/faq/usage_faq.html#what-is-a-backend
@@ -148,4 +149,40 @@ def correlation_matrix(corrdf, title, **kwargs):
     imgdata.seek(0)
     result_string = 'data:image/png;base64,' + quote(base64.b64encode(imgdata.getvalue()))
     plt.close(matrix_image.figure)
+    return result_string
+
+def missing_matrix(df):
+    imgdata = BytesIO()
+    plot = msno.matrix(df)
+    plot.figure.savefig(imgdata)
+    imgdata.seek(0)
+    result_string = 'data:image/png;base64,' + quote(base64.b64encode(imgdata.getvalue()))
+    plt.close(plot.figure)
+    return result_string
+
+def missing_bar(df):
+    imgdata = BytesIO()
+    plot = msno.bar(df)
+    plot.figure.savefig(imgdata)
+    imgdata.seek(0)
+    result_string = 'data:image/png;base64,' + quote(base64.b64encode(imgdata.getvalue()))
+    plt.close(plot.figure)
+    return result_string
+
+def missing_heat(df):
+    imgdata = BytesIO()
+    plot = msno.heatmap(df)
+    plot.figure.savefig(imgdata)
+    imgdata.seek(0)
+    result_string = 'data:image/png;base64,' + quote(base64.b64encode(imgdata.getvalue()))
+    plt.close(plot.figure)
+    return result_string
+
+def missing_dendrogram(df):
+    imgdata = BytesIO()
+    plot = msno.dendrogram(df)
+    plot.figure.savefig(imgdata)
+    imgdata.seek(0)
+    result_string = 'data:image/png;base64,' + quote(base64.b64encode(imgdata.getvalue()))
+    plt.close(plot.figure)
     return result_string

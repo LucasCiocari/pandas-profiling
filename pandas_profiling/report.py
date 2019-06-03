@@ -218,9 +218,17 @@ def to_html(sample, stats_object):
     # Add sample
     sample_html = templates.template('sample').render(sample_table_html=sample.to_html(classes="sample"))
     # TODO: should be done in the template
+    
+    matrix = plot.missing_matrix(df)
+    bar = plot.missing_bar(df)
+    heat = plot.missing_heat(df)
+    dendrogram = plot.missing_dendrogram(df)
+    missing_html = templates.template('missing').render(values={'matrix': matrix, 'bar': bar, 'heat': heat, 'dendrogram': dendrogram})
+    
     return templates.template('base').render({
         'overview_html': overview_html,
         'rows_html': rows_html,
         'sample_html': sample_html,
-        'correlation_html': correlations_html
+        'correlation_html': correlations_html,
+        'missing_html': missing_html
     })
