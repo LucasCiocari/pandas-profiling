@@ -255,12 +255,16 @@
 	<script>
 		d3.select("#overviewLink").attr("href", "#overview"+id).attr("id", "overviewLink"+id);
 		d3.select("#variablesLink").attr("href", "#variables"+id).attr("id", "variablesLink"+id);
-		d3.select("#missingLink").attr("href", "#missing"+id).attr("id", "missingLink"+id);
+		{% if values['missing'] %}
+			d3.select("#missingLink").attr("href", "#missing"+id).attr("id", "missingLink"+id);
+		{% endif %}
 		d3.select("#correlationsLink").attr("href", "#correlations"+id).attr("id", "correlationsLink"+id);
 		d3.select("#sampleLink").attr("href", "#sample"+id).attr("id", "sampleLink"+id);
 		d3.select("#overview").attr("id", "overview"+id);
 		d3.select("#variables").attr("id", "variables"+id);
-		d3.select("#missing").attr("id", "missing"+id);
+		{% if values['missing'] %}
+			d3.select("#missing").attr("id", "missing"+id);
+		{% endif %}
 		d3.select("#correlations").attr("id", "correlations"+id);
 		d3.select("#sample").attr("id", "sample"+id);
 	</script>
@@ -269,7 +273,9 @@
 		<ul>
 			<li><a id="overviewLink" href="#overview">Overview</a></li>
 			<li><a id="variablesLink" href="#variables">Variables</a></li>
-			<li><a id="missingLink" href="#missing">Sample</a></li>
+			{% if values['missing'] %}
+				<li><a id="missingLink" href="#missing">Missing</a></li>
+			{% endif %}
 			<li><a id="correlationsLink" href="#correlations">Correlations</a></li>
 			<li><a id="sampleLink" href="#sample">Sample</a></li>
 		</ul>
@@ -282,10 +288,12 @@
         <h1>Variables</h1>
     </div>
     {{ rows_html }}
-    <div id="missing" class="row headerrow highlight">
-        <h1>Missing Values</h1>
-    </div>
-    {{ missing_html }}
+	{% if values['missing'] %}
+		<div id="missing" class="row headerrow highlight">
+			<h1>Missing Values</h1>
+		</div>
+		{{ missing_html }}
+	{% endif %}
     <div id="correlations" class="row headerrow highlight">
         <h1>Correlations</h1>
     </div>
