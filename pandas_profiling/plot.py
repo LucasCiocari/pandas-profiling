@@ -152,6 +152,18 @@ def correlation_matrix(corrdf, title, **kwargs):
     return result_string
 
 def missing_matrix(df):
+    """Plot a missingno matrix
+
+    Parameters
+    ----------
+    df: DataFrame
+        The dataframe.
+
+    Returns
+    -------
+    str
+        The resulting image encoded as a string.
+    """
     imgdata = BytesIO()
     plot = msno.matrix(df)
     plot.figure.savefig(imgdata)
@@ -161,6 +173,18 @@ def missing_matrix(df):
     return result_string
 
 def missing_bar(df):
+    """Plot a missingno bar chart
+
+    Parameters
+    ----------
+    df: DataFrame
+        The dataframe.
+
+    Returns
+    -------
+    str
+        The resulting image encoded as a string.
+    """
     imgdata = BytesIO()
     plot = msno.bar(df)
     plot.figure.savefig(imgdata)
@@ -170,6 +194,18 @@ def missing_bar(df):
     return result_string
 
 def missing_heat(df):
+    """Plot a missingno heat map
+
+    Parameters
+    ----------
+    df: DataFrame
+        The dataframe.
+
+    Returns
+    -------
+    str
+        The resulting image encoded as a string.
+    """
     imgdata = BytesIO()
     plot = msno.heatmap(df)
     plot.figure.savefig(imgdata)
@@ -179,6 +215,18 @@ def missing_heat(df):
     return result_string
 
 def missing_dendrogram(df):
+    """Plot a missingno dendrogram
+
+    Parameters
+    ----------
+    df: DataFrame
+        The dataframe.
+
+    Returns
+    -------
+    str
+        The resulting image encoded as a string.
+    """
     imgdata = BytesIO()
     plot = msno.dendrogram(df)
     plot.figure.savefig(imgdata)
