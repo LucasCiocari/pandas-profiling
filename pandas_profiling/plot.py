@@ -6,6 +6,7 @@ from distutils.version import LooseVersion
 import pandas_profiling.base as base
 import matplotlib
 import numpy as np
+from matplotlib.colors import ListedColormap
 import missingno as msno
 # Fix #68, this call is not needed and brings side effects in some use cases
 # Backend name specifications are not case-sensitive; e.g., ‘GTKAgg’ and ‘gtkagg’ are equivalent.
@@ -137,7 +138,17 @@ def correlation_matrix(corrdf, title, **kwargs):
     imgdata = BytesIO()
     fig_cor, axes_cor = plt.subplots(1, 1)
     labels = corrdf.columns
-    matrix_image = axes_cor.imshow(corrdf, vmin=-1, vmax=1, interpolation="nearest", cmap='bwr')
+    N = 256
+    blues = np.ones((N, 4))
+    blues[:, 0] = np.linspace(66/256, 1, N)
+    blues[:, 1] = np.linspace(136/256, 1, N)
+    blues[:, 2] = np.linspace(181/256, 1, N)
+    reds = np.ones((N, 4))
+    reds[:, 0] = np.linspace(1, 209/256, N)
+    reds[:, 1] = np.linspace(1, 60/256, N)
+    reds[:, 2] = np.linspace(1, 75/256, N)
+    newcmp = ListedColormap(np.concatenate((blues, reds)))
+    matrix_image = axes_cor.imshow(corrdf, vmin=-1, vmax=1, interpolation="nearest", cmap=newcmp)
     plt.title(title, size=18)
     plt.colorbar(matrix_image)
     axes_cor.set_xticks(np.arange(0, corrdf.shape[0], corrdf.shape[0] * 1.0 / len(labels)))
