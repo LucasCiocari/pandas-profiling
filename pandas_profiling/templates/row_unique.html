@@ -1,12 +1,14 @@
 {% include '_row_header.html' %}
-<div class="col-md-3 collapse in" id="minivalues{{ values['varid'] }}">
+<div class="col-md-3">
 	<svg class="MissingValuesBar{{ values['varid'] }}">
 		<script>
 			var svg = d3.select("svg.MissingValuesBar{{ values['varid'] }}");
 			plotMissingValuesBar(svg, "{{ values['p_missing'] }}", 143, 40)
 		</script>
 	</svg>
-	{{ values['firstn'] }}
+	<div class="collapse in" id="minivalues{{ values['varid'] }}">
+		{{ values['firstn'] }}
+	</div>
 </div>
 <div class="col-md-6 collapse in" id="minivalues{{ values['varid'] }}">{{ values['lastn'] }}</div>
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
