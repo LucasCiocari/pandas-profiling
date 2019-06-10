@@ -234,7 +234,32 @@
 			.btn:focus {
 				outline: none;
 			}
-
+		
+		/*Help*/
+			.help-button:after {
+				font-family: 'FontAwesome';
+				content: "\f29c";
+				font-size: 14px;
+				font-weight: normal;
+				margin-left: 5px;
+				font-size: 17px;
+				color: #000000;
+				cursor: pointer;
+			}
+			
+			.help-button:hover {
+				text-decoration: none;
+			}
+			
+			.inline-block {
+				display: inline-block;
+			}
+			
+			.help {
+				padding-left: 1em;
+				padding-right: 1em;
+				width: 350px;
+			}
 </style>
 <div class="container pandas-profiling">
 	<script>
@@ -277,7 +302,7 @@
 		</ul>
 	</div>
     <div id="overview" class="row headerrow highlight">
-        <h1>Overview</h1>
+		<h1>Overview</h1>
     </div>
     {{ overview_html }}
     <div id="variables" class="row headerrow highlight">
@@ -286,16 +311,34 @@
     {{ rows_html }}
 	{% if values['missing'] %}
 		<div id="missing" class="row headerrow highlight">
-			<h1>Missing Values</h1>
+			<h1 class="inline-block">Missing Values</h1>
+			<div class="dropdown inline-block">
+				<a class="help-button dropdown-toggle" data-toggle="dropdown"></a>
+				<div class="help dropdown-menu">
+					<p>Explore different ways to visualize the missing data. Note this visualization will comfortably accommodate up to 50 labelled variables.</p>
+				</div>
+			</div>
 		</div>
 		{{ missing_html }}
 	{% endif %}
     <div id="correlations" class="row headerrow highlight">
-        <h1>Correlations</h1>
+        <h1 class="inline-block">Correlations</h1>
+		<div class="dropdown inline-block">
+			<a class="help-button dropdown-toggle" data-toggle="dropdown"></a>
+			<div class="help dropdown-menu">
+				<p>Explore different correlations among the variables. Note this visualization will comfortably accommodate up to 50 labelled variables.</p>
+			</div>
+		</div>
     </div>
     {{ correlation_html }}
     <div id="sample" class="row headerrow highlight">
-        <h1>Sample</h1>
+        <h1 class="inline-block">Sample</h1>
+		<div class="dropdown inline-block">
+			<a class="help-button dropdown-toggle" data-toggle="dropdown"></a>
+			<div class="help dropdown-menu">
+				<p>The first 5 Lines of the Dataframe are presented.</p>
+			</div>
+		</div>
     </div>
     {{ sample_html }}
 </div>
