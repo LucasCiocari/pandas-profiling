@@ -4,5 +4,5 @@
 </div>
 <script>
 	d3.select("#moreVariablesToggle").attr("data-target", "#moreVariables"+id).attr("id", "moreVariablesToggle"+id);
-	d3.select("#moreVariables").attr("id", "moreVariables"+id);
+	d3.select("#moreVariables").classed("in", false).attr("id", "moreVariables"+id);
 </script>

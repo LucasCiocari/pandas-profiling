@@ -294,29 +294,36 @@
 			.attr("width", missingBarWidth)
 			.attr("height", bHeight)
 			.attr("fill", "rgb(209, 60, 75)");
+		
+		if(height < 45) {
+			var fontSize = "12px";
+		} else {
+			var fontSize = "14px";
+		}
 		svg.append("text")
+			.text(valid+"%")
+			.attr("font-size", fontSize)
 			.attr("x", "5")
 			.attr("y", bHeight - 5)
-			.attr("fill", "white")
-			.text(valid+"%");
+			.attr("fill", "white");
 		svg.append("text")
+			.text("Valid")
+			.attr("font-size", fontSize)
 			.attr("x", "5")
 			.attr("y", height - 5)
-			.attr("fill", "rgb(126, 201, 166)")
-			.text("Valid");
+			.attr("fill", "rgb(126, 201, 166)");
 		svg.append("text")
 			.text(missing+"%")
-			.attr("x", function() {return width - 5 - this.getComputedTextLength()})
+			.attr("font-size", fontSize)
+			.attr("x", function() {return width - 5 - this.getComputedTextLength();})
 			.attr("y", bHeight - 5)
 			.attr("fill", "white");
 		svg.append("text")
 			.text("Missing")
-			.attr("x", function() {return width - 5 - this.getComputedTextLength()})
+			.attr("font-size", fontSize)
+			.attr("x", function() {return width - 5 - this.getComputedTextLength();})
 			.attr("y", height - 5)
 			.attr("fill", "rgb(209, 60, 75)");
-		if(height < 45) {
-			svg.selectAll("text").attr("font-size", "12px");
-		}
 			
 		var borderRadius = bHeight * 3 / 20
 		svg.append("path")
