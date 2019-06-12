@@ -85,10 +85,10 @@
 		<p class="h4">Missing Values</p>
 	</div>
 	<div class="col-md-5">
-        <svg class="MissingValuesBar" style="margin-top:35px;">
+        <svg class="MissingValuesBigBar" style="margin-top:35px;">
 			<script>
-				var svg = d3.select("svg.MissingValuesBar");
-				svg.attr("class", "MissingValuesBar"+id);
+				var svg = d3.select("svg.MissingValuesBigBar");
+				svg.attr("class", "MissingValuesBigBar"+id);
 				plotMissingValuesBar(svg, "{{ values['total_missing'] }}", 350, 50);
 			</script>
 		</svg>
