@@ -74,7 +74,7 @@
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active row" id="quantiles{{ values['varid'] }}">
             <div class="col-md-4 col-md-offset-1">
-                <p class="h4">Quantile statistics</p>
+                <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
                     <tr>
                         <th>Minimum</th>
@@ -115,7 +115,7 @@
                 </table>
             </div>
             <div class="col-md-4 col-md-offset-2">
-                <p class="h4">Descriptive statistics</p>
+                <p style="font-size:12px;font-weight: bold;margin-top:5px">Descriptive statistics</p>
                 <table class="stats indent">
                     <tr>
                         <th>Standard deviation</th>
@@ -168,9 +168,9 @@
             {{ values['freqtable'] }}
         </div>
         <div role="tabpanel" class="tab-pane col-md-12"  id="extreme{{ values['varid'] }}">
-            <p class="h4">Minimum 5 values</p>
+            <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             {{ values['firstn_expanded'] }}
-            <p class="h4">Maximum 5 values</p>
+            <p style="font-size:12px;font-weight: bold;margin-top:5px">Maximum 5 values</p>
             {{ values['lastn_expanded'] }}
         </div>
 		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot{{ values['varid'] }}">
