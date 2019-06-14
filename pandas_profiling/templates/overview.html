@@ -93,31 +93,33 @@
 			</script>
 		</svg>
     </div>
+	{% if values['missing_count']['n/a'] != 0 or values['missing_count']['na'] != 0 or values['missing_count']['?'] != 0 or values['missing_count']['empty'] != 0 or values['missing_count']['null'] != 0 %}
 	<div class="col-md-4">
 		<p class="h4" style="font-size:14px">Breakdown of Types</p>
 		<table class="stats" style="width: 100px">
 			<tr>
-				<th>na</th>
-				<td>xx</td>
+				<th>n/a</th>
+				<td>{{values['missing_count']['n/a']}}</td>
 			</tr>
 			<tr>
-				<th>NA</th>
-				<td>xx</td>
+				<th>na</th>
+				<td>{{values['missing_count']['na']}}</td>
 			</tr>
 			<tr>
 				<th>?</th>
-				<td>xx</td>
+				<td>{{values['missing_count']['?']}}</td>
 			</tr>
 			<tr>
 				<th>Empty</th>
-				<td>xx</td>
+				<td>{{values['missing_count']['empty']}}</td>
 			</tr>
 			<tr>
 				<th>Null</th>
-				<td>xx</td>
+				<td>{{values['missing_count']['null']}}</td>
 			</tr>
 		</table>
 	</div>
+	{% endif %}
     {% if messages %}
 </div>
 <div class="row variablerow">

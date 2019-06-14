@@ -2,6 +2,7 @@
 """Common parts to all other modules, mainly utility functions.
 """
 import pandas as pd
+from io import StringIO
 
 TYPE_CAT = 'CAT'
 """String: A categorical variable"""

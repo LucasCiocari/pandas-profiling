@@ -9,7 +9,7 @@ import pandas_profiling.plot as plot
 import datetime as dt
 
 
-def to_html(sample, stats_object):
+def to_html(sample, stats_object, missing_count):
     """Generate a HTML report from summary statistics and a given sample.
 
     Parameters
@@ -196,7 +196,7 @@ def to_html(sample, stats_object):
         rows_html += templates.template('more_variables_footer').render()
     # Overview
     formatted_values = {k: fmt(v, k) for k, v in six.iteritems(stats_object['table'])}
-
+    formatted_values['missing_count'] = missing_count
     row_classes={}
     for col in six.viewkeys(stats_object['table']) & six.viewkeys(row_formatters):
         row_classes[col] = row_formatters[col](stats_object['table'][col])

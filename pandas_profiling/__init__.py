@@ -6,10 +6,13 @@ https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt
 See also for a short description of docstring:
 https://stackoverflow.com/questions/3898572/what-is-the-standard-python-docstring-format
 """
+import pandas as pd
+import numpy as np
 import codecs
 import pandas_profiling.templates as templates
 from .describe import describe
 from .report import to_html
+from io import StringIO
 
 NO_OUTPUTFILE = "pandas_profiling.no_outputfile"
 DEFAULT_OUTPUTFILE = "pandas_profiling.default_outputfile"
@@ -58,15 +61,42 @@ class ProfileReport(object):
     html = ''
     file = None
 
-    def __init__(self, df, **kwargs):
+    def __init__(self, original, **kwargs):
         """Constructor see class documentation
         """
+        
+        df = original.copy()
+        is_datetime = []
+        missingCount = {'?' : 0, 'na' : 0, 'n/a' : 0, 'empty' : 0, 'null' : 0}
+        for column in df:
+            if(type(df[column][0]) == str):
+                df[column] = df[column].str.strip()
+        for column in df:
+            for j in range(len(df[column])):
+                if(type(df[column][j]) == str):
+                    if(df[column][j] == "?"):
+                        missingCount['?'] += 1
+                        df.loc[j, column] = np.nan
+                    elif(df[column][j].lower() == "na"):
+                        missingCount['na'] += 1
+                        df.loc[j, column] = np.nan
+                    elif(df[column][j].lower() == "n/a"):
+                        missingCount['n/a'] += 1
+                        df.loc[j, column] = np.nan
+                    elif(df[column][j].lower() == "empty"):
+                        missingCount['empty'] += 1
+                        df.loc[j, column] = np.nan
+                    elif(df[column][j].lower() == "null"):
+                        missingCount['null'] += 1
+                        df.loc[j, column] = np.nan
+        df = pd.read_csv(StringIO(df.to_csv(index=False, date_format='%Y-%m-%d %H:%M:%S')), parse_dates=list(df.select_dtypes(include=[np.datetime64]).columns))
+        
         sample = kwargs.get('sample', df.head())
 
         description_set = describe(df, **kwargs)
 
         self.html = to_html(sample,
-                            description_set)
+                            description_set, missingCount)
 
         self.description_set = description_set
 
