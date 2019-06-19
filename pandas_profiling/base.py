@@ -91,8 +91,6 @@ def get_vartype(data):
 
     Notes
     ----
-        * Should improve verification when a categorical or numeric field has 3 values, it could be a categorical field
-        or just a boolean with NaN values
         * #72: Numeric with low Distinct count should be treated as "Categorical"
     """
     if data.name is not None and data.name in _MEMO:
@@ -105,7 +103,7 @@ def get_vartype(data):
 
         if distinct_count <= 1:
             vartype = S_TYPE_CONST
-        elif pd.api.types.is_bool_dtype(data) or (distinct_count == 2 and pd.api.types.is_numeric_dtype(data)):
+        elif pd.api.types.is_bool_dtype(data) or ((distinct_count == 2 or (distinct_count == 3 and data.hasnans)) and pd.api.types.is_numeric_dtype(data)):
             vartype = TYPE_BOOL
         elif pd.api.types.is_numeric_dtype(data):
             vartype = TYPE_NUM
