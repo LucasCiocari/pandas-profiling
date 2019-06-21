@@ -279,14 +279,18 @@
 		{% if values['missing'] %}
 			d3.select("#missingLink").attr("href", "#missing"+id).attr("id", "missingLink"+id);
 		{% endif %}
-		d3.select("#correlationsLink").attr("href", "#correlations"+id).attr("id", "correlationsLink"+id);
+		{% if values['correlations'] %}
+			d3.select("#correlationsLink").attr("href", "#correlations"+id).attr("id", "correlationsLink"+id);
+		{% endif %}
 		d3.select("#sampleLink").attr("href", "#sample"+id).attr("id", "sampleLink"+id);
 		d3.select("#overview").attr("id", "overview"+id);
 		d3.select("#variables").attr("id", "variables"+id);
 		{% if values['missing'] %}
 			d3.select("#missing").attr("id", "missing"+id);
 		{% endif %}
-		d3.select("#correlations").attr("id", "correlations"+id);
+		{% if values['correlations'] %}
+			d3.select("#correlations").attr("id", "correlations"+id);
+		{% endif %}
 		d3.select("#sample").attr("id", "sample"+id);
 	</script>
 	<div class="row variablerow">
@@ -297,7 +301,9 @@
 			{% if values['missing'] %}
 				<li><a id="missingLink" href="#missing">Missing</a></li>
 			{% endif %}
+			{% if values['correlations'] %}
 			<li><a id="correlationsLink" href="#correlations">Correlations</a></li>
+			{% endif %}
 			<li><a id="sampleLink" href="#sample">Sample</a></li>
 		</ul>
 	</div>
@@ -321,6 +327,7 @@
 	</div>
 	{{ missing_html }}
 	{% endif %}
+	{% if values['correlations'] %}
     <div id="correlations" class="row headerrow highlight">
         <h1 class="inline-block">Correlations</h1>
 		<div class="dropdown inline-block">
@@ -331,6 +338,7 @@
 		</div>
     </div>
     {{ correlation_html }}
+	{% endif %}
     <div id="sample" class="row headerrow highlight">
         <h1 class="inline-block">Sample</h1>
 		<div class="dropdown inline-block">

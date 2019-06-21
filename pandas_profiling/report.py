@@ -210,10 +210,12 @@ def to_html(sample, stats_object, missing_count):
     overview_html = templates.template('overview').render(values=formatted_values, row_classes = row_classes, messages=messages_html)
 
     # Add plot of matrix correlation
-    pearson_matrix = plot.correlation_matrix(stats_object['correlations']['pearson'], 'Pearson')
-    spearman_matrix = plot.correlation_matrix(stats_object['correlations']['spearman'], 'Spearman')
-    correlations_html = templates.template('correlations').render(
-        values={'pearson_matrix': pearson_matrix, 'pearson_numeric': df.corr().to_html(), 'spearman_matrix': spearman_matrix})
+    correlations = len(stats_object['correlations']['pearson']) > 1
+    if(correlations):
+        pearson_matrix = plot.correlation_matrix(stats_object['correlations']['pearson'], 'Pearson')
+        spearman_matrix = plot.correlation_matrix(stats_object['correlations']['spearman'], 'Spearman')
+        correlations_html = templates.template('correlations').render(
+            values={'pearson_matrix': pearson_matrix, 'pearson_numeric': df.corr().to_html(), 'spearman_matrix': spearman_matrix})
 
     # Add sample
     sample_html = templates.template('sample').render(sample_table_html=sample.to_html(classes="sample"))
@@ -232,9 +234,10 @@ def to_html(sample, stats_object, missing_count):
         'overview_html': overview_html,
         'rows_html': rows_html,
         'sample_html': sample_html,
-        'correlation_html': correlations_html
     }
     if(missing):
         sections['missing_html'] = missing_html
+    if(correlations):
+        sections['correlation_html'] = correlations_html
     
-    return templates.template('base').render(sections, values = {'missing': missing})
+    return templates.template('base').render(sections, values = {'missing': missing, 'correlations': correlations})
