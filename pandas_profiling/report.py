@@ -219,6 +219,9 @@ def to_html(sample, stats_object, missing_count):
 
     # Add sample
     sample_html = templates.template('sample').render(sample_table_html=sample.to_html(classes="sample"))
+    print(stats_object['bid'][0], stats_object['bid'][1])
+    bid_html = templates.template('bid').render(data=stats_object['bid'][0], full_matrix=stats_object['bid'][1])
+
     # TODO: should be done in the template
     
     missing = df.isnull().values.any()
@@ -234,6 +237,7 @@ def to_html(sample, stats_object, missing_count):
         'overview_html': overview_html,
         'rows_html': rows_html,
         'sample_html': sample_html,
+        'bid_html' : bid_html
     }
     if(missing):
         sections['missing_html'] = missing_html

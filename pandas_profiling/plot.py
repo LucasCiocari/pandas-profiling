@@ -57,7 +57,6 @@ def _plot_histogram(series, bins=10, figsize=(6, 4), facecolor='#337ab7'):
                            bins=bins)  # TODO when running on server, send this off to a different thread
     return plot
 
-
 def histogram(series, **kwargs):
     """Plot an histogram of the data.
 
@@ -80,7 +79,6 @@ def histogram(series, **kwargs):
     # TODO Think about writing this to disk instead of caching them in strings
     plt.close(plot.figure)
     return result_string
-
 
 def mini_histogram(series, **kwargs):
     """Plot a small (mini) histogram of the data.
