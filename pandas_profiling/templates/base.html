@@ -1,6 +1,8 @@
 <meta charset="UTF-8">
 
 <style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+
     .variablerow {
         border: 1px solid #e1e1e8;
         border-top: hidden;
@@ -274,12 +276,27 @@
         width: 350px;
     }
 
-    .highlight {
+    .table_viz_style {
+        background-color: rgb(253, 247, 247);
+    }
+
+    .data-text {
+        font-size: 14px;
+        text-align: center;
+        background-color: black;
+    }
+
+    #table_viz {
+        font-family: 'Roboto', sans-serif;
+        font-size: 12px;
+    }
+
+    .highlight_bid_viz {
         fill-opacity: 1;
         stroke-opacity: 1;
     }
 
-    .fade {
+    .fade_bid_viz {
         fill-opacity: 0.06;
         stroke-opacity: 0;
     }
@@ -304,6 +321,7 @@
         cursor: pointer;
     }
 </style>
+
 <div class="container pandas-profiling">
     <script>
         if (typeof id !== 'undefined') {
@@ -317,10 +335,11 @@
         <h1 style="font-size: 36px;">Data Profiling</h1>
     </div>
     <script>
-        d3.select("#sel_a_bid_viz").attr("id", `sel_a_bid_viz_${id}`);
-        d3.select("#sel_b_bid_viz").attr("id", `sel_b_bid_viz_${id}`);
-        d3.select("#swap_btn_bid_viz").attr("id", `swap_btn_bid_viz_${id}`);
-        d3.select("#bid_viz").attr("id", `bid_viz_${id}`);
+        d3.select("#table_viz").attr("id", `table_viz${id}`)
+        d3.select("#sel_a_bid_viz").attr("id", `sel_a_bid_viz${id}`);
+        d3.select("#sel_b_bid_viz").attr("id", `sel_b_bid_viz${id}`);
+        d3.select("#swap_btn_bid_viz").attr("id", `swap_btn_bid_viz${id}`);
+        d3.select("#bid_viz").attr("id", `bid_viz${id}`);
         d3.select("#overviewLink").attr("href", "#overview" + id).attr("id", "overviewLink" + id);
         d3.select("#variablesLink").attr("href", "#variables" + id).attr("id", "variablesLink" + id);
         {% if values['missing'] %}
@@ -389,16 +408,6 @@
     </div>
     {{ correlation_html }}
     {% endif %}
-    <div id="sample" class="row headerrow highlight">
-        <h1 class="inline-block">Sample</h1>
-        <div class="dropdown inline-block">
-            <a class="help-button dropdown-toggle" data-toggle="dropdown"></a>
-            <div class="help dropdown-menu">
-                <p>The first 5 Lines of the Dataframe are presented.</p>
-            </div>
-        </div>
-    </div>
-    {{ sample_html }}
 
     <div id="bid" class="row headerrow highlight">
         <h1 class="inline-block">Bi-Directional Chord</h1>
@@ -411,4 +420,15 @@
     </div>
 
     {{ bid_html }}
+
+    <div id="table" class="row headerrow highlight">
+        <h1 class="inline-block">Inputted Data</h1>
+        <div class="dropdown inline-block">
+            <a class="help-button dropdown-toggle" data-toggle="dropdown"></a>
+            <div class="help dropdown-menu">
+                <p>Inputted data visualization</p>
+            </div>
+        </div>
+    </div>
+    {{ table_html }}
 </div>

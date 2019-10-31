@@ -1,0 +1,7 @@
+<div id="table_viz"></div>
+<script>
+    let svg = d3.select("#table_viz"+id)
+    let metadata = {{ metadata }}
+    let data_array = {{ data_array }}
+    build_table_viz(metadata, data_array, svg)
+</script>
