@@ -241,7 +241,7 @@
 						metadata[val]['values'].forEach((val2, index2) => {
 							color_palette = generate_colors(metadata[val]['values'])
 							if (val2 != "missing value") {
-								console.log(val2);
+								
 								color_list[val2] = color_palette[index2]
 							}
 							metadata[val]['colors'] = color_list
