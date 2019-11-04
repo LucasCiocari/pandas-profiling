@@ -374,6 +374,85 @@ def multiprocess_func(x, **kwargs):
     return x[0], describe_1d(x[1], **kwargs)
 
 
+def bid_process_data(df):
+    count = []
+    considered_cols = []
+    last_index = 0
+    keys = {}
+
+    df.replace(to_replace=["na", "?", np.nan, "missing", "not available",
+                           "n/a", "missing value"], value=np.nan, inplace=True)
+
+    for col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors='ignore')
+
+    for col in df.columns:
+        if df[col].dtype == "object":
+            df[col].replace(to_replace=["na", "?", np.nan, "missing", "not available",
+                                        "n/a", "missing value"], value="missing value", inplace=True)
+            if df[col].unique().size < 25:
+                considered_cols.append(col)
+                keys[col] = {"values": df[col].unique().tolist(
+                ), "start_i": last_index, "end_i": last_index + df[col].unique().size}
+                last_index = last_index + df[col].unique().size
+                for item in df[col].unique():
+                    count.append([col, item])
+    data_array = np.zeros((len(count), len(count)))
+
+    for row in range(df.shape[0]):
+        for col in range(df.shape[1]):
+            for i in range(col+1, df.shape[1]):
+                if df.columns[col] in considered_cols and df.columns[i] in considered_cols:
+                    data_array[count.index([df.columns[col], df.iloc[row, col]]), count.index(
+                        [df.columns[i], df.iloc[row, i]])] += 1
+
+    data_array += np.transpose(data_array)
+    return keys, data_array.tolist()
+
+
+def build_table_data(df_orig):
+    metadata = []
+    df = df_orig
+    df.replace(to_replace=["na", "?", np.nan, "missing", "not available",
+                           "n/a", "missing value"], value=np.nan, inplace=True)
+
+    for col in df.columns:
+        df[col] = pd.to_numeric(df[col], errors='ignore')
+
+    for idx, col in enumerate(df.columns):
+        helper = {}
+        key = col
+        if len(key) > 15:
+            key = col[:15]
+
+        helper['ascend'] = 0
+        helper['name'] = key
+        if(df.dtypes[col] == "object"):
+            df[col].replace(to_replace=["na", "?", np.nan, "missing", "not available",
+                                        "n/a", "missing value"], value="missing value", inplace=True)
+            helper['datatype'] = 'string'
+            helper['values'] = df[col].unique().tolist()
+        elif(df.dtypes[col] == "int64"):
+            helper['datatype'] = 'int'
+            helper['min_val'] = df[col].min()
+            helper['max_val'] = df[col].max()
+        elif(df.dtypes[col] == "float64"):
+            helper['datatype'] = 'float'
+            helper['min_val'] = df[col].min()
+            helper['max_val'] = df[col].max()
+        metadata.append(helper)
+
+    df.replace(to_replace=["na", "?", np.nan, "missing", "not available",
+                           "n/a", "missing value"], value="missing value", inplace=True)
+    data_array = []
+    for row in range(df.shape[0]):
+        aux = []
+        for col in range(df.shape[1]):
+            aux.append(df.iloc[row, col])
+        data_array.append(aux)
+    return metadata, data_array
+
+
 def describe(df, bins=10, check_correlation=True, correlation_threshold=0.9, correlation_overrides=None, check_recoded=False, pool_size=multiprocessing.cpu_count(), **kwargs):
     """Generates a dict containing summary statistics for a given dataset stored as a pandas `DataFrame`.
 
@@ -531,6 +610,6 @@ def describe(df, bins=10, check_correlation=True, correlation_threshold=0.9, cor
         'correlations': {'pearson': dfcorrPear, 'spearman': dfcorrSpear},
         'dataframe': df,
         'bid': bid,
-        'table_viz' : table_viz
+        'table_viz': table_viz
 
     }
