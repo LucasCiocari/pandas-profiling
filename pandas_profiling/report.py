@@ -218,10 +218,11 @@ def to_html(sample, stats_object, missing_count):
             values={'pearson_matrix': pearson_matrix, 'pearson_numeric': df.corr().to_html(), 'spearman_matrix': spearman_matrix})
 
     # Add sample
-    sample_html = templates.template('sample').render(sample_table_html=sample.to_html(classes="sample"))
-    print(stats_object['bid'][0], stats_object['bid'][1])
-    bid_html = templates.template('bid').render(data=stats_object['bid'][0], full_matrix=stats_object['bid'][1])
-
+    # sample_html = templates.template('sample').render(sample_table_html=sample.to_html(classes="sample"))
+    #add viz
+    bid_html = templates.template('bid').render(keys = stats_object['bid'][0], data_array = stats_object['bid'][1] )
+    table_html = templates.template('table').render(metadata_table_viz = stats_object['table_viz'][0],dataarray_table_viz = stats_object['table_viz'][1] )
+    # table_html = templates.template('table').render()
     # TODO: should be done in the template
     
     missing = df.isnull().values.any()
@@ -234,10 +235,12 @@ def to_html(sample, stats_object, missing_count):
         missing_html = templates.template('missing').render(values=values)
     
     sections = {
+        ##add viz to sections
         'overview_html': overview_html,
         'rows_html': rows_html,
-        'sample_html': sample_html,
-        'bid_html' : bid_html
+        # 'sample_html': sample_html,
+        'bid_html' : bid_html,
+        'table_html' : table_html
     }
     if(missing):
         sections['missing_html'] = missing_html

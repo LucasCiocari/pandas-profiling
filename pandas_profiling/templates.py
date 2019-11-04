@@ -29,7 +29,9 @@ templates = {'freq_table_row': 'freq_table_row.html',
              'more_variables_header' : 'more_variables_header.html',
              'more_variables_footer' : 'more_variables_footer.html',
              'missing' : 'missing.html',
-             'bid' : 'bid.html'
+             #Added viz to templates dict
+             'bid' : 'bid.html',
+             'table' : 'table.html'
              }
 
 # Mapping between row type and var type

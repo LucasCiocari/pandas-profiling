@@ -1,6 +1,9 @@
 <meta charset="UTF-8">
 
 <style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+    @import url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css');
+
     .variablerow {
         border: 1px solid #e1e1e8;
         border-top: hidden;
@@ -221,6 +224,8 @@
         padding: 2em;
     }
 
+    .pp-anchor {}
+
     /*Warnings and Suggestions collapses*/
     .panel-heading .collapseButton:after {
         font-family: 'FontAwesome';
@@ -274,12 +279,14 @@
         width: 350px;
     }
 
-    .highlight {
+    /* BID Viz */
+
+    .highlight_bid_viz {
         fill-opacity: 1;
         stroke-opacity: 1;
     }
 
-    .fade {
+    .fade_bid_viz {
         fill-opacity: 0.06;
         stroke-opacity: 0;
     }
@@ -303,7 +310,21 @@
         background-color: lavender;
         cursor: pointer;
     }
+
+    /* Table Viz */
+
+    .data-text {
+        font-size: 14px;
+        text-align: center;
+        background-color: black;
+    }
+
+    #table_viz {
+        font-family: 'Roboto', sans-serif;
+        font-size: 12px;
+    }
 </style>
+
 <div class="container pandas-profiling">
     <script>
         if (typeof id !== 'undefined') {
@@ -317,10 +338,11 @@
         <h1 style="font-size: 36px;">Data Profiling</h1>
     </div>
     <script>
-        d3.select("#sel_a_bid_viz").attr("id", `sel_a_bid_viz_${id}`);
-        d3.select("#sel_b_bid_viz").attr("id", `sel_b_bid_viz_${id}`);
-        d3.select("#swap_btn_bid_viz").attr("id", `swap_btn_bid_viz_${id}`);
-        d3.select("#bid_viz").attr("id", `bid_viz_${id}`);
+        //para adicionar contador no id (ids serão únicos para + de 1 report)
+        d3.select("#sel_a_bid_viz").attr("id", "sel_a_bid_viz" + id);
+        d3.select("#swap_btn_bid_viz").attr("id", "swap_btn_bid_viz" + id);
+        d3.select("#sel_b_bid_viz").attr("id", "sel_b_bid_viz" + id);
+        d3.select("#bid_viz").attr("id", "bid_viz" + id);;
         d3.select("#overviewLink").attr("href", "#overview" + id).attr("id", "overviewLink" + id);
         d3.select("#variablesLink").attr("href", "#variables" + id).attr("id", "variablesLink" + id);
         {% if values['missing'] %}
@@ -351,7 +373,8 @@
             {% if values['correlations'] %}
             <li><a id="correlationsLink" href="#correlations">Correlations</a></li>
             {% endif %}
-            <li><a id="sampleLink" href="#sample">Sample</a></li>
+            <li><a id="BiDLink" href="#BiD">Bi-dimensional Chord</a></li>
+            <li><a id="TableLink" href="#table_header_viz">Data Table</a></li>
         </ul>
     </div>
     <div id="overview" class="row headerrow highlight">
@@ -389,6 +412,8 @@
     </div>
     {{ correlation_html }}
     {% endif %}
+    <!-- SECTION HEADER -->
+    <!--
     <div id="sample" class="row headerrow highlight">
         <h1 class="inline-block">Sample</h1>
         <div class="dropdown inline-block">
@@ -398,17 +423,26 @@
             </div>
         </div>
     </div>
-    {{ sample_html }}
-
-    <div id="bid" class="row headerrow highlight">
-        <h1 class="inline-block">Bi-Directional Chord</h1>
+    -->
+    <!-- {{ sample_html }} -->
+    <div id="BiD" class="row headerrow highlight">
+        <h1 class="inline-block">Bi-Dimensional Chord Diagram</h1>
         <div class="dropdown inline-block">
             <a class="help-button dropdown-toggle" data-toggle="dropdown"></a>
             <div class="help dropdown-menu">
-                <p>Relationship between categorical data.</p>
+                <p>Relationship between all categorical data is shown.</p>
             </div>
         </div>
     </div>
-
     {{ bid_html }}
+    <div id="table_header_viz" class="row headerrow highlight">
+        <h1 class="inline-block">Data Table</h1>
+        <div class="dropdown inline-block">
+            <a class="help-button dropdown-toggle" data-toggle="dropdown"></a>
+            <div class="help dropdown-menu">
+                <p>All the data is shown in tabular form.</p>
+            </div>
+        </div>
+    </div>
+    {{ table_html }}
 </div>
