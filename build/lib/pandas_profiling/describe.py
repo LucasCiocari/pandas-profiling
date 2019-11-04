@@ -599,9 +599,6 @@ def describe(df, bins=10, check_correlation=True, correlation_threshold=0.9, cor
     table_stats['REJECTED'] = table_stats['CONST'] + \
         table_stats['CORR'] + table_stats['RECODED']
 
-    bid = bid_data_format(df)
-    table_viz = table_data_format(df)
-
     return {
         # Este é o stats_object do report.py
         'table': table_stats,
@@ -609,7 +606,7 @@ def describe(df, bins=10, check_correlation=True, correlation_threshold=0.9, cor
         'freq': {k: (base.get_groupby_statistic(df[k])[0] if variable_stats[k].type != base.S_TYPE_UNSUPPORTED else None) for k in df.columns},
         'correlations': {'pearson': dfcorrPear, 'spearman': dfcorrSpear},
         'dataframe': df,
-        'bid': bid,
-        'table_viz': table_viz
+        'bid': bid_data_format(df),
+        'table_viz': table_data_format(df)
 
     }
