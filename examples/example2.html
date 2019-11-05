@@ -378,7 +378,6 @@
         }
     </script>
 <script>
-
 	function plotTableGraph(metadata, data_array, svg) {
 		let color_palette = []
 
@@ -405,8 +404,7 @@
 						return -1
 					return a[col_n] - b[col_n]
 				});
-			}
-			else {
+			} else {
 				data_array.sort(function (a, b) {
 					if (isNaN(a[col_n]))
 						return 1
@@ -417,6 +415,7 @@
 				});
 			}
 		}
+
 		function sort_alpha(col_n, asc) {
 			if (asc) {
 				data_array.sort(function (a, b) {
@@ -424,17 +423,19 @@
 					return a[col_n].localeCompare(b[col_n]);
 
 				})
-			}
-			else {
+			} else {
 				data_array.sort(function (a, b) {
 					return b[col_n].localeCompare(a[col_n]);
 				})
 			}
 		}
+
 		function define_cell_width(min, max, val, full_wdth) {
 			const new_val = (val - min) / (max - min)
-			return new_val != 0 ? ((new_val * full_wdth) > min_int_bar_size ? (new_val * full_wdth) : min_int_bar_size) : min_int_bar_size
+			return new_val != 0 ? ((new_val * full_wdth) > min_int_bar_size ? (new_val * full_wdth) : min_int_bar_size) :
+				min_int_bar_size
 		}
+
 		function get_max_labels() {
 			let count = 2 // starts at 2 because at least two will be needed for int and float labels
 			Object.keys(metadata)
@@ -444,6 +445,7 @@
 				)
 			return count
 		}
+
 		function column_name_click(svg, clicked_col, label_qtt) {
 			let obj = Object.keys(metadata)[clicked_col]
 
@@ -463,14 +465,12 @@
 				svg
 					.selectAll(`.ascending-${clicked_col}`)
 					.text(sort_icon)
-			}
-			else if (metadata[clicked_col]['ascend'] == 1) {
+			} else if (metadata[clicked_col]['ascend'] == 1) {
 				metadata[clicked_col]['ascend'] = 2
 				svg
 					.selectAll(`.ascending-${clicked_col}`)
 					.text(sort_up_icon)
-			}
-			else if (metadata[clicked_col]['ascend'] == 2) {
+			} else if (metadata[clicked_col]['ascend'] == 2) {
 				metadata[clicked_col]['ascend'] = 1
 				svg
 					.selectAll(`.ascending-${clicked_col}`)
@@ -485,8 +485,7 @@
 					sort_alpha(clicked_col, false)
 				}
 
-			}
-			else {
+			} else {
 				if (metadata[obj]['ascend'] == 1) {
 					sort_numerical(clicked_col, true)
 				}
@@ -497,6 +496,7 @@
 
 			build_table(svg, label_qtt)
 		}
+
 		function move_to_left(svg, clicked_col) {
 
 			for (let i = 0; i < data_array.length; i++) {
@@ -508,11 +508,9 @@
 			let new_data = Object.keys(metadata).map((val, index) => {
 				if (index === clicked_col - 1) {
 					return metadata[Object.keys(metadata)[clicked_col]]
-				}
-				else if (index === clicked_col) {
+				} else if (index === clicked_col) {
 					return metadata[Object.keys(metadata)[clicked_col - 1]]
-				}
-				else {
+				} else {
 					return metadata[val]
 				}
 			})
@@ -520,6 +518,7 @@
 
 			head_build(svg);
 		}
+
 		function move_to_right(svg, clicked_col) {
 
 			for (let i = 0; i < data_array.length; i++) {
@@ -531,11 +530,9 @@
 			let new_data = Object.keys(metadata).map((val, index) => {
 				if (index === clicked_col + 1) {
 					return metadata[Object.keys(metadata)[clicked_col]]
-				}
-				else if (index === clicked_col) {
+				} else if (index === clicked_col) {
 					return metadata[Object.keys(metadata)[clicked_col + 1]]
-				}
-				else {
+				} else {
 					return metadata[val]
 				}
 			})
@@ -552,6 +549,7 @@
 			let a = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 			return (a < 0.5);
 		}
+
 		function create_tooltip(text, jdx, this_row_y, work_row, color) {
 
 			work_row.append("rect")
@@ -572,12 +570,16 @@
 				.attr("y", `${this_row_y - 7}`)
 				.attr("class", "data-text")
 				.attr("End", "true")
-				.attr("fill", `${colourIsLight(d3.color(color).rgb().r, d3.color(color).rgb().g, d3.color(color).rgb().b) ? 'black' : 'white'}`)
+				.attr("fill",
+					`${colourIsLight(d3.color(color).rgb().r, d3.color(color).rgb().g, d3.color(color).rgb().b) ? 'black' : 'white'}`
+					)
 		}
+
 		function destroy_tooltip(svg) {
 			svg.selectAll(".data-text").remove()
 			svg.selectAll(".back-tooltip").remove()
 		}
+
 		function generate_colors(values) {
 
 			const quantity = (values.find(val => val === "missing value") != undefined) ? values.length - 1 : values.length
@@ -590,20 +592,23 @@
 
 			return color_array
 		}
+
 		function head_build(svg) {
 
 			max_number_of_labels = get_max_labels()
 
 			// last label height is for buttons
-			let height = space_between_rows * data_array.length + space_between_rows * 2 + padding_top + max_number_of_labels * label_height + label_height
+			let height = space_between_rows * data_array.length + space_between_rows * 2 + padding_top +
+				max_number_of_labels * label_height + label_height
 
 			svg.selectAll("*").remove();
 
 			svg
 				.append("svg")
 				.attr("class", "table_viz_style")
-				.attr("width", width)
-				.attr("height", height)
+				.attr("style", "overflow:unset;max-width:unset;width:unset;height:unset")
+				.attr("width", `${width}px`)
+				.attr("height", `${height}px`)
 				.append("g")
 				.attr("class", "table")
 				.append("g")
@@ -620,7 +625,7 @@
 						metadata[val]['values'].forEach((val2, index2) => {
 							color_palette = generate_colors(metadata[val]['values'])
 							if (val2 != "missing value") {
-								
+
 								color_list[val2] = color_palette[index2]
 							}
 							metadata[val]['colors'] = color_list
@@ -635,16 +640,19 @@
 								.attr("rx", "1")
 								.attr("ry", "1")
 								.attr("width", `${cell_width - space_btw_columns}`)
-								.attr("fill", `${metadata[val]['values'][index] === "missing value" ? "black" : color_list[val2]}`)
+								.attr("fill",
+									`${metadata[val]['values'][index] === "missing value" ? "black" : color_list[val2]}`
+									)
 							label_item
 								.append("text")
 								.text(`${val2}`)
-								.attr("fill", `${val2 === "missing value" ? 'white' : (colourIsLight(d3.color(color_list[val2]).rgb().r, d3.color(color_list[val2]).rgb().g, d3.color(color_list[val2]).rgb().b) ? 'black' : 'white')}`)
+								.attr("fill",
+									`${val2 === "missing value" ? 'white' : (colourIsLight(d3.color(color_list[val2]).rgb().r, d3.color(color_list[val2]).rgb().g, d3.color(color_list[val2]).rgb().b) ? 'black' : 'white')}`
+									)
 								.attr("x", `${cell_width * index}`)
 								.attr("y", `${label_height * index2 + label_height - 2}`)
 						})
-					}
-					else {
+					} else {
 						var label_item = adding_labels
 							.append("g")
 							.attr("class", "label")
@@ -699,12 +707,11 @@
 
 				if (metadata[i]['ascend'] == 0)
 					image_construct
-						.text(sort_icon)
+					.text(sort_icon)
 				else if (metadata[i]['ascend'] == 1) {
 					image_construct
 						.text(sort_up_icon)
-				}
-				else if (metadata[i]['ascend'] == 2) {
+				} else if (metadata[i]['ascend'] == 2) {
 					image_construct
 						.text(sort_down_icon)
 				}
@@ -712,7 +719,8 @@
 				headers
 					.append("text")
 					.attr("x", `${cell_width * i}`)
-					.attr("y", `${space_between_rows + padding_top + max_number_of_labels * label_height + label_height}`)
+					.attr("y",
+						`${space_between_rows + padding_top + max_number_of_labels * label_height + label_height}`)
 					.attr("fill", "black")
 					.text(metadata[obj]['name'])
 					.attr("class", "header-item")
@@ -728,6 +736,7 @@
 			})
 			build_table(svg, max_number_of_labels)
 		}
+
 		function build_table(svg, n_of_labels) {
 
 			svg.selectAll(".rows").remove();
@@ -739,7 +748,8 @@
 						.attr("class", `row-${idx} rows`)
 
 					// last label height is for buttons
-					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top + label_height * n_of_labels + label_height
+					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top + label_height *
+						n_of_labels + label_height
 					item.forEach(
 						(i, jdx) => {
 							var work_row = svg.selectAll(`.row-${idx}`).append("g")
@@ -752,23 +762,32 @@
 								.attr("rx", "1").attr("ry", "1")
 								.on("mouseout", _ => destroy_tooltip(svg))
 
-							const { min_val, max_val, datatype, colors } = metadata[jdx]
+							const {
+								min_val,
+								max_val,
+								datatype,
+								colors
+							} = metadata[jdx]
 
 							if (datatype == 'string') {
 								common
 									.attr("width", `${cell_width - space_btw_columns}`)
 									.attr("fill", i === "missing value" ? "black" : colors[i])
-									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, i === "missing value" ? "black" : colors[i]))
+									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, i ===
+										"missing value" ? "black" : colors[i]))
 
-							}
-							else if (datatype == 'int' || datatype == 'float') {
-								const this_cell_wdth = define_cell_width(min_val, max_val, data_array[idx][jdx], cell_width - space_btw_columns);
+							} else if (datatype == 'int' || datatype == 'float') {
+								const this_cell_wdth = define_cell_width(min_val, max_val, data_array[idx][jdx],
+									cell_width - space_btw_columns);
 								const lightning_percentage = ((1 - this_cell_wdth / cell_width) * 85) + 15
 								const variable_color = `hsl(120, ${100}%, ${lightning_percentage}%)`
 								common
-									.attr("width", data_array[idx][jdx] == "missing value" ? cell_width - space_btw_columns : this_cell_wdth)
-									.attr("fill", data_array[idx][jdx] == "missing value" ? "black" : variable_color)
-									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, data_array[idx][jdx] == "missing value" ? "black" : variable_color))
+									.attr("width", data_array[idx][jdx] == "missing value" ? cell_width -
+										space_btw_columns : this_cell_wdth)
+									.attr("fill", data_array[idx][jdx] == "missing value" ? "black" :
+										variable_color)
+									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, data_array[
+										idx][jdx] == "missing value" ? "black" : variable_color))
 							}
 						}
 					)
@@ -781,6 +800,7 @@
 	}
 
 	function plotBidGraph(data, full_matrix) {
+
 
 		let dimensions = Object.keys(data)
 		let labels = [];
@@ -795,9 +815,9 @@
 		const outerRadius = 275
 
 		const entity_padding = 0.05
-		let select_a = document.getElementById('sel_a_bid_viz' + id);
-		let select_b = document.getElementById('sel_b_bid_viz' + id);
-		let swap_btn = document.getElementById("swap_btn_bid_viz" + id);
+		let select_a = document.getElementById('sel_a_bid_viz');
+		let select_b = document.getElementById('sel_b_bid_viz');
+		let swap_btn = document.getElementById("swap_btn_bid_viz");
 
 		function generate_colors(values) {
 
@@ -811,6 +831,7 @@
 
 			return color_array
 		}
+
 		function zeros(len1, len2) {
 			let arr = [];
 			for (let i = 0; i < len1; i++) {
@@ -825,6 +846,7 @@
 			}
 			return Array.from(arr);
 		}
+
 		function concat_matrix(f_mat, s_mat) {
 			let ret_mat = [];
 			for (i = 0; i < f_mat.length; i++) {
@@ -832,6 +854,7 @@
 			}
 			return Array.from(ret_mat);
 		}
+
 		function join_matrix(f_mat, s_mat) {
 			let ret_mat = f_mat;
 
@@ -841,6 +864,7 @@
 
 			return Array.from(ret_mat);
 		}
+
 		function node_mouseover(svg, d) {
 			svg.selectAll('.nodes').classed('fade_bid_viz', true)
 			svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', true)
@@ -854,16 +878,22 @@
 
 
 			let numbers = new Set();
-			let x = document.querySelectorAll(`[class^="ribbon-"]`)
-			for (let i = 0; i < x.length; i++) {
-				if (x[i].className.baseVal.indexOf(d.index.toString()) != -1) {
-					numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[1])
-					numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[2])
-				}
-			}
+			svg
+				.selectAll(".ribbons")
+				.selectAll("*")
+				.filter(val => val.source.index === d.index || val.source.subindex === d.index || val.target.index === d
+					.index || val.target.subindex === d.index)
+				._groups[0]
+				.forEach(
+					(val) => {
+						numbers.add(val.className.baseVal.split(" ")[0].split("-")[1])
+						numbers.add(val.className.baseVal.split(" ")[0].split("-")[2])
+					}
+				)
 
 			for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', true)
 		}
+
 		function node_mouseout(svg, d) {
 			svg.selectAll('.nodes').classed('fade_bid_viz', false)
 			svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', false)
@@ -885,6 +915,7 @@
 
 			for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', false)
 		}
+
 		function chord_mouseover(svg, d) {
 			svg.selectAll('.ribbons').classed('fade_bid_viz', true)
 			svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', true).moveToFront()
@@ -892,6 +923,7 @@
 			svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', true)
 			svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', true)
 		}
+
 		function chord_mouseout(svg, d) {
 			svg.selectAll('.ribbons').classed('fade_bid_viz', false)
 			svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', false)
@@ -899,12 +931,14 @@
 			svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', false)
 			svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', false)
 		}
+
 		function def_layout(matrix, entity_padding) {
 			return d3.chord()
 				.padAngle(entity_padding)
 				.sortSubgroups(d3.ascending)
 				(matrix)
 		}
+
 		function update_matrix(dim_l, dim_r) {
 			let new_matrix = []
 
@@ -926,11 +960,12 @@
 
 			return end_matrix;
 		}
+
 		function update_viz(dim_l, dim_r) {
 
-			d3.select("#bid_viz" + id).selectAll("*").remove();
+			d3.select("#bid_viz").selectAll("*").remove();
 
-			let svg = d3.select("#bid_viz" + id)
+			let svg = d3.select("#bid_viz")
 				.append("svg")
 				.attr("width", width)
 				.attr("height", height)
@@ -938,7 +973,6 @@
 				.attr("transform", `translate(${width / 2},${height / 2})`)
 
 			let res = def_layout(matrix, entity_padding)
-
 
 			//Nodes insert
 			let color_count = -1
@@ -957,37 +991,39 @@
 						if (data[dim_r]['values'][i] == "missing value") {
 							d.color = "black";
 							return "black";
-						}
-						else {
+						} else {
 							color_count += 1
 							d.color = l_dim_colors[color_count]
 							return l_dim_colors[color_count]
 						}
-					}
-					else {
+					} else {
 						if (data[dim_l]['values'][i - data[dim_r]['values'].length] == "missing value") {
 							d.color = "black"
 							return "black"
-						}
-						else {
+						} else {
 							d.color = r_dim_color
 							return r_dim_color
 						}
 					}
 
 					return d.startAngle >= 3 ? d.color = r_dim_color : d.color = l_dim_colors[d.index]
-				}
-				)
+				})
 				.style("stroke", d => d3.rgb(d.color).darker())
 				.attr("d", d3.arc().innerRadius(innerRadius).outerRadius(outerRadius))
-				.on('mouseover', d => { node_mouseover(svg, d) })
-				.on('mouseout', d => { node_mouseout(svg, d) });
+				.on('mouseover', d => {
+					node_mouseover(svg, d)
+				})
+				.on('mouseout', d => {
+					node_mouseout(svg, d)
+				});
 
 			//Text insert
 			svg.selectAll(".nodes")
 				.selectAll("g")
 				.append("text")
-				.each(d => { d.angle = (d.startAngle + d.endAngle) / 2; })
+				.each(d => {
+					d.angle = (d.startAngle + d.endAngle) / 2;
+				})
 				.attr("dy", ".35em")
 				.attr("transform", d => `
       rotate(${(d.angle * 180 / Math.PI - 90)})
@@ -1015,24 +1051,29 @@
 				.on('mouseover', d => chord_mouseover(svg, d))
 				.on('mouseout', d => chord_mouseout(svg, d))
 		}
+
 		function select_on_change() {
 
-			const dim_l = select_a.value
-			const dim_r = select_b.value
-			l_dim_colors = generate_colors(data[dim_r]['values'])
+			const dim_l = select_a.value;
+			const dim_r = select_b.value;
+			l_dim_colors = generate_colors(data[dim_r]['values']);
 			update_selects(dim_l, dim_r);
 			labels = data[dim_r]['values'].concat(data[dim_l]['values']);
 			matrix = update_matrix(dim_l, dim_r);
 			update_viz(dim_l, dim_r);
 		}
+
 		function btn_on_click() {
-			const dim_l = select_b.value
-			const dim_r = select_a.value
+			const dim_l = select_b.value;
+			const dim_r = select_a.value;
+			l_dim_colors = generate_colors(data[dim_r]['values']);
 			update_selects(dim_l, dim_r);
 			labels = data[dim_r]['values'].concat(data[dim_l]['values']);
+
 			matrix = update_matrix(dim_l, dim_r);
 			update_viz(dim_l, dim_r);
 		}
+
 		function update_selects(dim_l, dim_r) {
 
 			let keep_selected_a = dim_l
@@ -1068,8 +1109,8 @@
 		}
 
 		/*
-		* Initial code
-		*/
+		 * Initial code
+		 */
 
 		//Populate Select
 		dimensions.forEach((item, index) => {
@@ -1085,7 +1126,6 @@
 		select_b.addEventListener("change", select_on_change);
 		swap_btn.addEventListener("click", btn_on_click);
 		select_on_change();
-
 	}
 
 	function plotVaribleTypesChart(svg, data) {
@@ -1093,7 +1133,10 @@
 		var color = d3.scaleOrdinal()
 			.domain(data.map(d => d.name))
 			.range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), data.length).reverse());
-		var margin = { left: 20, right: 20 }
+		var margin = {
+			left: 20,
+			right: 20
+		}
 		var width = 350;
 		var height = 60;
 		svg
@@ -1126,25 +1169,38 @@
 			.attr("y", height - barHeight)
 			.attr("fill", d => color(d.name))
 			.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name + ": " + d.number))
-			.on("mousemove", function () { return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px"); })
-			.on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
+			.on("mousemove", function () {
+				return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
+			})
+			.on("mouseout", function () {
+				return tooltip.style("visibility", "hidden");
+			});
 
 		var borderRadius = barHeight * 3 / 20
 
 		svg.append("path")
-			.attr("d", "M " + (margin.left - 0.5) + " " + (height - barHeight - 0.5) + " L " + (margin.left - 0.5) + " " + (height - barHeight + borderRadius) + " S " + (margin.left - 0.5) + " " + (height - barHeight - 0.5) + " " + (margin.left + borderRadius) + " " + (height - barHeight - 0.5) + " Z")
+			.attr("d", "M " + (margin.left - 0.5) + " " + (height - barHeight - 0.5) + " L " + (margin.left - 0.5) + " " +
+				(height - barHeight + borderRadius) + " S " + (margin.left - 0.5) + " " + (height - barHeight - 0.5) +
+				" " + (margin.left + borderRadius) + " " + (height - barHeight - 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + (margin.left - 0.5) + " " + (height + 0.5) + " L " + (margin.left - 0.5) + " " + (height - borderRadius) + " S " + (margin.left - 0.5) + " " + (height + 0.5) + " " + (margin.left + borderRadius) + " " + (height + 0.5) + " Z")
+			.attr("d", "M " + (margin.left - 0.5) + " " + (height + 0.5) + " L " + (margin.left - 0.5) + " " + (height -
+					borderRadius) + " S " + (margin.left - 0.5) + " " + (height + 0.5) + " " + (margin.left +
+				borderRadius) + " " + (height + 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + (width + margin.right + 0.5) + " " + (height - barHeight - 0.5) + " L " + (width + margin.right + 0.5) + " " + (height - barHeight + borderRadius) + " S " + (width + margin.right + 0.5) + " " + (height - barHeight - 0.5) + " " + (width + margin.right - borderRadius) + " " + (height - barHeight - 0.5) + " Z")
+			.attr("d", "M " + (width + margin.right + 0.5) + " " + (height - barHeight - 0.5) + " L " + (width + margin
+					.right + 0.5) + " " + (height - barHeight + borderRadius) + " S " + (width + margin.right + 0.5) +
+				" " + (height - barHeight - 0.5) + " " + (width + margin.right - borderRadius) + " " + (height -
+					barHeight - 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + (width + margin.right + 0.5) + " " + (height + 0.5) + " L " + (width + margin.right + 0.5) + " " + (height - borderRadius) + " S " + (width + margin.right + 0.5) + " " + (height + 0.5) + " " + (width + margin.right - borderRadius) + " " + (height + 0.5) + " Z")
+			.attr("d", "M " + (width + margin.right + 0.5) + " " + (height + 0.5) + " L " + (width + margin.right + 0.5) +
+				" " + (height - borderRadius) + " S " + (width + margin.right + 0.5) + " " + (height + 0.5) + " " + (
+					width + margin.right - borderRadius) + " " + (height + 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
 
@@ -1155,10 +1211,19 @@
 			.attr("x", d => (margin.left + 5 + d.start / total * width))
 			.attr("y", height - 5)
 			.attr("fill", "black")
-			.text(function (d) { if (d.number / total * width >= 50) { return parseFloat((d.number / total * 100).toFixed(1)) + "%"; } return ""; })
+			.text(function (d) {
+				if (d.number / total * width >= 50) {
+					return parseFloat((d.number / total * 100).toFixed(1)) + "%";
+				}
+				return "";
+			})
 			.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name + ": " + d.number))
-			.on("mousemove", function () { return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px"); })
-			.on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
+			.on("mousemove", function () {
+				return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
+			})
+			.on("mouseout", function () {
+				return tooltip.style("visibility", "hidden");
+			});
 
 		var groups = [];
 		var aux = [];
@@ -1181,12 +1246,14 @@
 			var labelLength = 45;
 			var group = [];
 			var groupLength = 0;
-			var center = 0, start = 0;
+			var center = 0,
+				start = 0;
 			var labels = [];
 			for (var i = 0; i < groups.length; i++) {
 				group = groups[i];
 				groupLength = labelLength * group.length;
-				center = margin.left + (group[0].start / total * width + (group[group.length - 1].start / total * width + (group[group.length - 1].number / total * width))) / 2;
+				center = margin.left + (group[0].start / total * width + (group[group.length - 1].start / total * width + (
+					group[group.length - 1].number / total * width))) / 2;
 				start = center - groupLength / 2;
 				for (var j = 0; j < group.length; j++) {
 					group[j].labelX = start + j * labelLength;
@@ -1243,7 +1310,8 @@
 				.selectAll("path")
 				.data(labels)
 				.join("path")
-				.attr("d", d => ("M " + (margin.left + d.start / total * width + (d.number / total * width) / 2) + " " + (height - barHeight / 2) + "L " + (d.labelX + labelLength / 2) + " " + (17)))
+				.attr("d", d => ("M " + (margin.left + d.start / total * width + (d.number / total * width) / 2) + " " + (
+					height - barHeight / 2) + "L " + (d.labelX + labelLength / 2) + " " + (17)))
 				.attr("stroke", "black");
 		}
 	}
@@ -1256,7 +1324,12 @@
 		svg.attr("width", width)
 			.attr("height", height);
 		var bWidth = cWidth / data.length;
-		var yMax = data.reduce(function (a, b) { if (a.length > b.length) { return a; } return b; }).length;
+		var yMax = data.reduce(function (a, b) {
+			if (a.length > b.length) {
+				return a;
+			}
+			return b;
+		}).length;
 
 		svg.append("g")
 			.selectAll("rect")
@@ -1271,11 +1344,14 @@
 		var x = d3.scaleLinear().range([lWidth, width - 1]);
 		var y = d3.scaleLinear().range([cHeight, 0]);
 		x.domain([data[0].x0, data[data.length - 1].x1]);
-		y.domain([0, d3.max(data, function (d) { return d.length; })]);
+		y.domain([0, d3.max(data, function (d) {
+			return d.length;
+		})]);
 
 		var xAxis = d3.axisBottom(x).ticks(6);
 		var xTicks = x.ticks();
-		if (xTicks[0] < -1000000 || xTicks[xTicks.length - 1] >= 1000000 || xTicks[0] + 0.001 > xTicks[xTicks.length - 1]) {
+		if (xTicks[0] < -1000000 || xTicks[xTicks.length - 1] >= 1000000 || xTicks[0] + 0.001 > xTicks[xTicks.length -
+			1]) {
 			xAxis.tickFormat(d3.format(".1e"));
 		}
 		svg.append("g")
@@ -1305,7 +1381,11 @@
 			.style("text-anchor", "middle")
 			.style("font-size", "12px")
 			.text("Frequency");
-		svg.selectAll(".tick").filter(function (d) { return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr("transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(/[0-9]+/g)[1] < 5); }).attr("transform", "translate(-1000,-1000)");
+		svg.selectAll(".tick").filter(function (d) {
+			return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr(
+					"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
+				/[0-9]+/g)[1] < 5);
+		}).attr("transform", "translate(-1000,-1000)");
 	}
 
 	function plotHistogramDate(svg, data, width, height) {
@@ -1316,7 +1396,12 @@
 		svg.attr("width", width)
 			.attr("height", height);
 		var bWidth = cWidth / data.length;
-		var yMax = data.reduce(function (a, b) { if (a.length > b.length) { return a; } return b; }).length;
+		var yMax = data.reduce(function (a, b) {
+			if (a.length > b.length) {
+				return a;
+			}
+			return b;
+		}).length;
 
 		svg.append("g")
 			.selectAll("rect")
@@ -1331,7 +1416,9 @@
 		var x = d3.scaleTime().range([lWidth, width - 1]);
 		var y = d3.scaleLinear().range([cHeight, 0]);
 		x.domain([data[0].x0, data[data.length - 1].x1]);
-		y.domain([0, d3.max(data, function (d) { return d.length; })]);
+		y.domain([0, d3.max(data, function (d) {
+			return d.length;
+		})]);
 
 		svg.append("g")
 			.attr("transform", "translate(0," + cHeight + ")")
@@ -1360,7 +1447,11 @@
 			.style("text-anchor", "middle")
 			.style("font-size", "12px")
 			.text("Frequency");
-		svg.selectAll(".tick").filter(function (d) { return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr("transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(/[0-9]+/g)[1] < 5); }).attr("transform", "translate(-1000,-1000)");
+		svg.selectAll(".tick").filter(function (d) {
+			return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr(
+					"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
+				/[0-9]+/g)[1] < 5);
+		}).attr("transform", "translate(-1000,-1000)");
 	}
 
 	function plotMissingValuesBar(svg, missing_str, width, height) {
@@ -1404,13 +1495,17 @@
 		svg.append("text")
 			.text(missing + "%")
 			.attr("font-size", fontSize)
-			.attr("x", function () { return width - 5 - this.getComputedTextLength(); })
+			.attr("x", function () {
+				return width - 5 - this.getComputedTextLength();
+			})
 			.attr("y", bHeight - 5)
 			.attr("fill", "black");
 		svg.append("text")
 			.text("Missing")
 			.attr("font-size", fontSize)
-			.attr("x", function () { return width - 5 - this.getComputedTextLength(); })
+			.attr("x", function () {
+				return width - 5 - this.getComputedTextLength();
+			})
 			.attr("y", height - 5)
 			.attr("fill", "rgb(209, 60, 75)");
 
@@ -1419,13 +1514,16 @@
 			.attr("d", "M 0 0 L 0 " + borderRadius + " S 0 0 " + borderRadius + " 0 Z")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M 0 " + bHeight + " L 0 " + (bHeight - borderRadius) + " S 0 " + bHeight + " " + borderRadius + " " + bHeight + " Z")
+			.attr("d", "M 0 " + bHeight + " L 0 " + (bHeight - borderRadius) + " S 0 " + bHeight + " " + borderRadius +
+				" " + bHeight + " Z")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + width + " 0 L " + width + " " + borderRadius + " S " + width + " 0 " + (width - borderRadius) + " 0 Z")
+			.attr("d", "M " + width + " 0 L " + width + " " + borderRadius + " S " + width + " 0 " + (width -
+				borderRadius) + " 0 Z")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + width + " " + bHeight + " L " + width + " " + (bHeight - borderRadius) + " S " + width + " " + bHeight + " " + (width - borderRadius) + " " + bHeight + " Z")
+			.attr("d", "M " + width + " " + bHeight + " L " + width + " " + (bHeight - borderRadius) + " S " + width +
+				" " + bHeight + " " + (width - borderRadius) + " " + bHeight + " Z")
 			.attr("fill", "white");
 	}
 
@@ -1497,10 +1595,6 @@
     </div>
     <script>
         //para adicionar contador no id (ids serão únicos para + de 1 report)
-        d3.select("#sel_a_bid_viz").attr("id", "sel_a_bid_viz" + id);
-        d3.select("#swap_btn_bid_viz").attr("id", "swap_btn_bid_viz" + id);
-        d3.select("#sel_b_bid_viz").attr("id", "sel_b_bid_viz" + id);
-        d3.select("#bid_viz").attr("id", "bid_viz" + id);;
         d3.select("#overviewLink").attr("href", "#overview" + id).attr("id", "overviewLink" + id);
         d3.select("#variablesLink").attr("href", "#variables" + id).attr("id", "variablesLink" + id);
         d3.select("#correlationsLink").attr("href", "#correlations" + id).attr("id", "correlationsLink" + id);
@@ -1653,9 +1747,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-4080961356386377661">
+	<svg class="MissingValuesBar-4426653126116972187">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-4080961356386377661");
+			var svg = d3.select("svg.MissingValuesBar-4426653126116972187");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -1690,12 +1784,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram-4080961356386377661" style="text-align:right;">
-	<svg class="minihistogram-4080961356386377661">
+<div class="col-md-6 collapse in" id="minihistogram-4426653126116972187" style="text-align:right;">
+	<svg class="minihistogram-4426653126116972187">
 		<script>
 			var data = [3, 3, 1, 2, 2, 2, 1, 1, 1, 0, 2, 0, 0, 0, 1, 0, 0, 0, 2, 1, 0, 1, 1, 1, 1, 1, 1, 1, -1, 3, 2, 2, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 2, 0, 0, 0, 1, 1, 1, 1, 1, 3, 3, 3, 3, 1, 0, 1, 0, 0, 0, 0, 0, -1, -1, 0, -1, -1, 3, 0, 1, 1, 2, 2, 2, 1, 3, 3, 3, 3, 3, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 0, 0, 3, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, -1, 3, 3, 3, 3, 3, 1, 0, 2, 3, 2, 3, 2, 3, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, -1, -1, -1, -1, -1, 3, 3, -1, -1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 0, 0, 0, -2, -1, -2, -1, -2, -1, -1, -1, -1, -1, -1];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram-4080961356386377661");
+			var svg = d3.select("svg.minihistogram-4426653126116972187");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -1703,29 +1797,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-4080961356386377661" data-toggle="collapse" data-target="#descriptives-4080961356386377661,#minihistogram-4080961356386377661" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-4426653126116972187" data-toggle="collapse" data-target="#descriptives-4426653126116972187,#minihistogram-4426653126116972187" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-4080961356386377661").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-4426653126116972187").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives-4080961356386377661">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives-4426653126116972187">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles-4080961356386377661"
-                                                  aria-controls="quantiles-4080961356386377661" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles-4426653126116972187"
+                                                  aria-controls="quantiles-4426653126116972187" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram-4080961356386377661" aria-controls="histogram-4080961356386377661"
+        <li role="presentation"><a href="#histogram-4426653126116972187" aria-controls="histogram-4426653126116972187"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common-4080961356386377661" aria-controls="common-4080961356386377661"
+        <li role="presentation"><a href="#common-4426653126116972187" aria-controls="common-4426653126116972187"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme-4080961356386377661" aria-controls="extreme-4080961356386377661"
+        <li role="presentation"><a href="#extreme-4426653126116972187" aria-controls="extreme-4426653126116972187"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot-4080961356386377661" aria-controls="boxplot-4080961356386377661"
+        <li role="presentation"><a href="#boxplot-4426653126116972187" aria-controls="boxplot-4426653126116972187"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles-4080961356386377661">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles-4426653126116972187">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -1809,15 +1903,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-4080961356386377661" style="margin-top:20px;">
-            <svg class="histogram-4080961356386377661">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-4426653126116972187" style="margin-top:20px;">
+            <svg class="histogram-4426653126116972187">
 				<script>
-					var svg = d3.select("svg.histogram-4080961356386377661");
+					var svg = d3.select("svg.histogram-4426653126116972187");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common-4080961356386377661">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common-4426653126116972187">
             
 <table class="freq table table-hover">
     <thead>
@@ -1873,7 +1967,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-4080961356386377661">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-4426653126116972187">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -1971,10 +2065,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-4080961356386377661">
-			<svg class="boxplot-4080961356386377661">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-4426653126116972187">
+			<svg class="boxplot-4426653126116972187">
 				<script>
-					var svg = d3.select(".boxplot-4080961356386377661");
+					var svg = d3.select(".boxplot-4426653126116972187");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -1987,9 +2081,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-276769923170085894">
+	<svg class="MissingValuesBar2373626317667872742">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-276769923170085894");
+			var svg = d3.select("svg.MissingValuesBar2373626317667872742");
 			plotMissingValuesBar(svg, "20.0%", 143, 40)
 		</script>
 	</svg>
@@ -2024,12 +2118,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram-276769923170085894" style="text-align:right;">
-	<svg class="minihistogram-276769923170085894">
+<div class="col-md-6 collapse in" id="minihistogram2373626317667872742" style="text-align:right;">
+	<svg class="minihistogram2373626317667872742">
 		<script>
 			var data = ['missing value', 'missing value', 'missing value', 164.0, 164.0, 'missing value', 158.0, 'missing value', 158.0, 'missing value', 192.0, 192.0, 188.0, 188.0, 'missing value', 'missing value', 'missing value', 'missing value', 121.0, 98.0, 81.0, 118.0, 118.0, 118.0, 148.0, 148.0, 148.0, 148.0, 110.0, 145.0, 137.0, 137.0, 101.0, 101.0, 101.0, 110.0, 78.0, 106.0, 106.0, 85.0, 85.0, 85.0, 107.0, 'missing value', 'missing value', 'missing value', 'missing value', 145.0, 'missing value', 'missing value', 104.0, 104.0, 104.0, 113.0, 113.0, 150.0, 150.0, 150.0, 150.0, 129.0, 115.0, 129.0, 115.0, 'missing value', 115.0, 118.0, 'missing value', 93.0, 93.0, 93.0, 93.0, 'missing value', 142.0, 'missing value', 'missing value', 'missing value', 161.0, 161.0, 161.0, 161.0, 153.0, 153.0, 'missing value', 'missing value', 'missing value', 125.0, 125.0, 125.0, 137.0, 128.0, 128.0, 128.0, 122.0, 103.0, 128.0, 128.0, 122.0, 103.0, 168.0, 106.0, 106.0, 128.0, 108.0, 108.0, 194.0, 194.0, 231.0, 161.0, 161.0, 'missing value', 'missing value', 161.0, 161.0, 'missing value', 'missing value', 161.0, 161.0, 161.0, 119.0, 119.0, 154.0, 154.0, 154.0, 74.0, 'missing value', 186.0, 'missing value', 'missing value', 'missing value', 'missing value', 'missing value', 'missing value', 150.0, 104.0, 150.0, 104.0, 150.0, 104.0, 83.0, 83.0, 83.0, 102.0, 102.0, 102.0, 102.0, 102.0, 89.0, 89.0, 85.0, 85.0, 87.0, 87.0, 74.0, 77.0, 81.0, 91.0, 91.0, 91.0, 91.0, 91.0, 91.0, 91.0, 91.0, 168.0, 168.0, 168.0, 168.0, 134.0, 134.0, 134.0, 134.0, 134.0, 134.0, 65.0, 65.0, 65.0, 65.0, 65.0, 197.0, 197.0, 90.0, 'missing value', 122.0, 122.0, 94.0, 94.0, 94.0, 94.0, 94.0, 'missing value', 256.0, 'missing value', 'missing value', 'missing value', 103.0, 74.0, 103.0, 74.0, 103.0, 74.0, 95.0, 95.0, 95.0, 95.0, 95.0];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram-276769923170085894");
+			var svg = d3.select("svg.minihistogram2373626317667872742");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -2037,29 +2131,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-276769923170085894" data-toggle="collapse" data-target="#descriptives-276769923170085894,#minihistogram-276769923170085894" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails2373626317667872742" data-toggle="collapse" data-target="#descriptives2373626317667872742,#minihistogram2373626317667872742" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-276769923170085894").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails2373626317667872742").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives-276769923170085894">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives2373626317667872742">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles-276769923170085894"
-                                                  aria-controls="quantiles-276769923170085894" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles2373626317667872742"
+                                                  aria-controls="quantiles2373626317667872742" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram-276769923170085894" aria-controls="histogram-276769923170085894"
+        <li role="presentation"><a href="#histogram2373626317667872742" aria-controls="histogram2373626317667872742"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common-276769923170085894" aria-controls="common-276769923170085894"
+        <li role="presentation"><a href="#common2373626317667872742" aria-controls="common2373626317667872742"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme-276769923170085894" aria-controls="extreme-276769923170085894"
+        <li role="presentation"><a href="#extreme2373626317667872742" aria-controls="extreme2373626317667872742"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot-276769923170085894" aria-controls="boxplot-276769923170085894"
+        <li role="presentation"><a href="#boxplot2373626317667872742" aria-controls="boxplot2373626317667872742"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles-276769923170085894">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles2373626317667872742">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -2143,15 +2237,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-276769923170085894" style="margin-top:20px;">
-            <svg class="histogram-276769923170085894">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram2373626317667872742" style="margin-top:20px;">
+            <svg class="histogram2373626317667872742">
 				<script>
-					var svg = d3.select("svg.histogram-276769923170085894");
+					var svg = d3.select("svg.histogram2373626317667872742");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common-276769923170085894">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common2373626317667872742">
             
 <table class="freq table table-hover">
     <thead>
@@ -2249,7 +2343,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-276769923170085894">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme2373626317667872742">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -2347,10 +2441,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-276769923170085894">
-			<svg class="boxplot-276769923170085894">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot2373626317667872742">
+			<svg class="boxplot2373626317667872742">
 				<script>
-					var svg = d3.select(".boxplot-276769923170085894");
+					var svg = d3.select(".boxplot2373626317667872742");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -2363,9 +2457,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar698492567640011987">
+	<svg class="MissingValuesBar7644387231775137847">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar698492567640011987");
+			var svg = d3.select("svg.MissingValuesBar7644387231775137847");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -2388,7 +2482,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable698492567640011987">
+<div class="col-md-6 collapse in" id="minifreqtable7644387231775137847">
     <table class="mini freq">
         <tr class="">
     <th>toyota</th>
@@ -2432,13 +2526,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails698492567640011987" data-toggle="collapse" data-target="#freqtable698492567640011987,#minifreqtable698492567640011987" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails7644387231775137847" data-toggle="collapse" data-target="#freqtable7644387231775137847,#minifreqtable7644387231775137847" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails698492567640011987").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails7644387231775137847").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable698492567640011987">
+<div class="col-md-12 extrapadding collapse" id="freqtable7644387231775137847">
     
 <table class="freq table table-hover">
     <thead>
@@ -2485,13 +2579,6 @@
             <div class="bar" style="width:23%">&nbsp;</div>
         </td>
 </tr><tr class="">
-        <td class="fillremaining">volkswagen</td>
-        <td class="number">12</td>
-        <td class="number">5.9%</td>
-        <td>
-            <div class="bar" style="width:21%">&nbsp;</div>
-        </td>
-</tr><tr class="">
         <td class="fillremaining">subaru</td>
         <td class="number">12</td>
         <td class="number">5.9%</td>
@@ -2499,14 +2586,21 @@
             <div class="bar" style="width:21%">&nbsp;</div>
         </td>
 </tr><tr class="">
-        <td class="fillremaining">peugot</td>
+        <td class="fillremaining">volkswagen</td>
+        <td class="number">12</td>
+        <td class="number">5.9%</td>
+        <td>
+            <div class="bar" style="width:21%">&nbsp;</div>
+        </td>
+</tr><tr class="">
+        <td class="fillremaining">volvo</td>
         <td class="number">11</td>
         <td class="number">5.4%</td>
         <td>
             <div class="bar" style="width:20%">&nbsp;</div>
         </td>
 </tr><tr class="">
-        <td class="fillremaining">volvo</td>
+        <td class="fillremaining">peugot</td>
         <td class="number">11</td>
         <td class="number">5.4%</td>
         <td>
@@ -2535,9 +2629,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-6846958219259427864">
+	<svg class="MissingValuesBar572785843158199329">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-6846958219259427864");
+			var svg = d3.select("svg.MissingValuesBar572785843158199329");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -2560,7 +2654,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable-6846958219259427864">
+<div class="col-md-6 collapse in" id="minifreqtable572785843158199329">
     <table class="mini freq">
         <tr class="">
     <th>gas</th>
@@ -2586,13 +2680,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-6846958219259427864" data-toggle="collapse" data-target="#freqtable-6846958219259427864,#minifreqtable-6846958219259427864" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails572785843158199329" data-toggle="collapse" data-target="#freqtable572785843158199329,#minifreqtable572785843158199329" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-6846958219259427864").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails572785843158199329").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable-6846958219259427864">
+<div class="col-md-12 extrapadding collapse" id="freqtable572785843158199329">
     
 <table class="freq table table-hover">
     <thead>
@@ -2626,9 +2720,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar6242260874326645658">
+	<svg class="MissingValuesBar-8763203819244263924">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar6242260874326645658");
+			var svg = d3.select("svg.MissingValuesBar-8763203819244263924");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -2651,7 +2745,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable6242260874326645658">
+<div class="col-md-6 collapse in" id="minifreqtable-8763203819244263924">
     <table class="mini freq">
         <tr class="">
     <th>std</th>
@@ -2677,13 +2771,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails6242260874326645658" data-toggle="collapse" data-target="#freqtable6242260874326645658,#minifreqtable6242260874326645658" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-8763203819244263924" data-toggle="collapse" data-target="#freqtable-8763203819244263924,#minifreqtable-8763203819244263924" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails6242260874326645658").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-8763203819244263924").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable6242260874326645658">
+<div class="col-md-12 extrapadding collapse" id="freqtable-8763203819244263924">
     
 <table class="freq table table-hover">
     <thead>
@@ -2717,9 +2811,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar2684069636352075924">
+	<svg class="MissingValuesBar-6383570774124521956">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar2684069636352075924");
+			var svg = d3.select("svg.MissingValuesBar-6383570774124521956");
 			plotMissingValuesBar(svg, "1.0%", 143, 40)
 		</script>
 	</svg>
@@ -2742,7 +2836,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable2684069636352075924">
+<div class="col-md-6 collapse in" id="minifreqtable-6383570774124521956">
     <table class="mini freq">
         <tr class="">
     <th>four</th>
@@ -2777,13 +2871,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails2684069636352075924" data-toggle="collapse" data-target="#freqtable2684069636352075924,#minifreqtable2684069636352075924" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-6383570774124521956" data-toggle="collapse" data-target="#freqtable-6383570774124521956,#minifreqtable-6383570774124521956" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails2684069636352075924").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-6383570774124521956").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable2684069636352075924">
+<div class="col-md-12 extrapadding collapse" id="freqtable-6383570774124521956">
     
 <table class="freq table table-hover">
     <thead>
@@ -2824,9 +2918,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-8442635236034885807">
+	<svg class="MissingValuesBar-3049531867223034424">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-8442635236034885807");
+			var svg = d3.select("svg.MissingValuesBar-3049531867223034424");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -2849,7 +2943,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable-8442635236034885807">
+<div class="col-md-6 collapse in" id="minifreqtable-3049531867223034424">
     <table class="mini freq">
         <tr class="">
     <th>sedan</th>
@@ -2893,13 +2987,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-8442635236034885807" data-toggle="collapse" data-target="#freqtable-8442635236034885807,#minifreqtable-8442635236034885807" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-3049531867223034424" data-toggle="collapse" data-target="#freqtable-3049531867223034424,#minifreqtable-3049531867223034424" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-8442635236034885807").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-3049531867223034424").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable-8442635236034885807">
+<div class="col-md-12 extrapadding collapse" id="freqtable-3049531867223034424">
     
 <table class="freq table table-hover">
     <thead>
@@ -2954,9 +3048,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-245996460682055149">
+	<svg class="MissingValuesBar8510347118102122890">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-245996460682055149");
+			var svg = d3.select("svg.MissingValuesBar8510347118102122890");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -2979,7 +3073,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable-245996460682055149">
+<div class="col-md-6 collapse in" id="minifreqtable8510347118102122890">
     <table class="mini freq">
         <tr class="">
     <th>fwd</th>
@@ -3014,13 +3108,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-245996460682055149" data-toggle="collapse" data-target="#freqtable-245996460682055149,#minifreqtable-245996460682055149" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails8510347118102122890" data-toggle="collapse" data-target="#freqtable8510347118102122890,#minifreqtable8510347118102122890" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-245996460682055149").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails8510347118102122890").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable-245996460682055149">
+<div class="col-md-12 extrapadding collapse" id="freqtable8510347118102122890">
     
 <table class="freq table table-hover">
     <thead>
@@ -3061,9 +3155,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar5221296945372821470">
+	<svg class="MissingValuesBar7663280704501578949">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar5221296945372821470");
+			var svg = d3.select("svg.MissingValuesBar7663280704501578949");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -3086,7 +3180,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable5221296945372821470">
+<div class="col-md-6 collapse in" id="minifreqtable7663280704501578949">
     <table class="mini freq">
         <tr class="">
     <th>front</th>
@@ -3112,13 +3206,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails5221296945372821470" data-toggle="collapse" data-target="#freqtable5221296945372821470,#minifreqtable5221296945372821470" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails7663280704501578949" data-toggle="collapse" data-target="#freqtable7663280704501578949,#minifreqtable7663280704501578949" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails5221296945372821470").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails7663280704501578949").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable5221296945372821470">
+<div class="col-md-12 extrapadding collapse" id="freqtable7663280704501578949">
     
 <table class="freq table table-hover">
     <thead>
@@ -3152,9 +3246,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar2014565187595067274">
+	<svg class="MissingValuesBar6922731456345506216">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar2014565187595067274");
+			var svg = d3.select("svg.MissingValuesBar6922731456345506216");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -3189,12 +3283,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram2014565187595067274" style="text-align:right;">
-	<svg class="minihistogram2014565187595067274">
+<div class="col-md-6 collapse in" id="minihistogram6922731456345506216" style="text-align:right;">
+	<svg class="minihistogram6922731456345506216">
 		<script>
 			var data = [88.6, 88.6, 94.5, 99.8, 99.4, 99.8, 105.8, 105.8, 105.8, 99.5, 101.2, 101.2, 101.2, 101.2, 103.5, 103.5, 103.5, 110.0, 88.4, 94.5, 94.5, 93.7, 93.7, 93.7, 93.7, 93.7, 93.7, 93.7, 103.3, 95.9, 86.6, 86.6, 93.7, 93.7, 93.7, 96.5, 96.5, 96.5, 96.5, 96.5, 96.5, 96.5, 96.5, 94.3, 94.5, 94.5, 96.0, 113.0, 113.0, 102.0, 93.1, 93.1, 93.1, 93.1, 93.1, 95.3, 95.3, 95.3, 95.3, 98.8, 98.8, 98.8, 98.8, 98.8, 98.8, 104.9, 104.9, 110.0, 110.0, 106.7, 115.6, 115.6, 96.6, 120.9, 112.0, 102.7, 93.7, 93.7, 93.7, 93.0, 96.3, 96.3, 95.9, 95.9, 95.9, 96.3, 96.3, 96.3, 96.3, 94.5, 94.5, 94.5, 94.5, 94.5, 94.5, 94.5, 94.5, 94.5, 95.1, 97.2, 97.2, 100.4, 100.4, 100.4, 91.3, 91.3, 99.2, 107.9, 107.9, 114.2, 114.2, 107.9, 107.9, 114.2, 114.2, 107.9, 107.9, 108.0, 93.7, 93.7, 93.7, 93.7, 93.7, 103.3, 95.9, 94.5, 89.5, 89.5, 89.5, 98.4, 96.1, 96.1, 99.1, 99.1, 99.1, 99.1, 99.1, 99.1, 93.7, 93.7, 93.3, 97.2, 97.2, 97.2, 97.0, 97.0, 97.0, 97.0, 96.9, 96.9, 95.7, 95.7, 95.7, 95.7, 95.7, 95.7, 95.7, 95.7, 95.7, 95.7, 95.7, 95.7, 95.7, 94.5, 94.5, 94.5, 94.5, 98.4, 98.4, 98.4, 98.4, 98.4, 98.4, 102.4, 102.4, 102.4, 102.4, 102.4, 102.9, 102.9, 104.5, 104.5, 97.3, 97.3, 97.3, 97.3, 97.3, 97.3, 97.3, 94.5, 94.5, 100.4, 100.4, 100.4, 104.3, 104.3, 104.3, 104.3, 104.3, 104.3, 109.1, 109.1, 109.1, 109.1, 109.1];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram2014565187595067274");
+			var svg = d3.select("svg.minihistogram6922731456345506216");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -3202,29 +3296,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails2014565187595067274" data-toggle="collapse" data-target="#descriptives2014565187595067274,#minihistogram2014565187595067274" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails6922731456345506216" data-toggle="collapse" data-target="#descriptives6922731456345506216,#minihistogram6922731456345506216" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails2014565187595067274").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails6922731456345506216").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives2014565187595067274">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives6922731456345506216">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles2014565187595067274"
-                                                  aria-controls="quantiles2014565187595067274" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles6922731456345506216"
+                                                  aria-controls="quantiles6922731456345506216" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram2014565187595067274" aria-controls="histogram2014565187595067274"
+        <li role="presentation"><a href="#histogram6922731456345506216" aria-controls="histogram6922731456345506216"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common2014565187595067274" aria-controls="common2014565187595067274"
+        <li role="presentation"><a href="#common6922731456345506216" aria-controls="common6922731456345506216"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme2014565187595067274" aria-controls="extreme2014565187595067274"
+        <li role="presentation"><a href="#extreme6922731456345506216" aria-controls="extreme6922731456345506216"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot2014565187595067274" aria-controls="boxplot2014565187595067274"
+        <li role="presentation"><a href="#boxplot6922731456345506216" aria-controls="boxplot6922731456345506216"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles2014565187595067274">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles6922731456345506216">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -3308,15 +3402,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram2014565187595067274" style="margin-top:20px;">
-            <svg class="histogram2014565187595067274">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram6922731456345506216" style="margin-top:20px;">
+            <svg class="histogram6922731456345506216">
 				<script>
-					var svg = d3.select("svg.histogram2014565187595067274");
+					var svg = d3.select("svg.histogram6922731456345506216");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common2014565187595067274">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common6922731456345506216">
             
 <table class="freq table table-hover">
     <thead>
@@ -3407,7 +3501,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme2014565187595067274">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme6922731456345506216">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -3505,10 +3599,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot2014565187595067274">
-			<svg class="boxplot2014565187595067274">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot6922731456345506216">
+			<svg class="boxplot6922731456345506216">
 				<script>
-					var svg = d3.select(".boxplot2014565187595067274");
+					var svg = d3.select(".boxplot6922731456345506216");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -3521,9 +3615,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar6175437221471900092">
+	<svg class="MissingValuesBar-7586631221232243598">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar6175437221471900092");
+			var svg = d3.select("svg.MissingValuesBar-7586631221232243598");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -3558,12 +3652,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram6175437221471900092" style="text-align:right;">
-	<svg class="minihistogram6175437221471900092">
+<div class="col-md-6 collapse in" id="minihistogram-7586631221232243598" style="text-align:right;">
+	<svg class="minihistogram-7586631221232243598">
 		<script>
 			var data = [168.8, 168.8, 171.2, 176.6, 176.6, 177.3, 192.7, 192.7, 192.7, 178.2, 176.8, 176.8, 176.8, 176.8, 189.0, 189.0, 193.8, 197.0, 141.1, 155.9, 158.8, 157.3, 157.3, 157.3, 157.3, 157.3, 157.3, 157.3, 174.6, 173.2, 144.6, 144.6, 150.0, 150.0, 150.0, 163.4, 157.1, 167.5, 167.5, 175.4, 175.4, 175.4, 169.1, 170.7, 155.9, 155.9, 172.6, 199.6, 199.6, 191.7, 159.1, 159.1, 159.1, 166.8, 166.8, 169.0, 169.0, 169.0, 169.0, 177.8, 177.8, 177.8, 177.8, 177.8, 177.8, 175.0, 175.0, 190.9, 190.9, 187.5, 202.6, 202.6, 180.3, 208.1, 199.2, 178.4, 157.3, 157.3, 157.3, 157.3, 173.0, 173.0, 173.2, 173.2, 173.2, 172.4, 172.4, 172.4, 172.4, 165.3, 165.3, 165.3, 165.3, 170.2, 165.3, 165.6, 165.3, 170.2, 162.4, 173.4, 173.4, 181.7, 184.6, 184.6, 170.7, 170.7, 178.5, 186.7, 186.7, 198.9, 198.9, 186.7, 186.7, 198.9, 198.9, 186.7, 186.7, 186.7, 157.3, 157.3, 157.3, 167.3, 167.3, 174.6, 173.2, 168.9, 168.9, 168.9, 168.9, 175.7, 181.5, 176.8, 186.6, 186.6, 186.6, 186.6, 186.6, 186.6, 156.9, 157.9, 157.3, 172.0, 172.0, 172.0, 172.0, 172.0, 173.5, 173.5, 173.6, 173.6, 158.7, 158.7, 158.7, 169.7, 169.7, 169.7, 166.3, 166.3, 166.3, 166.3, 166.3, 166.3, 166.3, 168.7, 168.7, 168.7, 168.7, 176.2, 176.2, 176.2, 176.2, 176.2, 176.2, 175.6, 175.6, 175.6, 175.6, 175.6, 183.5, 183.5, 187.8, 187.8, 171.7, 171.7, 171.7, 171.7, 171.7, 171.7, 171.7, 159.3, 165.7, 180.2, 180.2, 183.1, 188.8, 188.8, 188.8, 188.8, 188.8, 188.8, 188.8, 188.8, 188.8, 188.8, 188.8];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram6175437221471900092");
+			var svg = d3.select("svg.minihistogram-7586631221232243598");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -3571,29 +3665,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails6175437221471900092" data-toggle="collapse" data-target="#descriptives6175437221471900092,#minihistogram6175437221471900092" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-7586631221232243598" data-toggle="collapse" data-target="#descriptives-7586631221232243598,#minihistogram-7586631221232243598" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails6175437221471900092").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-7586631221232243598").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives6175437221471900092">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives-7586631221232243598">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles6175437221471900092"
-                                                  aria-controls="quantiles6175437221471900092" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles-7586631221232243598"
+                                                  aria-controls="quantiles-7586631221232243598" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram6175437221471900092" aria-controls="histogram6175437221471900092"
+        <li role="presentation"><a href="#histogram-7586631221232243598" aria-controls="histogram-7586631221232243598"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common6175437221471900092" aria-controls="common6175437221471900092"
+        <li role="presentation"><a href="#common-7586631221232243598" aria-controls="common-7586631221232243598"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme6175437221471900092" aria-controls="extreme6175437221471900092"
+        <li role="presentation"><a href="#extreme-7586631221232243598" aria-controls="extreme-7586631221232243598"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot6175437221471900092" aria-controls="boxplot6175437221471900092"
+        <li role="presentation"><a href="#boxplot-7586631221232243598" aria-controls="boxplot-7586631221232243598"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles6175437221471900092">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles-7586631221232243598">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -3677,15 +3771,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram6175437221471900092" style="margin-top:20px;">
-            <svg class="histogram6175437221471900092">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-7586631221232243598" style="margin-top:20px;">
+            <svg class="histogram-7586631221232243598">
 				<script>
-					var svg = d3.select("svg.histogram6175437221471900092");
+					var svg = d3.select("svg.histogram-7586631221232243598");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common6175437221471900092">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common-7586631221232243598">
             
 <table class="freq table table-hover">
     <thead>
@@ -3776,7 +3870,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme6175437221471900092">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-7586631221232243598">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -3874,10 +3968,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot6175437221471900092">
-			<svg class="boxplot6175437221471900092">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-7586631221232243598">
+			<svg class="boxplot-7586631221232243598">
 				<script>
-					var svg = d3.select(".boxplot6175437221471900092");
+					var svg = d3.select(".boxplot-7586631221232243598");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -3890,9 +3984,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-7786664359127379485">
+	<svg class="MissingValuesBar-7623572350372820727">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-7786664359127379485");
+			var svg = d3.select("svg.MissingValuesBar-7623572350372820727");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -3927,12 +4021,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram-7786664359127379485" style="text-align:right;">
-	<svg class="minihistogram-7786664359127379485">
+<div class="col-md-6 collapse in" id="minihistogram-7623572350372820727" style="text-align:right;">
+	<svg class="minihistogram-7623572350372820727">
 		<script>
 			var data = [64.1, 64.1, 65.5, 66.2, 66.4, 66.3, 71.4, 71.4, 71.4, 67.9, 64.8, 64.8, 64.8, 64.8, 66.9, 66.9, 67.9, 70.9, 60.3, 63.6, 63.6, 63.8, 63.8, 63.8, 63.8, 63.8, 63.8, 63.8, 64.6, 66.3, 63.9, 63.9, 64.0, 64.0, 64.0, 64.0, 63.9, 65.2, 65.2, 65.2, 62.5, 65.2, 66.0, 61.8, 63.6, 63.6, 65.2, 69.6, 69.6, 70.6, 64.2, 64.2, 64.2, 64.2, 64.2, 65.7, 65.7, 65.7, 65.7, 66.5, 66.5, 66.5, 66.5, 66.5, 66.5, 66.1, 66.1, 70.3, 70.3, 70.3, 71.7, 71.7, 70.5, 71.7, 72.0, 68.0, 64.4, 64.4, 64.4, 63.8, 65.4, 65.4, 66.3, 66.3, 66.3, 65.4, 65.4, 65.4, 65.4, 63.8, 63.8, 63.8, 63.8, 63.8, 63.8, 63.8, 63.8, 63.8, 63.8, 65.2, 65.2, 66.5, 66.5, 66.5, 67.9, 67.9, 67.9, 68.4, 68.4, 68.4, 68.4, 68.4, 68.4, 68.4, 68.4, 68.4, 68.4, 68.3, 63.8, 63.8, 63.8, 63.8, 63.8, 64.6, 66.3, 68.3, 65.0, 65.0, 65.0, 72.3, 66.5, 66.6, 66.5, 66.5, 66.5, 66.5, 66.5, 66.5, 63.4, 63.6, 63.8, 65.4, 65.4, 65.4, 65.4, 65.4, 65.4, 65.4, 65.4, 65.4, 63.6, 63.6, 63.6, 63.6, 63.6, 63.6, 64.4, 64.4, 64.4, 64.4, 64.4, 64.4, 64.4, 64.0, 64.0, 64.0, 64.0, 65.6, 65.6, 65.6, 65.6, 65.6, 65.6, 66.5, 66.5, 66.5, 66.5, 66.5, 67.7, 67.7, 66.5, 66.5, 65.5, 65.5, 65.5, 65.5, 65.5, 65.5, 65.5, 64.2, 64.0, 66.9, 66.9, 66.9, 67.2, 67.2, 67.2, 67.2, 67.2, 67.2, 68.9, 68.8, 68.9, 68.9, 68.9];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram-7786664359127379485");
+			var svg = d3.select("svg.minihistogram-7623572350372820727");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -3940,29 +4034,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-7786664359127379485" data-toggle="collapse" data-target="#descriptives-7786664359127379485,#minihistogram-7786664359127379485" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-7623572350372820727" data-toggle="collapse" data-target="#descriptives-7623572350372820727,#minihistogram-7623572350372820727" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-7786664359127379485").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-7623572350372820727").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives-7786664359127379485">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives-7623572350372820727">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles-7786664359127379485"
-                                                  aria-controls="quantiles-7786664359127379485" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles-7623572350372820727"
+                                                  aria-controls="quantiles-7623572350372820727" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram-7786664359127379485" aria-controls="histogram-7786664359127379485"
+        <li role="presentation"><a href="#histogram-7623572350372820727" aria-controls="histogram-7623572350372820727"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common-7786664359127379485" aria-controls="common-7786664359127379485"
+        <li role="presentation"><a href="#common-7623572350372820727" aria-controls="common-7623572350372820727"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme-7786664359127379485" aria-controls="extreme-7786664359127379485"
+        <li role="presentation"><a href="#extreme-7623572350372820727" aria-controls="extreme-7623572350372820727"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot-7786664359127379485" aria-controls="boxplot-7786664359127379485"
+        <li role="presentation"><a href="#boxplot-7623572350372820727" aria-controls="boxplot-7623572350372820727"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles-7786664359127379485">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles-7623572350372820727">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -4046,15 +4140,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-7786664359127379485" style="margin-top:20px;">
-            <svg class="histogram-7786664359127379485">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-7623572350372820727" style="margin-top:20px;">
+            <svg class="histogram-7623572350372820727">
 				<script>
-					var svg = d3.select("svg.histogram-7786664359127379485");
+					var svg = d3.select("svg.histogram-7623572350372820727");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common-7786664359127379485">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common-7623572350372820727">
             
 <table class="freq table table-hover">
     <thead>
@@ -4145,7 +4239,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-7786664359127379485">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-7623572350372820727">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -4243,10 +4337,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-7786664359127379485">
-			<svg class="boxplot-7786664359127379485">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-7623572350372820727">
+			<svg class="boxplot-7623572350372820727">
 				<script>
-					var svg = d3.select(".boxplot-7786664359127379485");
+					var svg = d3.select(".boxplot-7623572350372820727");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -4259,9 +4353,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-8517620773550605698">
+	<svg class="MissingValuesBar7130869062682655324">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-8517620773550605698");
+			var svg = d3.select("svg.MissingValuesBar7130869062682655324");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -4296,12 +4390,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram-8517620773550605698" style="text-align:right;">
-	<svg class="minihistogram-8517620773550605698">
+<div class="col-md-6 collapse in" id="minihistogram7130869062682655324" style="text-align:right;">
+	<svg class="minihistogram7130869062682655324">
 		<script>
 			var data = [48.8, 48.8, 52.4, 54.3, 54.3, 53.1, 55.7, 55.7, 55.9, 52.0, 54.3, 54.3, 54.3, 54.3, 55.7, 55.7, 53.7, 56.3, 53.2, 52.0, 52.0, 50.8, 50.8, 50.8, 50.6, 50.6, 50.6, 50.6, 59.8, 50.2, 50.8, 50.8, 52.6, 52.6, 52.6, 54.5, 58.3, 53.3, 53.3, 54.1, 54.1, 54.1, 51.0, 53.5, 52.0, 52.0, 51.4, 52.8, 52.8, 47.8, 54.1, 54.1, 54.1, 54.1, 54.1, 49.6, 49.6, 49.6, 49.6, 53.7, 55.5, 53.7, 55.5, 55.5, 55.5, 54.4, 54.4, 56.5, 58.7, 54.9, 56.3, 56.5, 50.8, 56.7, 55.4, 54.8, 50.8, 50.8, 50.8, 50.8, 49.4, 49.4, 50.2, 50.2, 50.2, 51.6, 51.6, 51.6, 51.6, 54.5, 54.5, 54.5, 54.5, 53.5, 54.5, 53.3, 54.5, 53.5, 53.3, 54.7, 54.7, 55.1, 56.1, 55.1, 49.7, 49.7, 49.7, 56.7, 56.7, 58.7, 58.7, 56.7, 56.7, 56.7, 58.7, 56.7, 56.7, 56.0, 50.8, 50.8, 50.6, 50.8, 50.8, 59.8, 50.2, 50.2, 51.6, 51.6, 51.6, 50.5, 55.2, 50.5, 56.1, 56.1, 56.1, 56.1, 56.1, 56.1, 53.7, 53.7, 55.7, 52.5, 52.5, 52.5, 54.3, 54.3, 53.0, 53.0, 54.9, 54.9, 54.5, 54.5, 54.5, 59.1, 59.1, 59.1, 53.0, 52.8, 53.0, 52.8, 53.0, 52.8, 52.8, 52.6, 52.6, 52.6, 52.6, 52.0, 52.0, 52.0, 52.0, 52.0, 53.0, 54.9, 54.9, 53.9, 54.9, 53.9, 52.0, 52.0, 54.1, 54.1, 55.7, 55.7, 55.7, 55.7, 55.7, 55.7, 55.7, 55.6, 51.4, 55.1, 55.1, 55.1, 56.2, 57.5, 56.2, 57.5, 56.2, 57.5, 55.5, 55.5, 55.5, 55.5, 55.5];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram-8517620773550605698");
+			var svg = d3.select("svg.minihistogram7130869062682655324");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -4309,29 +4403,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-8517620773550605698" data-toggle="collapse" data-target="#descriptives-8517620773550605698,#minihistogram-8517620773550605698" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails7130869062682655324" data-toggle="collapse" data-target="#descriptives7130869062682655324,#minihistogram7130869062682655324" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-8517620773550605698").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails7130869062682655324").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives-8517620773550605698">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives7130869062682655324">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles-8517620773550605698"
-                                                  aria-controls="quantiles-8517620773550605698" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles7130869062682655324"
+                                                  aria-controls="quantiles7130869062682655324" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram-8517620773550605698" aria-controls="histogram-8517620773550605698"
+        <li role="presentation"><a href="#histogram7130869062682655324" aria-controls="histogram7130869062682655324"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common-8517620773550605698" aria-controls="common-8517620773550605698"
+        <li role="presentation"><a href="#common7130869062682655324" aria-controls="common7130869062682655324"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme-8517620773550605698" aria-controls="extreme-8517620773550605698"
+        <li role="presentation"><a href="#extreme7130869062682655324" aria-controls="extreme7130869062682655324"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot-8517620773550605698" aria-controls="boxplot-8517620773550605698"
+        <li role="presentation"><a href="#boxplot7130869062682655324" aria-controls="boxplot7130869062682655324"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles-8517620773550605698">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles7130869062682655324">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -4415,15 +4509,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-8517620773550605698" style="margin-top:20px;">
-            <svg class="histogram-8517620773550605698">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram7130869062682655324" style="margin-top:20px;">
+            <svg class="histogram7130869062682655324">
 				<script>
-					var svg = d3.select("svg.histogram-8517620773550605698");
+					var svg = d3.select("svg.histogram7130869062682655324");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common-8517620773550605698">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common7130869062682655324">
             
 <table class="freq table table-hover">
     <thead>
@@ -4514,7 +4608,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-8517620773550605698">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme7130869062682655324">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -4612,10 +4706,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-8517620773550605698">
-			<svg class="boxplot-8517620773550605698">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot7130869062682655324">
+			<svg class="boxplot7130869062682655324">
 				<script>
-					var svg = d3.select(".boxplot-8517620773550605698");
+					var svg = d3.select(".boxplot7130869062682655324");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -4628,9 +4722,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar5809970291676594097">
+	<svg class="MissingValuesBar2721936140865788317">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar5809970291676594097");
+			var svg = d3.select("svg.MissingValuesBar2721936140865788317");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -4665,12 +4759,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram5809970291676594097" style="text-align:right;">
-	<svg class="minihistogram5809970291676594097">
+<div class="col-md-6 collapse in" id="minihistogram2721936140865788317" style="text-align:right;">
+	<svg class="minihistogram2721936140865788317">
 		<script>
 			var data = [2548, 2548, 2823, 2337, 2824, 2507, 2844, 2954, 3086, 3053, 2395, 2395, 2710, 2765, 3055, 3230, 3380, 3505, 1488, 1874, 1909, 1876, 1876, 2128, 1967, 1989, 1989, 2191, 2535, 2811, 1713, 1819, 1837, 1940, 1956, 2010, 2024, 2236, 2289, 2304, 2372, 2465, 2293, 2337, 1874, 1909, 2734, 4066, 4066, 3950, 1890, 1900, 1905, 1945, 1950, 2380, 2380, 2385, 2500, 2385, 2410, 2385, 2410, 2443, 2425, 2670, 2700, 3515, 3750, 3495, 3770, 3740, 3685, 3900, 3715, 2910, 1918, 1944, 2004, 2145, 2370, 2328, 2833, 2921, 2926, 2365, 2405, 2403, 2403, 1889, 2017, 1918, 1938, 2024, 1951, 2028, 1971, 2037, 2008, 2324, 2302, 3095, 3296, 3060, 3071, 3139, 3139, 3020, 3197, 3230, 3430, 3075, 3252, 3285, 3485, 3075, 3252, 3130, 1918, 2128, 1967, 1989, 2191, 2535, 2818, 2778, 2756, 2756, 2800, 3366, 2579, 2460, 2658, 2695, 2707, 2758, 2808, 2847, 2050, 2120, 2240, 2145, 2190, 2340, 2385, 2510, 2290, 2455, 2420, 2650, 1985, 2040, 2015, 2280, 2290, 3110, 2081, 2109, 2275, 2275, 2094, 2122, 2140, 2169, 2204, 2265, 2300, 2540, 2536, 2551, 2679, 2714, 2975, 2326, 2480, 2414, 2414, 2458, 2976, 3016, 3131, 3151, 2261, 2209, 2264, 2212, 2275, 2319, 2300, 2254, 2221, 2661, 2579, 2563, 2912, 3034, 2935, 3042, 3045, 3157, 2952, 3049, 3012, 3217, 3062];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram5809970291676594097");
+			var svg = d3.select("svg.minihistogram2721936140865788317");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -4678,29 +4772,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails5809970291676594097" data-toggle="collapse" data-target="#descriptives5809970291676594097,#minihistogram5809970291676594097" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails2721936140865788317" data-toggle="collapse" data-target="#descriptives2721936140865788317,#minihistogram2721936140865788317" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails5809970291676594097").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails2721936140865788317").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives5809970291676594097">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives2721936140865788317">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles5809970291676594097"
-                                                  aria-controls="quantiles5809970291676594097" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles2721936140865788317"
+                                                  aria-controls="quantiles2721936140865788317" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram5809970291676594097" aria-controls="histogram5809970291676594097"
+        <li role="presentation"><a href="#histogram2721936140865788317" aria-controls="histogram2721936140865788317"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common5809970291676594097" aria-controls="common5809970291676594097"
+        <li role="presentation"><a href="#common2721936140865788317" aria-controls="common2721936140865788317"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme5809970291676594097" aria-controls="extreme5809970291676594097"
+        <li role="presentation"><a href="#extreme2721936140865788317" aria-controls="extreme2721936140865788317"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot5809970291676594097" aria-controls="boxplot5809970291676594097"
+        <li role="presentation"><a href="#boxplot2721936140865788317" aria-controls="boxplot2721936140865788317"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles5809970291676594097">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles2721936140865788317">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -4784,15 +4878,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram5809970291676594097" style="margin-top:20px;">
-            <svg class="histogram5809970291676594097">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram2721936140865788317" style="margin-top:20px;">
+            <svg class="histogram2721936140865788317">
 				<script>
-					var svg = d3.select("svg.histogram5809970291676594097");
+					var svg = d3.select("svg.histogram2721936140865788317");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common5809970291676594097">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common2721936140865788317">
             
 <table class="freq table table-hover">
     <thead>
@@ -4883,7 +4977,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme5809970291676594097">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme2721936140865788317">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -4981,10 +5075,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot5809970291676594097">
-			<svg class="boxplot5809970291676594097">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot2721936140865788317">
+			<svg class="boxplot2721936140865788317">
 				<script>
-					var svg = d3.select(".boxplot5809970291676594097");
+					var svg = d3.select(".boxplot2721936140865788317");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -4997,9 +5091,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar4674071300712311987">
+	<svg class="MissingValuesBar-6726387461637249906">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar4674071300712311987");
+			var svg = d3.select("svg.MissingValuesBar-6726387461637249906");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -5022,7 +5116,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable4674071300712311987">
+<div class="col-md-6 collapse in" id="minifreqtable-6726387461637249906">
     <table class="mini freq">
         <tr class="">
     <th>ohc</th>
@@ -5066,13 +5160,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails4674071300712311987" data-toggle="collapse" data-target="#freqtable4674071300712311987,#minifreqtable4674071300712311987" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-6726387461637249906" data-toggle="collapse" data-target="#freqtable-6726387461637249906,#minifreqtable-6726387461637249906" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails4674071300712311987").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-6726387461637249906").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable4674071300712311987">
+<div class="col-md-12 extrapadding collapse" id="freqtable-6726387461637249906">
     
 <table class="freq table table-hover">
     <thead>
@@ -5105,14 +5199,14 @@
             <div class="bar" style="width:9%">&nbsp;</div>
         </td>
 </tr><tr class="">
-        <td class="fillremaining">dohc</td>
+        <td class="fillremaining">l</td>
         <td class="number">12</td>
         <td class="number">5.9%</td>
         <td>
             <div class="bar" style="width:9%">&nbsp;</div>
         </td>
 </tr><tr class="">
-        <td class="fillremaining">l</td>
+        <td class="fillremaining">dohc</td>
         <td class="number">12</td>
         <td class="number">5.9%</td>
         <td>
@@ -5141,9 +5235,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-4206631810708980281">
+	<svg class="MissingValuesBar6454994800458885173">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-4206631810708980281");
+			var svg = d3.select("svg.MissingValuesBar6454994800458885173");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -5166,7 +5260,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable-4206631810708980281">
+<div class="col-md-6 collapse in" id="minifreqtable6454994800458885173">
     <table class="mini freq">
         <tr class="">
     <th>four</th>
@@ -5210,13 +5304,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-4206631810708980281" data-toggle="collapse" data-target="#freqtable-4206631810708980281,#minifreqtable-4206631810708980281" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails6454994800458885173" data-toggle="collapse" data-target="#freqtable6454994800458885173,#minifreqtable6454994800458885173" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-4206631810708980281").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails6454994800458885173").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable-4206631810708980281">
+<div class="col-md-12 extrapadding collapse" id="freqtable6454994800458885173">
     
 <table class="freq table table-hover">
     <thead>
@@ -5285,9 +5379,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-7181382414002420484">
+	<svg class="MissingValuesBar8317960037318754460">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-7181382414002420484");
+			var svg = d3.select("svg.MissingValuesBar8317960037318754460");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -5322,12 +5416,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram-7181382414002420484" style="text-align:right;">
-	<svg class="minihistogram-7181382414002420484">
+<div class="col-md-6 collapse in" id="minihistogram8317960037318754460" style="text-align:right;">
+	<svg class="minihistogram8317960037318754460">
 		<script>
 			var data = [130, 130, 152, 109, 136, 136, 136, 136, 131, 131, 108, 108, 164, 164, 164, 209, 209, 209, 61, 90, 90, 90, 90, 98, 90, 90, 90, 98, 122, 156, 92, 92, 79, 92, 92, 92, 92, 110, 110, 110, 110, 110, 110, 111, 90, 90, 119, 258, 258, 326, 91, 91, 91, 91, 91, 70, 70, 70, 80, 122, 122, 122, 122, 122, 122, 140, 134, 183, 183, 183, 183, 234, 234, 308, 304, 140, 92, 92, 92, 98, 110, 122, 156, 156, 156, 122, 122, 110, 110, 97, 103, 97, 97, 97, 97, 97, 97, 97, 97, 120, 120, 181, 181, 181, 181, 181, 181, 120, 152, 120, 152, 120, 152, 120, 152, 120, 152, 134, 90, 98, 90, 90, 98, 122, 156, 151, 194, 194, 194, 203, 132, 132, 121, 121, 121, 121, 121, 121, 97, 108, 108, 108, 108, 108, 108, 108, 108, 108, 108, 108, 92, 92, 92, 92, 92, 92, 98, 98, 110, 110, 98, 98, 98, 98, 98, 98, 98, 146, 146, 146, 146, 146, 146, 122, 110, 122, 122, 122, 171, 171, 171, 161, 97, 109, 97, 109, 109, 97, 109, 109, 109, 136, 97, 109, 141, 141, 141, 141, 130, 130, 141, 141, 173, 145, 141];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram-7181382414002420484");
+			var svg = d3.select("svg.minihistogram8317960037318754460");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -5335,29 +5429,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-7181382414002420484" data-toggle="collapse" data-target="#descriptives-7181382414002420484,#minihistogram-7181382414002420484" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails8317960037318754460" data-toggle="collapse" data-target="#descriptives8317960037318754460,#minihistogram8317960037318754460" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-7181382414002420484").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails8317960037318754460").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives-7181382414002420484">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives8317960037318754460">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles-7181382414002420484"
-                                                  aria-controls="quantiles-7181382414002420484" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles8317960037318754460"
+                                                  aria-controls="quantiles8317960037318754460" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram-7181382414002420484" aria-controls="histogram-7181382414002420484"
+        <li role="presentation"><a href="#histogram8317960037318754460" aria-controls="histogram8317960037318754460"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common-7181382414002420484" aria-controls="common-7181382414002420484"
+        <li role="presentation"><a href="#common8317960037318754460" aria-controls="common8317960037318754460"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme-7181382414002420484" aria-controls="extreme-7181382414002420484"
+        <li role="presentation"><a href="#extreme8317960037318754460" aria-controls="extreme8317960037318754460"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot-7181382414002420484" aria-controls="boxplot-7181382414002420484"
+        <li role="presentation"><a href="#boxplot8317960037318754460" aria-controls="boxplot8317960037318754460"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles-7181382414002420484">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles8317960037318754460">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -5441,15 +5535,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-7181382414002420484" style="margin-top:20px;">
-            <svg class="histogram-7181382414002420484">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram8317960037318754460" style="margin-top:20px;">
+            <svg class="histogram8317960037318754460">
 				<script>
-					var svg = d3.select("svg.histogram-7181382414002420484");
+					var svg = d3.select("svg.histogram8317960037318754460");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common-7181382414002420484">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common8317960037318754460">
             
 <table class="freq table table-hover">
     <thead>
@@ -5540,7 +5634,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-7181382414002420484">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme8317960037318754460">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -5638,10 +5732,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-7181382414002420484">
-			<svg class="boxplot-7181382414002420484">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot8317960037318754460">
+			<svg class="boxplot8317960037318754460">
 				<script>
-					var svg = d3.select(".boxplot-7181382414002420484");
+					var svg = d3.select(".boxplot8317960037318754460");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -5654,9 +5748,9 @@
             <small>Categorical</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar2638861810630579525">
+	<svg class="MissingValuesBar-107302049515456605">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar2638861810630579525");
+			var svg = d3.select("svg.MissingValuesBar-107302049515456605");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -5679,7 +5773,7 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minifreqtable2638861810630579525">
+<div class="col-md-6 collapse in" id="minifreqtable-107302049515456605">
     <table class="mini freq">
         <tr class="">
     <th>mpfi</th>
@@ -5723,13 +5817,13 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails2638861810630579525" data-toggle="collapse" data-target="#freqtable2638861810630579525,#minifreqtable2638861810630579525" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-107302049515456605" data-toggle="collapse" data-target="#freqtable-107302049515456605,#minifreqtable-107302049515456605" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails2638861810630579525").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-107302049515456605").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="col-md-12 extrapadding collapse" id="freqtable2638861810630579525">
+<div class="col-md-12 extrapadding collapse" id="freqtable-107302049515456605">
     
 <table class="freq table table-hover">
     <thead>
@@ -5783,14 +5877,14 @@
             <div class="bar" style="width:4%">&nbsp;</div>
         </td>
 </tr><tr class="">
-        <td class="fillremaining">spfi</td>
+        <td class="fillremaining">mfi</td>
         <td class="number">1</td>
         <td class="number">0.5%</td>
         <td>
             <div class="bar" style="width:2%">&nbsp;</div>
         </td>
 </tr><tr class="">
-        <td class="fillremaining">mfi</td>
+        <td class="fillremaining">spfi</td>
         <td class="number">1</td>
         <td class="number">0.5%</td>
         <td>
@@ -5805,9 +5899,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar6080399464014413443">
+	<svg class="MissingValuesBar-7847055709780962815">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar6080399464014413443");
+			var svg = d3.select("svg.MissingValuesBar-7847055709780962815");
 			plotMissingValuesBar(svg, "2.0%", 143, 40)
 		</script>
 	</svg>
@@ -5842,12 +5936,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram6080399464014413443" style="text-align:right;">
-	<svg class="minihistogram6080399464014413443">
+<div class="col-md-6 collapse in" id="minihistogram-7847055709780962815" style="text-align:right;">
+	<svg class="minihistogram-7847055709780962815">
 		<script>
 			var data = [3.47, 3.47, 2.68, 3.19, 3.19, 3.19, 3.19, 3.19, 3.13, 3.13, 3.5, 3.5, 3.31, 3.31, 3.31, 3.62, 3.62, 3.62, 2.91, 3.03, 3.03, 2.97, 2.97, 3.03, 2.97, 2.97, 2.97, 3.03, 3.34, 3.6, 2.91, 2.91, 2.91, 2.91, 2.91, 2.91, 2.92, 3.15, 3.15, 3.15, 3.15, 3.15, 3.15, 3.31, 3.03, 3.03, 3.43, 3.63, 3.63, 3.54, 3.03, 3.03, 3.03, 3.03, 3.08, 'missing value', 'missing value', 'missing value', 'missing value', 3.39, 3.39, 3.39, 3.39, 3.39, 3.39, 3.76, 3.43, 3.58, 3.58, 3.58, 3.58, 3.46, 3.46, 3.8, 3.8, 3.78, 2.97, 2.97, 2.97, 3.03, 3.17, 3.35, 3.58, 3.59, 3.59, 3.35, 3.35, 3.17, 3.17, 3.15, 2.99, 3.15, 3.15, 3.15, 3.15, 3.15, 3.15, 3.15, 3.15, 3.33, 3.33, 3.43, 3.43, 3.43, 3.43, 3.43, 3.43, 3.46, 3.7, 3.46, 3.7, 3.46, 3.7, 3.46, 3.7, 3.46, 3.7, 3.61, 2.97, 3.03, 2.97, 2.97, 2.97, 3.35, 3.59, 3.94, 3.74, 3.74, 3.74, 3.94, 3.46, 3.46, 3.54, 3.54, 2.54, 3.54, 3.54, 3.54, 3.62, 3.62, 3.62, 3.62, 3.62, 3.62, 3.62, 3.62, 3.62, 3.62, 3.62, 3.62, 3.05, 3.05, 3.05, 3.05, 3.05, 3.05, 3.19, 3.19, 3.27, 3.27, 3.19, 3.19, 3.19, 3.19, 3.19, 3.24, 3.24, 3.62, 3.62, 3.62, 3.62, 3.62, 3.62, 3.31, 3.27, 3.31, 3.31, 3.31, 3.27, 3.27, 3.27, 3.27, 3.01, 3.19, 3.01, 3.19, 3.19, 3.01, 3.19, 3.19, 3.19, 3.19, 3.01, 3.19, 3.78, 3.78, 3.78, 3.78, 3.62, 3.62, 3.78, 3.78, 3.58, 3.01, 3.78];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram6080399464014413443");
+			var svg = d3.select("svg.minihistogram-7847055709780962815");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -5855,29 +5949,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails6080399464014413443" data-toggle="collapse" data-target="#descriptives6080399464014413443,#minihistogram6080399464014413443" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-7847055709780962815" data-toggle="collapse" data-target="#descriptives-7847055709780962815,#minihistogram-7847055709780962815" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails6080399464014413443").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-7847055709780962815").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives6080399464014413443">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives-7847055709780962815">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles6080399464014413443"
-                                                  aria-controls="quantiles6080399464014413443" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles-7847055709780962815"
+                                                  aria-controls="quantiles-7847055709780962815" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram6080399464014413443" aria-controls="histogram6080399464014413443"
+        <li role="presentation"><a href="#histogram-7847055709780962815" aria-controls="histogram-7847055709780962815"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common6080399464014413443" aria-controls="common6080399464014413443"
+        <li role="presentation"><a href="#common-7847055709780962815" aria-controls="common-7847055709780962815"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme6080399464014413443" aria-controls="extreme6080399464014413443"
+        <li role="presentation"><a href="#extreme-7847055709780962815" aria-controls="extreme-7847055709780962815"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot6080399464014413443" aria-controls="boxplot6080399464014413443"
+        <li role="presentation"><a href="#boxplot-7847055709780962815" aria-controls="boxplot-7847055709780962815"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles6080399464014413443">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles-7847055709780962815">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -5961,15 +6055,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram6080399464014413443" style="margin-top:20px;">
-            <svg class="histogram6080399464014413443">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-7847055709780962815" style="margin-top:20px;">
+            <svg class="histogram-7847055709780962815">
 				<script>
-					var svg = d3.select("svg.histogram6080399464014413443");
+					var svg = d3.select("svg.histogram-7847055709780962815");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common6080399464014413443">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common-7847055709780962815">
             
 <table class="freq table table-hover">
     <thead>
@@ -6060,7 +6154,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme6080399464014413443">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-7847055709780962815">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -6158,10 +6252,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot6080399464014413443">
-			<svg class="boxplot6080399464014413443">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-7847055709780962815">
+			<svg class="boxplot-7847055709780962815">
 				<script>
-					var svg = d3.select(".boxplot6080399464014413443");
+					var svg = d3.select(".boxplot-7847055709780962815");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -6174,9 +6268,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-3298659168994459499">
+	<svg class="MissingValuesBar4257151456369662956">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-3298659168994459499");
+			var svg = d3.select("svg.MissingValuesBar4257151456369662956");
 			plotMissingValuesBar(svg, "2.0%", 143, 40)
 		</script>
 	</svg>
@@ -6211,12 +6305,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram-3298659168994459499" style="text-align:right;">
-	<svg class="minihistogram-3298659168994459499">
+<div class="col-md-6 collapse in" id="minihistogram4257151456369662956" style="text-align:right;">
+	<svg class="minihistogram4257151456369662956">
 		<script>
 			var data = [2.68, 2.68, 3.47, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 2.8, 2.8, 3.19, 3.19, 3.19, 3.39, 3.39, 3.39, 3.03, 3.11, 3.11, 3.23, 3.23, 3.39, 3.23, 3.23, 3.23, 3.39, 3.46, 3.9, 3.41, 3.41, 3.07, 3.41, 3.41, 3.41, 3.41, 3.58, 3.58, 3.58, 3.58, 3.58, 3.58, 3.23, 3.11, 3.11, 3.23, 4.17, 4.17, 2.76, 3.15, 3.15, 3.15, 3.15, 3.15, 'missing value', 'missing value', 'missing value', 'missing value', 3.39, 3.39, 3.39, 3.39, 3.39, 3.39, 3.16, 3.64, 3.64, 3.64, 3.64, 3.64, 3.1, 3.1, 3.35, 3.35, 3.12, 3.23, 3.23, 3.23, 3.39, 3.46, 3.46, 3.86, 3.86, 3.86, 3.46, 3.46, 3.46, 3.46, 3.29, 3.47, 3.29, 3.29, 3.29, 3.29, 3.29, 3.29, 3.29, 3.29, 3.47, 3.47, 3.27, 3.27, 3.27, 3.27, 3.27, 3.27, 3.19, 3.52, 3.19, 3.52, 2.19, 3.52, 2.19, 3.52, 3.19, 3.52, 3.21, 3.23, 3.39, 3.23, 3.23, 3.23, 3.46, 3.86, 3.11, 2.9, 2.9, 2.9, 3.11, 3.9, 3.9, 3.07, 3.07, 2.07, 3.07, 3.07, 3.07, 2.36, 2.64, 2.64, 2.64, 2.64, 2.64, 2.64, 2.64, 2.64, 2.64, 2.64, 2.64, 3.03, 3.03, 3.03, 3.03, 3.03, 3.03, 3.03, 3.03, 3.35, 3.35, 3.03, 3.03, 3.03, 3.03, 3.03, 3.08, 3.08, 3.5, 3.5, 3.5, 3.5, 3.5, 3.5, 3.54, 3.35, 3.54, 3.54, 3.54, 3.35, 3.35, 3.35, 3.35, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.4, 3.15, 3.15, 3.15, 3.15, 3.15, 3.15, 3.15, 3.15, 2.87, 3.4, 3.15];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram-3298659168994459499");
+			var svg = d3.select("svg.minihistogram4257151456369662956");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -6224,29 +6318,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-3298659168994459499" data-toggle="collapse" data-target="#descriptives-3298659168994459499,#minihistogram-3298659168994459499" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails4257151456369662956" data-toggle="collapse" data-target="#descriptives4257151456369662956,#minihistogram4257151456369662956" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-3298659168994459499").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails4257151456369662956").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives-3298659168994459499">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives4257151456369662956">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles-3298659168994459499"
-                                                  aria-controls="quantiles-3298659168994459499" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles4257151456369662956"
+                                                  aria-controls="quantiles4257151456369662956" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram-3298659168994459499" aria-controls="histogram-3298659168994459499"
+        <li role="presentation"><a href="#histogram4257151456369662956" aria-controls="histogram4257151456369662956"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common-3298659168994459499" aria-controls="common-3298659168994459499"
+        <li role="presentation"><a href="#common4257151456369662956" aria-controls="common4257151456369662956"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme-3298659168994459499" aria-controls="extreme-3298659168994459499"
+        <li role="presentation"><a href="#extreme4257151456369662956" aria-controls="extreme4257151456369662956"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot-3298659168994459499" aria-controls="boxplot-3298659168994459499"
+        <li role="presentation"><a href="#boxplot4257151456369662956" aria-controls="boxplot4257151456369662956"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles-3298659168994459499">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles4257151456369662956">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -6330,15 +6424,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-3298659168994459499" style="margin-top:20px;">
-            <svg class="histogram-3298659168994459499">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram4257151456369662956" style="margin-top:20px;">
+            <svg class="histogram4257151456369662956">
 				<script>
-					var svg = d3.select("svg.histogram-3298659168994459499");
+					var svg = d3.select("svg.histogram4257151456369662956");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common-3298659168994459499">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common4257151456369662956">
             
 <table class="freq table table-hover">
     <thead>
@@ -6429,7 +6523,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-3298659168994459499">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme4257151456369662956">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -6527,10 +6621,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-3298659168994459499">
-			<svg class="boxplot-3298659168994459499">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot4257151456369662956">
+			<svg class="boxplot4257151456369662956">
 				<script>
-					var svg = d3.select(".boxplot-3298659168994459499");
+					var svg = d3.select(".boxplot4257151456369662956");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -6543,9 +6637,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar1354347275933405205">
+	<svg class="MissingValuesBar1779496077248350360">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar1354347275933405205");
+			var svg = d3.select("svg.MissingValuesBar1779496077248350360");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -6580,12 +6674,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram1354347275933405205" style="text-align:right;">
-	<svg class="minihistogram1354347275933405205">
+<div class="col-md-6 collapse in" id="minihistogram1779496077248350360" style="text-align:right;">
+	<svg class="minihistogram1779496077248350360">
 		<script>
 			var data = [9.0, 9.0, 9.0, 10.0, 8.0, 8.5, 8.5, 8.5, 8.3, 7.0, 8.8, 8.8, 9.0, 9.0, 9.0, 8.0, 8.0, 8.0, 9.5, 9.6, 9.6, 9.41, 9.4, 7.6, 9.4, 9.4, 9.4, 7.6, 8.5, 7.0, 9.6, 9.2, 10.1, 9.2, 9.2, 9.2, 9.2, 9.0, 9.0, 9.0, 9.0, 9.0, 9.1, 8.5, 9.6, 9.6, 9.2, 8.1, 8.1, 11.5, 9.0, 9.0, 9.0, 9.0, 9.0, 9.4, 9.4, 9.4, 9.4, 8.6, 8.6, 8.6, 8.6, 22.7, 8.6, 8.0, 22.0, 21.5, 21.5, 21.5, 21.5, 8.3, 8.3, 8.0, 8.0, 8.0, 9.4, 9.4, 9.4, 7.6, 7.5, 8.5, 7.0, 7.0, 7.0, 8.5, 8.5, 7.5, 7.5, 9.4, 21.9, 9.4, 9.4, 9.4, 9.4, 9.4, 9.4, 9.4, 9.4, 8.5, 8.5, 9.0, 9.0, 9.0, 9.0, 7.8, 9.0, 8.4, 21.0, 8.4, 21.0, 8.4, 21.0, 8.4, 21.0, 8.4, 21.0, 7.0, 9.4, 7.6, 9.4, 9.4, 9.4, 8.5, 7.0, 9.5, 9.5, 9.5, 9.5, 10.0, 8.7, 8.7, 9.31, 9.3, 9.3, 9.3, 9.0, 9.0, 9.0, 8.7, 8.7, 9.5, 9.5, 9.0, 9.0, 7.7, 9.0, 9.0, 9.0, 7.7, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 9.0, 22.5, 22.5, 9.0, 9.0, 9.0, 9.0, 9.0, 9.4, 9.4, 9.3, 9.3, 9.3, 9.3, 9.3, 9.3, 8.7, 22.5, 8.7, 8.7, 8.7, 9.3, 9.3, 9.2, 9.2, 23.0, 9.0, 23.0, 9.0, 9.0, 23.0, 10.0, 8.5, 8.5, 8.5, 23.0, 9.0, 9.5, 9.5, 9.5, 9.5, 7.5, 7.5, 9.5, 8.7, 8.8, 23.0, 9.5];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram1354347275933405205");
+			var svg = d3.select("svg.minihistogram1779496077248350360");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -6593,29 +6687,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails1354347275933405205" data-toggle="collapse" data-target="#descriptives1354347275933405205,#minihistogram1354347275933405205" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails1779496077248350360" data-toggle="collapse" data-target="#descriptives1779496077248350360,#minihistogram1779496077248350360" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails1354347275933405205").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails1779496077248350360").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives1354347275933405205">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives1779496077248350360">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles1354347275933405205"
-                                                  aria-controls="quantiles1354347275933405205" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles1779496077248350360"
+                                                  aria-controls="quantiles1779496077248350360" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram1354347275933405205" aria-controls="histogram1354347275933405205"
+        <li role="presentation"><a href="#histogram1779496077248350360" aria-controls="histogram1779496077248350360"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common1354347275933405205" aria-controls="common1354347275933405205"
+        <li role="presentation"><a href="#common1779496077248350360" aria-controls="common1779496077248350360"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme1354347275933405205" aria-controls="extreme1354347275933405205"
+        <li role="presentation"><a href="#extreme1779496077248350360" aria-controls="extreme1779496077248350360"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot1354347275933405205" aria-controls="boxplot1354347275933405205"
+        <li role="presentation"><a href="#boxplot1779496077248350360" aria-controls="boxplot1779496077248350360"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles1354347275933405205">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles1779496077248350360">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -6699,15 +6793,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram1354347275933405205" style="margin-top:20px;">
-            <svg class="histogram1354347275933405205">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram1779496077248350360" style="margin-top:20px;">
+            <svg class="histogram1779496077248350360">
 				<script>
-					var svg = d3.select("svg.histogram1354347275933405205");
+					var svg = d3.select("svg.histogram1779496077248350360");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common1354347275933405205">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common1779496077248350360">
             
 <table class="freq table table-hover">
     <thead>
@@ -6798,7 +6892,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme1354347275933405205">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme1779496077248350360">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -6896,10 +6990,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot1354347275933405205">
-			<svg class="boxplot1354347275933405205">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot1779496077248350360">
+			<svg class="boxplot1779496077248350360">
 				<script>
-					var svg = d3.select(".boxplot1354347275933405205");
+					var svg = d3.select(".boxplot1779496077248350360");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -6912,9 +7006,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar5968010732997403400">
+	<svg class="MissingValuesBar-8063003657721941106">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar5968010732997403400");
+			var svg = d3.select("svg.MissingValuesBar-8063003657721941106");
 			plotMissingValuesBar(svg, "1.0%", 143, 40)
 		</script>
 	</svg>
@@ -6949,12 +7043,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram5968010732997403400" style="text-align:right;">
-	<svg class="minihistogram5968010732997403400">
+<div class="col-md-6 collapse in" id="minihistogram-8063003657721941106" style="text-align:right;">
+	<svg class="minihistogram-8063003657721941106">
 		<script>
 			var data = [111.0, 111.0, 154.0, 102.0, 115.0, 110.0, 110.0, 110.0, 140.0, 160.0, 101.0, 101.0, 121.0, 121.0, 121.0, 182.0, 182.0, 182.0, 48.0, 70.0, 70.0, 68.0, 68.0, 102.0, 68.0, 68.0, 68.0, 102.0, 88.0, 145.0, 58.0, 76.0, 60.0, 76.0, 76.0, 76.0, 76.0, 86.0, 86.0, 86.0, 86.0, 101.0, 100.0, 78.0, 70.0, 70.0, 90.0, 176.0, 176.0, 262.0, 68.0, 68.0, 68.0, 68.0, 68.0, 101.0, 101.0, 101.0, 135.0, 84.0, 84.0, 84.0, 84.0, 64.0, 84.0, 120.0, 72.0, 123.0, 123.0, 123.0, 123.0, 155.0, 155.0, 184.0, 184.0, 175.0, 68.0, 68.0, 68.0, 102.0, 116.0, 88.0, 145.0, 145.0, 145.0, 88.0, 88.0, 116.0, 116.0, 69.0, 55.0, 69.0, 69.0, 69.0, 69.0, 69.0, 69.0, 69.0, 69.0, 97.0, 97.0, 152.0, 152.0, 152.0, 160.0, 200.0, 160.0, 97.0, 95.0, 97.0, 95.0, 95.0, 95.0, 95.0, 95.0, 97.0, 95.0, 142.0, 68.0, 102.0, 68.0, 68.0, 68.0, 88.0, 145.0, 143.0, 207.0, 207.0, 207.0, 288.0, 'missing value', 'missing value', 110.0, 110.0, 110.0, 110.0, 160.0, 160.0, 69.0, 73.0, 73.0, 82.0, 82.0, 94.0, 82.0, 111.0, 82.0, 94.0, 82.0, 111.0, 62.0, 62.0, 62.0, 62.0, 62.0, 62.0, 70.0, 70.0, 56.0, 56.0, 70.0, 70.0, 70.0, 70.0, 70.0, 112.0, 112.0, 116.0, 116.0, 116.0, 116.0, 116.0, 116.0, 92.0, 73.0, 92.0, 92.0, 92.0, 161.0, 161.0, 156.0, 156.0, 52.0, 85.0, 52.0, 85.0, 85.0, 68.0, 100.0, 90.0, 90.0, 110.0, 68.0, 88.0, 114.0, 114.0, 114.0, 114.0, 162.0, 162.0, 114.0, 160.0, 134.0, 106.0, 114.0];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram5968010732997403400");
+			var svg = d3.select("svg.minihistogram-8063003657721941106");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -6962,29 +7056,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails5968010732997403400" data-toggle="collapse" data-target="#descriptives5968010732997403400,#minihistogram5968010732997403400" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-8063003657721941106" data-toggle="collapse" data-target="#descriptives-8063003657721941106,#minihistogram-8063003657721941106" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails5968010732997403400").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-8063003657721941106").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives5968010732997403400">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives-8063003657721941106">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles5968010732997403400"
-                                                  aria-controls="quantiles5968010732997403400" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles-8063003657721941106"
+                                                  aria-controls="quantiles-8063003657721941106" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram5968010732997403400" aria-controls="histogram5968010732997403400"
+        <li role="presentation"><a href="#histogram-8063003657721941106" aria-controls="histogram-8063003657721941106"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common5968010732997403400" aria-controls="common5968010732997403400"
+        <li role="presentation"><a href="#common-8063003657721941106" aria-controls="common-8063003657721941106"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme5968010732997403400" aria-controls="extreme5968010732997403400"
+        <li role="presentation"><a href="#extreme-8063003657721941106" aria-controls="extreme-8063003657721941106"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot5968010732997403400" aria-controls="boxplot5968010732997403400"
+        <li role="presentation"><a href="#boxplot-8063003657721941106" aria-controls="boxplot-8063003657721941106"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles5968010732997403400">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles-8063003657721941106">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -7068,15 +7162,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram5968010732997403400" style="margin-top:20px;">
-            <svg class="histogram5968010732997403400">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-8063003657721941106" style="margin-top:20px;">
+            <svg class="histogram-8063003657721941106">
 				<script>
-					var svg = d3.select("svg.histogram5968010732997403400");
+					var svg = d3.select("svg.histogram-8063003657721941106");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common5968010732997403400">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common-8063003657721941106">
             
 <table class="freq table table-hover">
     <thead>
@@ -7167,7 +7261,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme5968010732997403400">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-8063003657721941106">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -7265,10 +7359,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot5968010732997403400">
-			<svg class="boxplot5968010732997403400">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-8063003657721941106">
+			<svg class="boxplot-8063003657721941106">
 				<script>
-					var svg = d3.select(".boxplot5968010732997403400");
+					var svg = d3.select(".boxplot-8063003657721941106");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -7281,9 +7375,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar-2573651993625462133">
+	<svg class="MissingValuesBar128172563495846962">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar-2573651993625462133");
+			var svg = d3.select("svg.MissingValuesBar128172563495846962");
 			plotMissingValuesBar(svg, "1.0%", 143, 40)
 		</script>
 	</svg>
@@ -7318,12 +7412,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram-2573651993625462133" style="text-align:right;">
-	<svg class="minihistogram-2573651993625462133">
+<div class="col-md-6 collapse in" id="minihistogram128172563495846962" style="text-align:right;">
+	<svg class="minihistogram128172563495846962">
 		<script>
 			var data = [5000.0, 5000.0, 5000.0, 5500.0, 5500.0, 5500.0, 5500.0, 5500.0, 5500.0, 5500.0, 5800.0, 5800.0, 4250.0, 4250.0, 4250.0, 5400.0, 5400.0, 5400.0, 5100.0, 5400.0, 5400.0, 5500.0, 5500.0, 5500.0, 5500.0, 5500.0, 5500.0, 5500.0, 5000.0, 5000.0, 4800.0, 6000.0, 5500.0, 6000.0, 6000.0, 6000.0, 6000.0, 5800.0, 5800.0, 5800.0, 5800.0, 5800.0, 5500.0, 4800.0, 5400.0, 5400.0, 5000.0, 4750.0, 4750.0, 5000.0, 5000.0, 5000.0, 5000.0, 5000.0, 5000.0, 6000.0, 6000.0, 6000.0, 6000.0, 4800.0, 4800.0, 4800.0, 4800.0, 4650.0, 4800.0, 5000.0, 4200.0, 4350.0, 4350.0, 4350.0, 4350.0, 4750.0, 4750.0, 4500.0, 4500.0, 5000.0, 5500.0, 5500.0, 5500.0, 5500.0, 5500.0, 5000.0, 5000.0, 5000.0, 5000.0, 5000.0, 5000.0, 5500.0, 5500.0, 5200.0, 4800.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5200.0, 5000.0, 4150.0, 5000.0, 4150.0, 5000.0, 4150.0, 5000.0, 4150.0, 5000.0, 4150.0, 5600.0, 5500.0, 5500.0, 5500.0, 5500.0, 5500.0, 5000.0, 5000.0, 5500.0, 5900.0, 5900.0, 5900.0, 5750.0, 'missing value', 'missing value', 5250.0, 5250.0, 5250.0, 5250.0, 5500.0, 5500.0, 4900.0, 4400.0, 4400.0, 4800.0, 4400.0, 5200.0, 4800.0, 4800.0, 4800.0, 5200.0, 4800.0, 4800.0, 4800.0, 4800.0, 4800.0, 4800.0, 4800.0, 4800.0, 4800.0, 4800.0, 4500.0, 4500.0, 4800.0, 4800.0, 4800.0, 4800.0, 4800.0, 6600.0, 6600.0, 4800.0, 4800.0, 4800.0, 4800.0, 4800.0, 4800.0, 4200.0, 4500.0, 4200.0, 4200.0, 4200.0, 5200.0, 5200.0, 5200.0, 5200.0, 4800.0, 5250.0, 4800.0, 5250.0, 5250.0, 4500.0, 5500.0, 5500.0, 5500.0, 5500.0, 4500.0, 5500.0, 5400.0, 5400.0, 5400.0, 5400.0, 5100.0, 5100.0, 5400.0, 5300.0, 5500.0, 4800.0, 5400.0];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram-2573651993625462133");
+			var svg = d3.select("svg.minihistogram128172563495846962");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -7331,29 +7425,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails-2573651993625462133" data-toggle="collapse" data-target="#descriptives-2573651993625462133,#minihistogram-2573651993625462133" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails128172563495846962" data-toggle="collapse" data-target="#descriptives128172563495846962,#minihistogram128172563495846962" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails-2573651993625462133").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails128172563495846962").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives-2573651993625462133">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives128172563495846962">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles-2573651993625462133"
-                                                  aria-controls="quantiles-2573651993625462133" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles128172563495846962"
+                                                  aria-controls="quantiles128172563495846962" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram-2573651993625462133" aria-controls="histogram-2573651993625462133"
+        <li role="presentation"><a href="#histogram128172563495846962" aria-controls="histogram128172563495846962"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common-2573651993625462133" aria-controls="common-2573651993625462133"
+        <li role="presentation"><a href="#common128172563495846962" aria-controls="common128172563495846962"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme-2573651993625462133" aria-controls="extreme-2573651993625462133"
+        <li role="presentation"><a href="#extreme128172563495846962" aria-controls="extreme128172563495846962"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot-2573651993625462133" aria-controls="boxplot-2573651993625462133"
+        <li role="presentation"><a href="#boxplot128172563495846962" aria-controls="boxplot128172563495846962"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles-2573651993625462133">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles128172563495846962">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -7437,15 +7531,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-2573651993625462133" style="margin-top:20px;">
-            <svg class="histogram-2573651993625462133">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram128172563495846962" style="margin-top:20px;">
+            <svg class="histogram128172563495846962">
 				<script>
-					var svg = d3.select("svg.histogram-2573651993625462133");
+					var svg = d3.select("svg.histogram128172563495846962");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common-2573651993625462133">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common128172563495846962">
             
 <table class="freq table table-hover">
     <thead>
@@ -7536,7 +7630,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-2573651993625462133">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme128172563495846962">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -7634,10 +7728,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-2573651993625462133">
-			<svg class="boxplot-2573651993625462133">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot128172563495846962">
+			<svg class="boxplot128172563495846962">
 				<script>
-					var svg = d3.select(".boxplot-2573651993625462133");
+					var svg = d3.select(".boxplot128172563495846962");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -7650,9 +7744,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar8414643639457946649">
+	<svg class="MissingValuesBar7262924058667753855">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar8414643639457946649");
+			var svg = d3.select("svg.MissingValuesBar7262924058667753855");
 			plotMissingValuesBar(svg, "0.0%", 143, 40)
 		</script>
 	</svg>
@@ -7687,12 +7781,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram8414643639457946649" style="text-align:right;">
-	<svg class="minihistogram8414643639457946649">
+<div class="col-md-6 collapse in" id="minihistogram7262924058667753855" style="text-align:right;">
+	<svg class="minihistogram7262924058667753855">
 		<script>
 			var data = [21, 21, 19, 24, 18, 19, 19, 19, 17, 16, 23, 23, 21, 21, 20, 16, 16, 15, 47, 38, 38, 37, 31, 24, 31, 31, 31, 24, 24, 19, 49, 31, 38, 30, 30, 30, 30, 27, 27, 27, 27, 24, 25, 24, 38, 38, 24, 15, 15, 13, 30, 31, 31, 31, 31, 17, 17, 17, 16, 26, 26, 26, 26, 36, 26, 19, 31, 22, 22, 22, 22, 16, 16, 14, 14, 19, 37, 31, 31, 24, 23, 25, 19, 19, 19, 25, 25, 23, 23, 31, 45, 31, 31, 31, 31, 31, 31, 31, 31, 27, 27, 17, 17, 19, 19, 17, 19, 19, 28, 19, 25, 19, 28, 19, 25, 19, 28, 18, 37, 24, 31, 31, 31, 24, 19, 19, 17, 17, 17, 17, 23, 23, 21, 21, 21, 21, 19, 19, 31, 26, 26, 32, 28, 26, 24, 24, 28, 25, 23, 23, 35, 31, 31, 31, 27, 27, 30, 30, 34, 38, 38, 28, 28, 29, 29, 26, 26, 24, 24, 24, 24, 24, 24, 29, 30, 27, 27, 27, 20, 19, 20, 19, 37, 27, 37, 27, 27, 37, 26, 24, 24, 19, 33, 25, 23, 23, 24, 24, 17, 17, 23, 19, 18, 26, 19];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram8414643639457946649");
+			var svg = d3.select("svg.minihistogram7262924058667753855");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -7700,29 +7794,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails8414643639457946649" data-toggle="collapse" data-target="#descriptives8414643639457946649,#minihistogram8414643639457946649" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails7262924058667753855" data-toggle="collapse" data-target="#descriptives7262924058667753855,#minihistogram7262924058667753855" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails8414643639457946649").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails7262924058667753855").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives8414643639457946649">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives7262924058667753855">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles8414643639457946649"
-                                                  aria-controls="quantiles8414643639457946649" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles7262924058667753855"
+                                                  aria-controls="quantiles7262924058667753855" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram8414643639457946649" aria-controls="histogram8414643639457946649"
+        <li role="presentation"><a href="#histogram7262924058667753855" aria-controls="histogram7262924058667753855"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common8414643639457946649" aria-controls="common8414643639457946649"
+        <li role="presentation"><a href="#common7262924058667753855" aria-controls="common7262924058667753855"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme8414643639457946649" aria-controls="extreme8414643639457946649"
+        <li role="presentation"><a href="#extreme7262924058667753855" aria-controls="extreme7262924058667753855"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot8414643639457946649" aria-controls="boxplot8414643639457946649"
+        <li role="presentation"><a href="#boxplot7262924058667753855" aria-controls="boxplot7262924058667753855"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles8414643639457946649">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles7262924058667753855">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -7806,15 +7900,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram8414643639457946649" style="margin-top:20px;">
-            <svg class="histogram8414643639457946649">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram7262924058667753855" style="margin-top:20px;">
+            <svg class="histogram7262924058667753855">
 				<script>
-					var svg = d3.select("svg.histogram8414643639457946649");
+					var svg = d3.select("svg.histogram7262924058667753855");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common8414643639457946649">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common7262924058667753855">
             
 <table class="freq table table-hover">
     <thead>
@@ -7905,7 +7999,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme8414643639457946649">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme7262924058667753855">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -8003,10 +8097,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot8414643639457946649">
-			<svg class="boxplot8414643639457946649">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot7262924058667753855">
+			<svg class="boxplot7262924058667753855">
 				<script>
-					var svg = d3.select(".boxplot8414643639457946649");
+					var svg = d3.select(".boxplot7262924058667753855");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -8035,9 +8129,9 @@
             <small>Numeric</small>
         </p>
     </div><div class="col-md-3">
-	<svg class="MissingValuesBar3321476134918123341">
+	<svg class="MissingValuesBar-3345982561313264004">
 		<script>
-			var svg = d3.select("svg.MissingValuesBar3321476134918123341");
+			var svg = d3.select("svg.MissingValuesBar-3345982561313264004");
 			plotMissingValuesBar(svg, "2.0%", 143, 40)
 		</script>
 	</svg>
@@ -8072,12 +8166,12 @@
         </tr>
     </table>
 </div>
-<div class="col-md-6 collapse in" id="minihistogram3321476134918123341" style="text-align:right;">
-	<svg class="minihistogram3321476134918123341">
+<div class="col-md-6 collapse in" id="minihistogram-3345982561313264004" style="text-align:right;">
+	<svg class="minihistogram-3345982561313264004">
 		<script>
 			var data = [13495.0, 16500.0, 16500.0, 13950.0, 17450.0, 15250.0, 17710.0, 18920.0, 23875.0, 'missing value', 16430.0, 16925.0, 20970.0, 21105.0, 24565.0, 30760.0, 41315.0, 36880.0, 5151.0, 6295.0, 6575.0, 5572.0, 6377.0, 7957.0, 6229.0, 6692.0, 7609.0, 8558.0, 8921.0, 12964.0, 6479.0, 6855.0, 5399.0, 6529.0, 7129.0, 7295.0, 7295.0, 7895.0, 9095.0, 8845.0, 10295.0, 12945.0, 10345.0, 6785.0, 'missing value', 'missing value', 11048.0, 32250.0, 35550.0, 36000.0, 5195.0, 6095.0, 6795.0, 6695.0, 7395.0, 10945.0, 11845.0, 13645.0, 15645.0, 8845.0, 8495.0, 10595.0, 10245.0, 10795.0, 11245.0, 18280.0, 18344.0, 25552.0, 28248.0, 28176.0, 31600.0, 34184.0, 35056.0, 40960.0, 45400.0, 16503.0, 5389.0, 6189.0, 6669.0, 7689.0, 9959.0, 8499.0, 12629.0, 14869.0, 14489.0, 6989.0, 8189.0, 9279.0, 9279.0, 5499.0, 7099.0, 6649.0, 6849.0, 7349.0, 7299.0, 7799.0, 7499.0, 7999.0, 8249.0, 8949.0, 9549.0, 13499.0, 14399.0, 13499.0, 17199.0, 19699.0, 18399.0, 11900.0, 13200.0, 12440.0, 13860.0, 15580.0, 16900.0, 16695.0, 17075.0, 16630.0, 17950.0, 18150.0, 5572.0, 7957.0, 6229.0, 6692.0, 7609.0, 8921.0, 12764.0, 22018.0, 32528.0, 34028.0, 37028.0, 'missing value', 9295.0, 9895.0, 11850.0, 12170.0, 15040.0, 15510.0, 18150.0, 18620.0, 5118.0, 7053.0, 7603.0, 7126.0, 7775.0, 9960.0, 9233.0, 11259.0, 7463.0, 10198.0, 8013.0, 11694.0, 5348.0, 6338.0, 6488.0, 6918.0, 7898.0, 8778.0, 6938.0, 7198.0, 7898.0, 7788.0, 7738.0, 8358.0, 9258.0, 8058.0, 8238.0, 9298.0, 9538.0, 8449.0, 9639.0, 9989.0, 11199.0, 11549.0, 17669.0, 8948.0, 10698.0, 9988.0, 10898.0, 11248.0, 16558.0, 15998.0, 15690.0, 15750.0, 7775.0, 7975.0, 7995.0, 8195.0, 8495.0, 9495.0, 9995.0, 11595.0, 9980.0, 13295.0, 13845.0, 12290.0, 12940.0, 13415.0, 15985.0, 16515.0, 18420.0, 18950.0, 16845.0, 19045.0, 21485.0, 22470.0, 22625.0];
 			var bins = d3.histogram()(data);
-			var svg = d3.select("svg.minihistogram3321476134918123341");
+			var svg = d3.select("svg.minihistogram-3345982561313264004");
 			plotHistogramNum(svg, bins, 400, 200);
 		</script>
 	</svg>
@@ -8085,29 +8179,29 @@
 <div class="panel-heading col-md-12 text-right" style="padding:0;">
     <p style="text-align: right; font-size: 12px;">
         Show details
-		<button id="toggleDetails3321476134918123341" data-toggle="collapse" data-target="#descriptives3321476134918123341,#minihistogram3321476134918123341" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
+		<button id="toggleDetails-3345982561313264004" data-toggle="collapse" data-target="#descriptives-3345982561313264004,#minihistogram-3345982561313264004" class="collapseButton btn btn-xs btn-secondary btn-hover-dark collapsed"></button>
 		<script>
-			d3.select("#toggleDetails3321476134918123341").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
+			d3.select("#toggleDetails-3345982561313264004").on("click", function() {d3.select(this).classed("collapsed", d3.select(this).classed("collapsed") ? false : true);});
 		</script>
     </p>
 </div>
-<div class="pannel-collapse collapse row col-md-12" id="descriptives3321476134918123341">
+<div class="pannel-collapse collapse row col-md-12" id="descriptives-3345982561313264004">
     <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active"><a href="#quantiles3321476134918123341"
-                                                  aria-controls="quantiles3321476134918123341" role="tab"
+        <li role="presentation" class="active"><a href="#quantiles-3345982561313264004"
+                                                  aria-controls="quantiles-3345982561313264004" role="tab"
                                                   data-toggle="tab">Statistics</a></li>
-        <li role="presentation"><a href="#histogram3321476134918123341" aria-controls="histogram3321476134918123341"
+        <li role="presentation"><a href="#histogram-3345982561313264004" aria-controls="histogram-3345982561313264004"
                                    role="tab" data-toggle="tab">Histogram</a></li>
-        <li role="presentation"><a href="#common3321476134918123341" aria-controls="common3321476134918123341"
+        <li role="presentation"><a href="#common-3345982561313264004" aria-controls="common-3345982561313264004"
                                    role="tab" data-toggle="tab">Common Values</a></li>
-        <li role="presentation"><a href="#extreme3321476134918123341" aria-controls="extreme3321476134918123341"
+        <li role="presentation"><a href="#extreme-3345982561313264004" aria-controls="extreme-3345982561313264004"
                                    role="tab" data-toggle="tab">Extreme Values</a></li>
-        <li role="presentation"><a href="#boxplot3321476134918123341" aria-controls="boxplot3321476134918123341"
+        <li role="presentation"><a href="#boxplot-3345982561313264004" aria-controls="boxplot-3345982561313264004"
                                    role="tab" data-toggle="tab">Box Plot</a></li>
     </ul>
 
     <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active row" id="quantiles3321476134918123341">
+        <div role="tabpanel" class="tab-pane active row" id="quantiles-3345982561313264004">
             <div class="col-md-4 col-md-offset-1">
                 <p style="font-size:12px;font-weight: bold;margin-top:5px">Quantile statistics</p>
                 <table class="stats indent">
@@ -8191,15 +8285,15 @@
                 </table>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram3321476134918123341" style="margin-top:20px;">
-            <svg class="histogram3321476134918123341">
+        <div role="tabpanel" class="tab-pane col-md-10 col-md-offset-1" id="histogram-3345982561313264004" style="margin-top:20px;">
+            <svg class="histogram-3345982561313264004">
 				<script>
-					var svg = d3.select("svg.histogram3321476134918123341");
+					var svg = d3.select("svg.histogram-3345982561313264004");
 					plotHistogramNum(svg, bins, 700, 350);
 				</script>
 			</svg>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12" id="common3321476134918123341">
+        <div role="tabpanel" class="tab-pane col-md-12" id="common-3345982561313264004">
             
 <table class="freq table table-hover">
     <thead>
@@ -8297,7 +8391,7 @@
 </tr>
 </table>
         </div>
-        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme3321476134918123341">
+        <div role="tabpanel" class="tab-pane col-md-12"  id="extreme-3345982561313264004">
             <p style="font-size:12px;font-weight: bold;margin-top:5px">Minimum 5 values</p>
             
 <table class="freq table table-hover">
@@ -8395,10 +8489,10 @@
 </tr>
 </table>
         </div>
-		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot3321476134918123341">
-			<svg class="boxplot3321476134918123341">
+		<div role="tabpanel" class="tab-pane col-md-12 text-center" id="boxplot-3345982561313264004">
+			<svg class="boxplot-3345982561313264004">
 				<script>
-					var svg = d3.select(".boxplot3321476134918123341");
+					var svg = d3.select(".boxplot-3345982561313264004");
 					plotBox(svg, data);
 				</script>
 			</svg>
@@ -8651,7 +8745,8 @@
             </div>
         </div>
     </div>
-    <div id="table_viz"></div>
+     
+    <div id="table_viz" style="overflow: scroll;"></div>
 
 <script>
     var meta_data_table_viz = [{'ascend': 0, 'name': 'symboling', 'datatype': 'int', 'min_val': -2, 'max_val': 3}, {'ascend': 0, 'name': 'normalized-loss', 'datatype': 'float', 'min_val': 65.0, 'max_val': 256.0}, {'ascend': 0, 'name': 'make', 'datatype': 'string', 'values': ['alfa-romero', 'audi', 'bmw', 'chevrolet', 'dodge', 'honda', 'isuzu', 'jaguar', 'mazda', 'mercedes-benz', 'mercury', 'mitsubishi', 'nissan', 'peugot', 'plymouth', 'porsche', 'renault', 'saab', 'subaru', 'toyota', 'volkswagen', 'volvo']}, {'ascend': 0, 'name': 'fuel-type', 'datatype': 'string', 'values': ['gas', 'diesel']}, {'ascend': 0, 'name': 'aspiration', 'datatype': 'string', 'values': ['std', 'turbo']}, {'ascend': 0, 'name': 'num-of-doors', 'datatype': 'string', 'values': ['two', 'four', 'missing value']}, {'ascend': 0, 'name': 'body-style', 'datatype': 'string', 'values': ['convertible', 'hatchback', 'sedan', 'wagon', 'hardtop']}, {'ascend': 0, 'name': 'drive-wheels', 'datatype': 'string', 'values': ['rwd', 'fwd', '4wd']}, {'ascend': 0, 'name': 'engine-location', 'datatype': 'string', 'values': ['front', 'rear']}, {'ascend': 0, 'name': 'wheel-base', 'datatype': 'float', 'min_val': 86.6, 'max_val': 120.9}, {'ascend': 0, 'name': 'length', 'datatype': 'float', 'min_val': 141.1, 'max_val': 208.1}, {'ascend': 0, 'name': 'width', 'datatype': 'float', 'min_val': 60.3, 'max_val': 72.3}, {'ascend': 0, 'name': 'height', 'datatype': 'float', 'min_val': 47.8, 'max_val': 59.8}, {'ascend': 0, 'name': 'curb-weight', 'datatype': 'int', 'min_val': 1488, 'max_val': 4066}, {'ascend': 0, 'name': 'engine-type', 'datatype': 'string', 'values': ['dohc', 'ohcv', 'ohc', 'l', 'rotor', 'ohcf', 'dohcv']}, {'ascend': 0, 'name': 'num-of-cylinder', 'datatype': 'string', 'values': ['four', 'six', 'five', 'three', 'twelve', 'two', 'eight']}, {'ascend': 0, 'name': 'engine-size', 'datatype': 'int', 'min_val': 61, 'max_val': 326}, {'ascend': 0, 'name': 'fuel-system', 'datatype': 'string', 'values': ['mpfi', '2bbl', 'mfi', '1bbl', 'spfi', '4bbl', 'idi', 'spdi']}, {'ascend': 0, 'name': 'bore', 'datatype': 'float', 'min_val': 2.54, 'max_val': 3.94}, {'ascend': 0, 'name': 'stroke', 'datatype': 'float', 'min_val': 2.07, 'max_val': 4.17}, {'ascend': 0, 'name': 'compression-rat', 'datatype': 'float', 'min_val': 7.0, 'max_val': 23.0}, {'ascend': 0, 'name': 'horsepower', 'datatype': 'float', 'min_val': 48.0, 'max_val': 288.0}, {'ascend': 0, 'name': 'peak-rpm', 'datatype': 'float', 'min_val': 4150.0, 'max_val': 6600.0}, {'ascend': 0, 'name': 'city-mpg', 'datatype': 'int', 'min_val': 13, 'max_val': 49}, {'ascend': 0, 'name': 'highway-mpg', 'datatype': 'int', 'min_val': 16, 'max_val': 54}, {'ascend': 0, 'name': 'price', 'datatype': 'float', 'min_val': 5118.0, 'max_val': 45400.0}]

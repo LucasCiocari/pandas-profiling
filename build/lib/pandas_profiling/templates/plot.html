@@ -1,5 +1,4 @@
 <script>
-
 	function plotTableGraph(metadata, data_array, svg) {
 		let color_palette = []
 
@@ -26,8 +25,7 @@
 						return -1
 					return a[col_n] - b[col_n]
 				});
-			}
-			else {
+			} else {
 				data_array.sort(function (a, b) {
 					if (isNaN(a[col_n]))
 						return 1
@@ -38,6 +36,7 @@
 				});
 			}
 		}
+
 		function sort_alpha(col_n, asc) {
 			if (asc) {
 				data_array.sort(function (a, b) {
@@ -45,17 +44,19 @@
 					return a[col_n].localeCompare(b[col_n]);
 
 				})
-			}
-			else {
+			} else {
 				data_array.sort(function (a, b) {
 					return b[col_n].localeCompare(a[col_n]);
 				})
 			}
 		}
+
 		function define_cell_width(min, max, val, full_wdth) {
 			const new_val = (val - min) / (max - min)
-			return new_val != 0 ? ((new_val * full_wdth) > min_int_bar_size ? (new_val * full_wdth) : min_int_bar_size) : min_int_bar_size
+			return new_val != 0 ? ((new_val * full_wdth) > min_int_bar_size ? (new_val * full_wdth) : min_int_bar_size) :
+				min_int_bar_size
 		}
+
 		function get_max_labels() {
 			let count = 2 // starts at 2 because at least two will be needed for int and float labels
 			Object.keys(metadata)
@@ -65,6 +66,7 @@
 				)
 			return count
 		}
+
 		function column_name_click(svg, clicked_col, label_qtt) {
 			let obj = Object.keys(metadata)[clicked_col]
 
@@ -84,14 +86,12 @@
 				svg
 					.selectAll(`.ascending-${clicked_col}`)
 					.text(sort_icon)
-			}
-			else if (metadata[clicked_col]['ascend'] == 1) {
+			} else if (metadata[clicked_col]['ascend'] == 1) {
 				metadata[clicked_col]['ascend'] = 2
 				svg
 					.selectAll(`.ascending-${clicked_col}`)
 					.text(sort_up_icon)
-			}
-			else if (metadata[clicked_col]['ascend'] == 2) {
+			} else if (metadata[clicked_col]['ascend'] == 2) {
 				metadata[clicked_col]['ascend'] = 1
 				svg
 					.selectAll(`.ascending-${clicked_col}`)
@@ -106,8 +106,7 @@
 					sort_alpha(clicked_col, false)
 				}
 
-			}
-			else {
+			} else {
 				if (metadata[obj]['ascend'] == 1) {
 					sort_numerical(clicked_col, true)
 				}
@@ -118,6 +117,7 @@
 
 			build_table(svg, label_qtt)
 		}
+
 		function move_to_left(svg, clicked_col) {
 
 			for (let i = 0; i < data_array.length; i++) {
@@ -129,11 +129,9 @@
 			let new_data = Object.keys(metadata).map((val, index) => {
 				if (index === clicked_col - 1) {
 					return metadata[Object.keys(metadata)[clicked_col]]
-				}
-				else if (index === clicked_col) {
+				} else if (index === clicked_col) {
 					return metadata[Object.keys(metadata)[clicked_col - 1]]
-				}
-				else {
+				} else {
 					return metadata[val]
 				}
 			})
@@ -141,6 +139,7 @@
 
 			head_build(svg);
 		}
+
 		function move_to_right(svg, clicked_col) {
 
 			for (let i = 0; i < data_array.length; i++) {
@@ -152,11 +151,9 @@
 			let new_data = Object.keys(metadata).map((val, index) => {
 				if (index === clicked_col + 1) {
 					return metadata[Object.keys(metadata)[clicked_col]]
-				}
-				else if (index === clicked_col) {
+				} else if (index === clicked_col) {
 					return metadata[Object.keys(metadata)[clicked_col + 1]]
-				}
-				else {
+				} else {
 					return metadata[val]
 				}
 			})
@@ -173,6 +170,7 @@
 			let a = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
 			return (a < 0.5);
 		}
+
 		function create_tooltip(text, jdx, this_row_y, work_row, color) {
 
 			work_row.append("rect")
@@ -193,12 +191,16 @@
 				.attr("y", `${this_row_y - 7}`)
 				.attr("class", "data-text")
 				.attr("End", "true")
-				.attr("fill", `${colourIsLight(d3.color(color).rgb().r, d3.color(color).rgb().g, d3.color(color).rgb().b) ? 'black' : 'white'}`)
+				.attr("fill",
+					`${colourIsLight(d3.color(color).rgb().r, d3.color(color).rgb().g, d3.color(color).rgb().b) ? 'black' : 'white'}`
+					)
 		}
+
 		function destroy_tooltip(svg) {
 			svg.selectAll(".data-text").remove()
 			svg.selectAll(".back-tooltip").remove()
 		}
+
 		function generate_colors(values) {
 
 			const quantity = (values.find(val => val === "missing value") != undefined) ? values.length - 1 : values.length
@@ -211,20 +213,23 @@
 
 			return color_array
 		}
+
 		function head_build(svg) {
 
 			max_number_of_labels = get_max_labels()
 
 			// last label height is for buttons
-			let height = space_between_rows * data_array.length + space_between_rows * 2 + padding_top + max_number_of_labels * label_height + label_height
+			let height = space_between_rows * data_array.length + space_between_rows * 2 + padding_top +
+				max_number_of_labels * label_height + label_height
 
 			svg.selectAll("*").remove();
 
 			svg
 				.append("svg")
 				.attr("class", "table_viz_style")
-				.attr("width", width)
-				.attr("height", height)
+				.attr("style", "overflow:unset;max-width:unset;width:unset;height:unset")
+				.attr("width", `${width}px`)
+				.attr("height", `${height}px`)
 				.append("g")
 				.attr("class", "table")
 				.append("g")
@@ -241,7 +246,7 @@
 						metadata[val]['values'].forEach((val2, index2) => {
 							color_palette = generate_colors(metadata[val]['values'])
 							if (val2 != "missing value") {
-								
+
 								color_list[val2] = color_palette[index2]
 							}
 							metadata[val]['colors'] = color_list
@@ -256,16 +261,19 @@
 								.attr("rx", "1")
 								.attr("ry", "1")
 								.attr("width", `${cell_width - space_btw_columns}`)
-								.attr("fill", `${metadata[val]['values'][index] === "missing value" ? "black" : color_list[val2]}`)
+								.attr("fill",
+									`${metadata[val]['values'][index] === "missing value" ? "black" : color_list[val2]}`
+									)
 							label_item
 								.append("text")
 								.text(`${val2}`)
-								.attr("fill", `${val2 === "missing value" ? 'white' : (colourIsLight(d3.color(color_list[val2]).rgb().r, d3.color(color_list[val2]).rgb().g, d3.color(color_list[val2]).rgb().b) ? 'black' : 'white')}`)
+								.attr("fill",
+									`${val2 === "missing value" ? 'white' : (colourIsLight(d3.color(color_list[val2]).rgb().r, d3.color(color_list[val2]).rgb().g, d3.color(color_list[val2]).rgb().b) ? 'black' : 'white')}`
+									)
 								.attr("x", `${cell_width * index}`)
 								.attr("y", `${label_height * index2 + label_height - 2}`)
 						})
-					}
-					else {
+					} else {
 						var label_item = adding_labels
 							.append("g")
 							.attr("class", "label")
@@ -320,12 +328,11 @@
 
 				if (metadata[i]['ascend'] == 0)
 					image_construct
-						.text(sort_icon)
+					.text(sort_icon)
 				else if (metadata[i]['ascend'] == 1) {
 					image_construct
 						.text(sort_up_icon)
-				}
-				else if (metadata[i]['ascend'] == 2) {
+				} else if (metadata[i]['ascend'] == 2) {
 					image_construct
 						.text(sort_down_icon)
 				}
@@ -333,7 +340,8 @@
 				headers
 					.append("text")
 					.attr("x", `${cell_width * i}`)
-					.attr("y", `${space_between_rows + padding_top + max_number_of_labels * label_height + label_height}`)
+					.attr("y",
+						`${space_between_rows + padding_top + max_number_of_labels * label_height + label_height}`)
 					.attr("fill", "black")
 					.text(metadata[obj]['name'])
 					.attr("class", "header-item")
@@ -349,6 +357,7 @@
 			})
 			build_table(svg, max_number_of_labels)
 		}
+
 		function build_table(svg, n_of_labels) {
 
 			svg.selectAll(".rows").remove();
@@ -360,7 +369,8 @@
 						.attr("class", `row-${idx} rows`)
 
 					// last label height is for buttons
-					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top + label_height * n_of_labels + label_height
+					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top + label_height *
+						n_of_labels + label_height
 					item.forEach(
 						(i, jdx) => {
 							var work_row = svg.selectAll(`.row-${idx}`).append("g")
@@ -373,23 +383,32 @@
 								.attr("rx", "1").attr("ry", "1")
 								.on("mouseout", _ => destroy_tooltip(svg))
 
-							const { min_val, max_val, datatype, colors } = metadata[jdx]
+							const {
+								min_val,
+								max_val,
+								datatype,
+								colors
+							} = metadata[jdx]
 
 							if (datatype == 'string') {
 								common
 									.attr("width", `${cell_width - space_btw_columns}`)
 									.attr("fill", i === "missing value" ? "black" : colors[i])
-									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, i === "missing value" ? "black" : colors[i]))
+									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, i ===
+										"missing value" ? "black" : colors[i]))
 
-							}
-							else if (datatype == 'int' || datatype == 'float') {
-								const this_cell_wdth = define_cell_width(min_val, max_val, data_array[idx][jdx], cell_width - space_btw_columns);
+							} else if (datatype == 'int' || datatype == 'float') {
+								const this_cell_wdth = define_cell_width(min_val, max_val, data_array[idx][jdx],
+									cell_width - space_btw_columns);
 								const lightning_percentage = ((1 - this_cell_wdth / cell_width) * 85) + 15
 								const variable_color = `hsl(120, ${100}%, ${lightning_percentage}%)`
 								common
-									.attr("width", data_array[idx][jdx] == "missing value" ? cell_width - space_btw_columns : this_cell_wdth)
-									.attr("fill", data_array[idx][jdx] == "missing value" ? "black" : variable_color)
-									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, data_array[idx][jdx] == "missing value" ? "black" : variable_color))
+									.attr("width", data_array[idx][jdx] == "missing value" ? cell_width -
+										space_btw_columns : this_cell_wdth)
+									.attr("fill", data_array[idx][jdx] == "missing value" ? "black" :
+										variable_color)
+									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, data_array[
+										idx][jdx] == "missing value" ? "black" : variable_color))
 							}
 						}
 					)
@@ -402,6 +421,7 @@
 	}
 
 	function plotBidGraph(data, full_matrix) {
+
 
 		let dimensions = Object.keys(data)
 		let labels = [];
@@ -416,9 +436,9 @@
 		const outerRadius = 275
 
 		const entity_padding = 0.05
-		let select_a = document.getElementById('sel_a_bid_viz' + id);
-		let select_b = document.getElementById('sel_b_bid_viz' + id);
-		let swap_btn = document.getElementById("swap_btn_bid_viz" + id);
+		let select_a = document.getElementById('sel_a_bid_viz');
+		let select_b = document.getElementById('sel_b_bid_viz');
+		let swap_btn = document.getElementById("swap_btn_bid_viz");
 
 		function generate_colors(values) {
 
@@ -432,6 +452,7 @@
 
 			return color_array
 		}
+
 		function zeros(len1, len2) {
 			let arr = [];
 			for (let i = 0; i < len1; i++) {
@@ -446,6 +467,7 @@
 			}
 			return Array.from(arr);
 		}
+
 		function concat_matrix(f_mat, s_mat) {
 			let ret_mat = [];
 			for (i = 0; i < f_mat.length; i++) {
@@ -453,6 +475,7 @@
 			}
 			return Array.from(ret_mat);
 		}
+
 		function join_matrix(f_mat, s_mat) {
 			let ret_mat = f_mat;
 
@@ -462,6 +485,7 @@
 
 			return Array.from(ret_mat);
 		}
+
 		function node_mouseover(svg, d) {
 			svg.selectAll('.nodes').classed('fade_bid_viz', true)
 			svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', true)
@@ -475,16 +499,22 @@
 
 
 			let numbers = new Set();
-			let x = document.querySelectorAll(`[class^="ribbon-"]`)
-			for (let i = 0; i < x.length; i++) {
-				if (x[i].className.baseVal.indexOf(d.index.toString()) != -1) {
-					numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[1])
-					numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[2])
-				}
-			}
+			svg
+				.selectAll(".ribbons")
+				.selectAll("*")
+				.filter(val => val.source.index === d.index || val.source.subindex === d.index || val.target.index === d
+					.index || val.target.subindex === d.index)
+				._groups[0]
+				.forEach(
+					(val) => {
+						numbers.add(val.className.baseVal.split(" ")[0].split("-")[1])
+						numbers.add(val.className.baseVal.split(" ")[0].split("-")[2])
+					}
+				)
 
 			for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', true)
 		}
+
 		function node_mouseout(svg, d) {
 			svg.selectAll('.nodes').classed('fade_bid_viz', false)
 			svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', false)
@@ -506,6 +536,7 @@
 
 			for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', false)
 		}
+
 		function chord_mouseover(svg, d) {
 			svg.selectAll('.ribbons').classed('fade_bid_viz', true)
 			svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', true).moveToFront()
@@ -513,6 +544,7 @@
 			svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', true)
 			svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', true)
 		}
+
 		function chord_mouseout(svg, d) {
 			svg.selectAll('.ribbons').classed('fade_bid_viz', false)
 			svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', false)
@@ -520,12 +552,14 @@
 			svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', false)
 			svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', false)
 		}
+
 		function def_layout(matrix, entity_padding) {
 			return d3.chord()
 				.padAngle(entity_padding)
 				.sortSubgroups(d3.ascending)
 				(matrix)
 		}
+
 		function update_matrix(dim_l, dim_r) {
 			let new_matrix = []
 
@@ -547,11 +581,12 @@
 
 			return end_matrix;
 		}
+
 		function update_viz(dim_l, dim_r) {
 
-			d3.select("#bid_viz" + id).selectAll("*").remove();
+			d3.select("#bid_viz").selectAll("*").remove();
 
-			let svg = d3.select("#bid_viz" + id)
+			let svg = d3.select("#bid_viz")
 				.append("svg")
 				.attr("width", width)
 				.attr("height", height)
@@ -559,7 +594,6 @@
 				.attr("transform", `translate(${width / 2},${height / 2})`)
 
 			let res = def_layout(matrix, entity_padding)
-
 
 			//Nodes insert
 			let color_count = -1
@@ -578,37 +612,39 @@
 						if (data[dim_r]['values'][i] == "missing value") {
 							d.color = "black";
 							return "black";
-						}
-						else {
+						} else {
 							color_count += 1
 							d.color = l_dim_colors[color_count]
 							return l_dim_colors[color_count]
 						}
-					}
-					else {
+					} else {
 						if (data[dim_l]['values'][i - data[dim_r]['values'].length] == "missing value") {
 							d.color = "black"
 							return "black"
-						}
-						else {
+						} else {
 							d.color = r_dim_color
 							return r_dim_color
 						}
 					}
 
 					return d.startAngle >= 3 ? d.color = r_dim_color : d.color = l_dim_colors[d.index]
-				}
-				)
+				})
 				.style("stroke", d => d3.rgb(d.color).darker())
 				.attr("d", d3.arc().innerRadius(innerRadius).outerRadius(outerRadius))
-				.on('mouseover', d => { node_mouseover(svg, d) })
-				.on('mouseout', d => { node_mouseout(svg, d) });
+				.on('mouseover', d => {
+					node_mouseover(svg, d)
+				})
+				.on('mouseout', d => {
+					node_mouseout(svg, d)
+				});
 
 			//Text insert
 			svg.selectAll(".nodes")
 				.selectAll("g")
 				.append("text")
-				.each(d => { d.angle = (d.startAngle + d.endAngle) / 2; })
+				.each(d => {
+					d.angle = (d.startAngle + d.endAngle) / 2;
+				})
 				.attr("dy", ".35em")
 				.attr("transform", d => `
       rotate(${(d.angle * 180 / Math.PI - 90)})
@@ -636,25 +672,29 @@
 				.on('mouseover', d => chord_mouseover(svg, d))
 				.on('mouseout', d => chord_mouseout(svg, d))
 		}
+
 		function select_on_change() {
 
-			const dim_l = select_a.value
-			const dim_r = select_b.value
-			l_dim_colors = generate_colors(data[dim_r]['values'])
+			const dim_l = select_a.value;
+			const dim_r = select_b.value;
+			l_dim_colors = generate_colors(data[dim_r]['values']);
 			update_selects(dim_l, dim_r);
 			labels = data[dim_r]['values'].concat(data[dim_l]['values']);
 			matrix = update_matrix(dim_l, dim_r);
 			update_viz(dim_l, dim_r);
 		}
+
 		function btn_on_click() {
-			const dim_l = select_b.value
-			const dim_r = select_a.value
-			l_dim_colors = generate_colors(data[dim_r]['values'])
+			const dim_l = select_b.value;
+			const dim_r = select_a.value;
+			l_dim_colors = generate_colors(data[dim_r]['values']);
 			update_selects(dim_l, dim_r);
 			labels = data[dim_r]['values'].concat(data[dim_l]['values']);
+
 			matrix = update_matrix(dim_l, dim_r);
 			update_viz(dim_l, dim_r);
 		}
+
 		function update_selects(dim_l, dim_r) {
 
 			let keep_selected_a = dim_l
@@ -690,8 +730,8 @@
 		}
 
 		/*
-		* Initial code
-		*/
+		 * Initial code
+		 */
 
 		//Populate Select
 		dimensions.forEach((item, index) => {
@@ -707,7 +747,6 @@
 		select_b.addEventListener("change", select_on_change);
 		swap_btn.addEventListener("click", btn_on_click);
 		select_on_change();
-
 	}
 
 	function plotVaribleTypesChart(svg, data) {
@@ -715,7 +754,10 @@
 		var color = d3.scaleOrdinal()
 			.domain(data.map(d => d.name))
 			.range(d3.quantize(t => d3.interpolateSpectral(t * 0.8 + 0.1), data.length).reverse());
-		var margin = { left: 20, right: 20 }
+		var margin = {
+			left: 20,
+			right: 20
+		}
 		var width = 350;
 		var height = 60;
 		svg
@@ -748,25 +790,38 @@
 			.attr("y", height - barHeight)
 			.attr("fill", d => color(d.name))
 			.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name + ": " + d.number))
-			.on("mousemove", function () { return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px"); })
-			.on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
+			.on("mousemove", function () {
+				return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
+			})
+			.on("mouseout", function () {
+				return tooltip.style("visibility", "hidden");
+			});
 
 		var borderRadius = barHeight * 3 / 20
 
 		svg.append("path")
-			.attr("d", "M " + (margin.left - 0.5) + " " + (height - barHeight - 0.5) + " L " + (margin.left - 0.5) + " " + (height - barHeight + borderRadius) + " S " + (margin.left - 0.5) + " " + (height - barHeight - 0.5) + " " + (margin.left + borderRadius) + " " + (height - barHeight - 0.5) + " Z")
+			.attr("d", "M " + (margin.left - 0.5) + " " + (height - barHeight - 0.5) + " L " + (margin.left - 0.5) + " " +
+				(height - barHeight + borderRadius) + " S " + (margin.left - 0.5) + " " + (height - barHeight - 0.5) +
+				" " + (margin.left + borderRadius) + " " + (height - barHeight - 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + (margin.left - 0.5) + " " + (height + 0.5) + " L " + (margin.left - 0.5) + " " + (height - borderRadius) + " S " + (margin.left - 0.5) + " " + (height + 0.5) + " " + (margin.left + borderRadius) + " " + (height + 0.5) + " Z")
+			.attr("d", "M " + (margin.left - 0.5) + " " + (height + 0.5) + " L " + (margin.left - 0.5) + " " + (height -
+					borderRadius) + " S " + (margin.left - 0.5) + " " + (height + 0.5) + " " + (margin.left +
+				borderRadius) + " " + (height + 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + (width + margin.right + 0.5) + " " + (height - barHeight - 0.5) + " L " + (width + margin.right + 0.5) + " " + (height - barHeight + borderRadius) + " S " + (width + margin.right + 0.5) + " " + (height - barHeight - 0.5) + " " + (width + margin.right - borderRadius) + " " + (height - barHeight - 0.5) + " Z")
+			.attr("d", "M " + (width + margin.right + 0.5) + " " + (height - barHeight - 0.5) + " L " + (width + margin
+					.right + 0.5) + " " + (height - barHeight + borderRadius) + " S " + (width + margin.right + 0.5) +
+				" " + (height - barHeight - 0.5) + " " + (width + margin.right - borderRadius) + " " + (height -
+					barHeight - 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + (width + margin.right + 0.5) + " " + (height + 0.5) + " L " + (width + margin.right + 0.5) + " " + (height - borderRadius) + " S " + (width + margin.right + 0.5) + " " + (height + 0.5) + " " + (width + margin.right - borderRadius) + " " + (height + 0.5) + " Z")
+			.attr("d", "M " + (width + margin.right + 0.5) + " " + (height + 0.5) + " L " + (width + margin.right + 0.5) +
+				" " + (height - borderRadius) + " S " + (width + margin.right + 0.5) + " " + (height + 0.5) + " " + (
+					width + margin.right - borderRadius) + " " + (height + 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
 
@@ -777,10 +832,19 @@
 			.attr("x", d => (margin.left + 5 + d.start / total * width))
 			.attr("y", height - 5)
 			.attr("fill", "black")
-			.text(function (d) { if (d.number / total * width >= 50) { return parseFloat((d.number / total * 100).toFixed(1)) + "%"; } return ""; })
+			.text(function (d) {
+				if (d.number / total * width >= 50) {
+					return parseFloat((d.number / total * 100).toFixed(1)) + "%";
+				}
+				return "";
+			})
 			.on("mouseover", d => tooltip.style("visibility", "visible").text(d.name + ": " + d.number))
-			.on("mousemove", function () { return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px"); })
-			.on("mouseout", function () { return tooltip.style("visibility", "hidden"); });
+			.on("mousemove", function () {
+				return tooltip.style("top", (event.pageY - 10) + "px").style("left", (event.pageX + 10) + "px");
+			})
+			.on("mouseout", function () {
+				return tooltip.style("visibility", "hidden");
+			});
 
 		var groups = [];
 		var aux = [];
@@ -803,12 +867,14 @@
 			var labelLength = 45;
 			var group = [];
 			var groupLength = 0;
-			var center = 0, start = 0;
+			var center = 0,
+				start = 0;
 			var labels = [];
 			for (var i = 0; i < groups.length; i++) {
 				group = groups[i];
 				groupLength = labelLength * group.length;
-				center = margin.left + (group[0].start / total * width + (group[group.length - 1].start / total * width + (group[group.length - 1].number / total * width))) / 2;
+				center = margin.left + (group[0].start / total * width + (group[group.length - 1].start / total * width + (
+					group[group.length - 1].number / total * width))) / 2;
 				start = center - groupLength / 2;
 				for (var j = 0; j < group.length; j++) {
 					group[j].labelX = start + j * labelLength;
@@ -865,7 +931,8 @@
 				.selectAll("path")
 				.data(labels)
 				.join("path")
-				.attr("d", d => ("M " + (margin.left + d.start / total * width + (d.number / total * width) / 2) + " " + (height - barHeight / 2) + "L " + (d.labelX + labelLength / 2) + " " + (17)))
+				.attr("d", d => ("M " + (margin.left + d.start / total * width + (d.number / total * width) / 2) + " " + (
+					height - barHeight / 2) + "L " + (d.labelX + labelLength / 2) + " " + (17)))
 				.attr("stroke", "black");
 		}
 	}
@@ -878,7 +945,12 @@
 		svg.attr("width", width)
 			.attr("height", height);
 		var bWidth = cWidth / data.length;
-		var yMax = data.reduce(function (a, b) { if (a.length > b.length) { return a; } return b; }).length;
+		var yMax = data.reduce(function (a, b) {
+			if (a.length > b.length) {
+				return a;
+			}
+			return b;
+		}).length;
 
 		svg.append("g")
 			.selectAll("rect")
@@ -893,11 +965,14 @@
 		var x = d3.scaleLinear().range([lWidth, width - 1]);
 		var y = d3.scaleLinear().range([cHeight, 0]);
 		x.domain([data[0].x0, data[data.length - 1].x1]);
-		y.domain([0, d3.max(data, function (d) { return d.length; })]);
+		y.domain([0, d3.max(data, function (d) {
+			return d.length;
+		})]);
 
 		var xAxis = d3.axisBottom(x).ticks(6);
 		var xTicks = x.ticks();
-		if (xTicks[0] < -1000000 || xTicks[xTicks.length - 1] >= 1000000 || xTicks[0] + 0.001 > xTicks[xTicks.length - 1]) {
+		if (xTicks[0] < -1000000 || xTicks[xTicks.length - 1] >= 1000000 || xTicks[0] + 0.001 > xTicks[xTicks.length -
+			1]) {
 			xAxis.tickFormat(d3.format(".1e"));
 		}
 		svg.append("g")
@@ -927,7 +1002,11 @@
 			.style("text-anchor", "middle")
 			.style("font-size", "12px")
 			.text("Frequency");
-		svg.selectAll(".tick").filter(function (d) { return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr("transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(/[0-9]+/g)[1] < 5); }).attr("transform", "translate(-1000,-1000)");
+		svg.selectAll(".tick").filter(function (d) {
+			return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr(
+					"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
+				/[0-9]+/g)[1] < 5);
+		}).attr("transform", "translate(-1000,-1000)");
 	}
 
 	function plotHistogramDate(svg, data, width, height) {
@@ -938,7 +1017,12 @@
 		svg.attr("width", width)
 			.attr("height", height);
 		var bWidth = cWidth / data.length;
-		var yMax = data.reduce(function (a, b) { if (a.length > b.length) { return a; } return b; }).length;
+		var yMax = data.reduce(function (a, b) {
+			if (a.length > b.length) {
+				return a;
+			}
+			return b;
+		}).length;
 
 		svg.append("g")
 			.selectAll("rect")
@@ -953,7 +1037,9 @@
 		var x = d3.scaleTime().range([lWidth, width - 1]);
 		var y = d3.scaleLinear().range([cHeight, 0]);
 		x.domain([data[0].x0, data[data.length - 1].x1]);
-		y.domain([0, d3.max(data, function (d) { return d.length; })]);
+		y.domain([0, d3.max(data, function (d) {
+			return d.length;
+		})]);
 
 		svg.append("g")
 			.attr("transform", "translate(0," + cHeight + ")")
@@ -982,7 +1068,11 @@
 			.style("text-anchor", "middle")
 			.style("font-size", "12px")
 			.text("Frequency");
-		svg.selectAll(".tick").filter(function (d) { return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr("transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(/[0-9]+/g)[1] < 5); }).attr("transform", "translate(-1000,-1000)");
+		svg.selectAll(".tick").filter(function (d) {
+			return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr(
+					"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
+				/[0-9]+/g)[1] < 5);
+		}).attr("transform", "translate(-1000,-1000)");
 	}
 
 	function plotMissingValuesBar(svg, missing_str, width, height) {
@@ -1026,13 +1116,17 @@
 		svg.append("text")
 			.text(missing + "%")
 			.attr("font-size", fontSize)
-			.attr("x", function () { return width - 5 - this.getComputedTextLength(); })
+			.attr("x", function () {
+				return width - 5 - this.getComputedTextLength();
+			})
 			.attr("y", bHeight - 5)
 			.attr("fill", "black");
 		svg.append("text")
 			.text("Missing")
 			.attr("font-size", fontSize)
-			.attr("x", function () { return width - 5 - this.getComputedTextLength(); })
+			.attr("x", function () {
+				return width - 5 - this.getComputedTextLength();
+			})
 			.attr("y", height - 5)
 			.attr("fill", "rgb(209, 60, 75)");
 
@@ -1041,13 +1135,16 @@
 			.attr("d", "M 0 0 L 0 " + borderRadius + " S 0 0 " + borderRadius + " 0 Z")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M 0 " + bHeight + " L 0 " + (bHeight - borderRadius) + " S 0 " + bHeight + " " + borderRadius + " " + bHeight + " Z")
+			.attr("d", "M 0 " + bHeight + " L 0 " + (bHeight - borderRadius) + " S 0 " + bHeight + " " + borderRadius +
+				" " + bHeight + " Z")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + width + " 0 L " + width + " " + borderRadius + " S " + width + " 0 " + (width - borderRadius) + " 0 Z")
+			.attr("d", "M " + width + " 0 L " + width + " " + borderRadius + " S " + width + " 0 " + (width -
+				borderRadius) + " 0 Z")
 			.attr("fill", "white");
 		svg.append("path")
-			.attr("d", "M " + width + " " + bHeight + " L " + width + " " + (bHeight - borderRadius) + " S " + width + " " + bHeight + " " + (width - borderRadius) + " " + bHeight + " Z")
+			.attr("d", "M " + width + " " + bHeight + " L " + width + " " + (bHeight - borderRadius) + " S " + width +
+				" " + bHeight + " " + (width - borderRadius) + " " + bHeight + " Z")
 			.attr("fill", "white");
 	}
 
