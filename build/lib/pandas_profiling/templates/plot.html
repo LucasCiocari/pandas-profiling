@@ -649,6 +649,7 @@
 		function btn_on_click() {
 			const dim_l = select_b.value
 			const dim_r = select_a.value
+			l_dim_colors = generate_colors(data[dim_r]['values'])
 			update_selects(dim_l, dim_r);
 			labels = data[dim_r]['values'].concat(data[dim_l]['values']);
 			matrix = update_matrix(dim_l, dim_r);
