@@ -12,9 +12,11 @@
 		let label_height = 20
 		let label_spacing = 2
 
-		const sort_up_icon = "\uf0de"
-		const sort_down_icon = "\uf0dd"
-		const sort_icon = "\uf0dc"
+		const sort_up_icon = "\uf161"
+		const sort_down_icon = "\uf160"
+		const sort_icon = "\uf0b0"
+		const move_left_icon = "\uf0d9"
+		const move_right_icon = "\uf0da"
 
 		function sort_numerical(col_n, asc) {
 			if (asc) {
@@ -233,12 +235,14 @@
 				.append("g")
 				.attr("class", "table")
 				.append("g")
-				.attr("class", 'header')
+				.attr("class", 'labels')
+
+			let labels = svg.selectAll(".labels").attr("font-size", "100%")
 
 
 			Object.keys(metadata).forEach(
 				(val, index) => {
-					let adding_labels = svg.selectAll(".header").append("g").attr("class", `labels-${index}`)
+					let adding_labels = labels.append("g").attr("class", `labels-${index}`)
 
 					if (metadata[val]['datatype'] == 'string') {
 						let color_list = {}
@@ -294,14 +298,17 @@
 				}
 			)
 
-			Object.keys(metadata).forEach((obj, i) => {
-				let headers = svg.selectAll(".header").append("g")
+			let header = svg.selectAll(".table").append("g")
+				.attr("class", 'header')
 
-				buttons = headers.append("g")
+			Object.keys(metadata).forEach((obj, i) => {
+				let headers = header.append("g").attr("class", `header-${i}`)
+
+				buttons = headers.append("g").attr("class", `header-${i}-buttons`)
 
 				if (i != Object.keys(metadata).length - 1) {
-					buttons.append("text").attr("font-family", "FontAwesome").text("\uf061")
-						.attr("x", `${cell_width * i + cell_width * 4 / 7}`)
+					buttons.append("text").attr("font-family", "FontAwesome").text(move_right_icon)
+						.attr("x", `${cell_width * i + cell_width * 3/4 + space_btw_columns}`)
 						.attr("y", `${16 + max_number_of_labels * label_height}`)
 						.attr("class", `right_arrow-${i} btn_table_viz`)
 						.attr("style", "cursor:pointer")
@@ -309,8 +316,8 @@
 				}
 
 				if (i != 0) {
-					buttons.append("text").attr("font-family", "FontAwesome").text("\uf060")
-						.attr("x", `${cell_width * i + cell_width * 2 / 7}`)
+					buttons.append("text").attr("font-family", "FontAwesome").text(move_left_icon)
+						.attr("x", `${cell_width * i + cell_width * 0/4}`)
 						.attr("y", `${max_number_of_labels * label_height + 16}`)
 						.attr("class", `left_arrow-${i} btn_table_viz`)
 						.attr("style", "cursor:pointer")
@@ -319,7 +326,7 @@
 
 				let image_construct = buttons.append("text").attr("height", "15")
 					.attr("width", "15")
-					.attr("x", `${cell_width * i + cell_width * 3 / 7}`)
+					.attr("x", `${cell_width * i + cell_width * 1.5/4}`)
 					.attr("y", `${16 + max_number_of_labels * label_height}`)
 					.attr("class", `ascending-${i} sorted_button btn_table_viz`)
 					.attr("style", "cursor:pointer")
@@ -361,21 +368,21 @@
 		function build_table(svg, n_of_labels) {
 
 			svg.selectAll(".rows").remove();
-
+			let rows = svg.selectAll(".table").append("g").attr("class", "rows")
 			data_array.forEach(
 				(item, idx) => {
-					svg.selectAll(".table")
-						.append("g")
-						.attr("class", `row-${idx} rows`)
+
 
 					// last label height is for buttons
 					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top + label_height *
 						n_of_labels + label_height
 					item.forEach(
 						(i, jdx) => {
-							var work_row = svg.selectAll(`.row-${idx}`).append("g")
+							let work_row = rows
+								.append("g")
+								.attr("class", `row-${idx}`)
 
-							var common = work_row
+							let common = work_row
 								.append("rect")
 								.attr("x", `${jdx * cell_width}`)
 								.attr("y", `${this_row_y}`)
@@ -642,7 +649,7 @@
 						}
 					}
 				})
-				.style("stroke", d => d.color == "white" ? "black" :d3.rgb(d.color).darker() )
+				.style("stroke", d => d.color == "white" ? "black" : d3.rgb(d.color).darker())
 				.attr("d", d3.arc().innerRadius(innerRadius).outerRadius(outerRadius))
 				.on('mouseover', d => {
 					node_mouseover(svg, d)
