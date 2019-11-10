@@ -227,8 +227,9 @@
 			svg
 				.append("svg")
 				.attr("class", "table_viz_style")
-				.style("width", `${width}px`)
-				.style("height", `${height}px`)
+				.attr("style", "overflow:unset;max-width:unset;width:unset;height:unset")
+				.attr("width", `${width}px`)
+				.attr("height", `${height}px`)
 				.append("g")
 				.attr("class", "table")
 				.append("g")

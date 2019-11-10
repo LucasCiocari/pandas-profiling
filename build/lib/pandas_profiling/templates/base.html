@@ -339,10 +339,6 @@
     </div>
     <script>
         //para adicionar contador no id (ids serão únicos para + de 1 report)
-        d3.select("#sel_a_bid_viz").attr("id", "sel_a_bid_viz" + id);
-        d3.select("#swap_btn_bid_viz").attr("id", "swap_btn_bid_viz" + id);
-        d3.select("#sel_b_bid_viz").attr("id", "sel_b_bid_viz" + id);
-        d3.select("#bid_viz").attr("id", "bid_viz" + id);;
         d3.select("#overviewLink").attr("href", "#overview" + id).attr("id", "overviewLink" + id);
         d3.select("#variablesLink").attr("href", "#variables" + id).attr("id", "variablesLink" + id);
         {% if values['missing'] %}
