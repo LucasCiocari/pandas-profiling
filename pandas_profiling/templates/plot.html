@@ -193,7 +193,7 @@
 				.attr("End", "true")
 				.attr("fill",
 					`${colourIsLight(d3.color(color).rgb().r, d3.color(color).rgb().g, d3.color(color).rgb().b) ? 'black' : 'white'}`
-					)
+				)
 		}
 
 		function destroy_tooltip(svg) {
@@ -262,13 +262,13 @@
 								.attr("width", `${cell_width - space_btw_columns}`)
 								.attr("fill",
 									`${metadata[val]['values'][index] === "missing value" ? "black" : color_list[val2]}`
-									)
+								)
 							label_item
 								.append("text")
 								.text(`${val2}`)
 								.attr("fill",
 									`${val2 === "missing value" ? 'white' : (colourIsLight(d3.color(color_list[val2]).rgb().r, d3.color(color_list[val2]).rgb().g, d3.color(color_list[val2]).rgb().b) ? 'black' : 'white')}`
-									)
+								)
 								.attr("x", `${cell_width * index}`)
 								.attr("y", `${label_height * index2 + label_height - 2}`)
 						})
@@ -419,14 +419,12 @@
 
 	}
 
-	function plotBidGraph(data, full_matrix) {
-
-
+	function plotBidGraph(data, full_matrix, sel_a, sel_b, btn_swap) {
 		let dimensions = Object.keys(data)
 		let labels = [];
 		let matrix = [];
 
-		const r_dim_color = "#f9d5bb"
+		const r_dim_color = "#black"
 		let l_dim_colors = []
 		const width = 650
 		const height = 650
@@ -435,9 +433,10 @@
 		const outerRadius = 275
 
 		const entity_padding = 0.05
-		let select_a = document.getElementById('sel_a_bid_viz'+id);
-		let select_b = document.getElementById('sel_b_bid_viz'+id);
-		let swap_btn = document.getElementById("swap_btn_bid_viz"+id);
+		let select_a = sel_a
+		let select_b = sel_b
+		let swap_btn = btn_swap
+		let hold_shown_values = false
 
 		function generate_colors(values) {
 
@@ -486,70 +485,85 @@
 		}
 
 		function node_mouseover(svg, d) {
-			svg.selectAll('.nodes').classed('fade_bid_viz', true)
-			svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', true)
-			svg.selectAll('.ribbons').classed('fade_bid_viz', true)
+			if (!hold_shown_values) {
+				svg.selectAll('.nodes').classed('fade_bid_viz', true)
+				svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', true)
+				svg.selectAll('.ribbons').classed('fade_bid_viz', true)
 
 
-			for (let i = 0; i < matrix.length; i++) {
-				svg.selectAll(`.ribbon-${d.index}-${i}`).classed('highlight_bid_viz', true).moveToFront()
-				svg.selectAll(`.ribbon-${i}-${d.index}`).classed('highlight_bid_viz', true).moveToFront()
+				for (let i = 0; i < matrix.length; i++) {
+					svg.selectAll(`.ribbon-${d.index}-${i}`).classed('highlight_bid_viz', true).moveToFront()
+					svg.selectAll(`.ribbon-${i}-${d.index}`).classed('highlight_bid_viz', true).moveToFront()
+				}
+
+
+				let numbers = new Set();
+				svg
+					.selectAll(".ribbons")
+					.selectAll("*")
+					.filter(val => val.source.index === d.index || val.source.subindex === d.index || val.target.index ===
+						d.index || val.target.subindex === d.index)
+					._groups[0]
+					.forEach(
+						(val) => {
+							numbers.add(val.className.baseVal.split(" ")[0].split("-")[1])
+							numbers.add(val.className.baseVal.split(" ")[0].split("-")[2])
+						}
+					)
+
+				for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', true)
 			}
-
-
-			let numbers = new Set();
-			svg
-				.selectAll(".ribbons")
-				.selectAll("*")
-				.filter(val => val.source.index === d.index || val.source.subindex === d.index || val.target.index === d
-					.index || val.target.subindex === d.index)
-				._groups[0]
-				.forEach(
-					(val) => {
-						numbers.add(val.className.baseVal.split(" ")[0].split("-")[1])
-						numbers.add(val.className.baseVal.split(" ")[0].split("-")[2])
-					}
-				)
-
-			for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', true)
 		}
 
 		function node_mouseout(svg, d) {
-			svg.selectAll('.nodes').classed('fade_bid_viz', false)
-			svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', false)
-			svg.selectAll('.ribbons').classed('fade_bid_viz', false)
-			svg.selectAll(`.ribbon-`).classed('highlight_bid_viz', false)
-			for (let i = 0; i < matrix.length; i++) {
-				svg.selectAll(`.ribbon-${d.index}-${i}`).classed('highlight_bid_viz', false)
-				svg.selectAll(`.ribbon-${i}-${d.index}`).classed('highlight_bid_viz', false)
-			}
-
-			let numbers = new Set();
-			let x = document.querySelectorAll(`[class^="ribbon-"]`)
-			for (let i = 0; i < x.length; i++) {
-				if (x[i].className.baseVal.indexOf(d.index.toString()) != -1) {
-					numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[1])
-					numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[2])
+			if (!hold_shown_values) {
+				svg.selectAll('.nodes').classed('fade_bid_viz', false)
+				svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', false)
+				svg.selectAll('.ribbons').classed('fade_bid_viz', false)
+				svg.selectAll(`.ribbon-`).classed('highlight_bid_viz', false)
+				for (let i = 0; i < matrix.length; i++) {
+					svg.selectAll(`.ribbon-${d.index}-${i}`).classed('highlight_bid_viz', false)
+					svg.selectAll(`.ribbon-${i}-${d.index}`).classed('highlight_bid_viz', false)
 				}
-			}
 
-			for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', false)
+				let numbers = new Set();
+				let x = document.querySelectorAll(`[class^="ribbon-"]`)
+				for (let i = 0; i < x.length; i++) {
+					if (x[i].className.baseVal.indexOf(d.index.toString()) != -1) {
+						numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[1])
+						numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[2])
+					}
+				}
+
+				for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', false)
+			}
 		}
 
 		function chord_mouseover(svg, d) {
-			svg.selectAll('.ribbons').classed('fade_bid_viz', true)
-			svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', true).moveToFront()
-			svg.selectAll('.nodes').classed('fade_bid_viz', true)
-			svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', true)
-			svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', true)
+			if (!hold_shown_values) {
+				svg.selectAll('.ribbons').classed('fade_bid_viz', true)
+				svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', true)
+					.moveToFront()
+				svg.selectAll('.nodes').classed('fade_bid_viz', true)
+				svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', true)
+				svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', true)
+			}
 		}
 
 		function chord_mouseout(svg, d) {
-			svg.selectAll('.ribbons').classed('fade_bid_viz', false)
-			svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', false)
-			svg.selectAll('.nodes').classed('fade_bid_viz', false)
-			svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', false)
-			svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', false)
+			if (!hold_shown_values) {
+				svg.selectAll('.ribbons').classed('fade_bid_viz', false)
+				svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', false)
+				svg.selectAll('.nodes').classed('fade_bid_viz', false)
+				svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', false)
+				svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', false)
+			}
+		}
+
+		function all_on_click() {
+			console.log(hold_shown_values);
+			hold_shown_values = hold_shown_values ? false : true
+			console.log(hold_shown_values);
 		}
 
 		function def_layout(matrix, entity_padding) {
@@ -583,9 +597,9 @@
 
 		function update_viz(dim_l, dim_r) {
 
-			d3.select("#bid_viz"+id).selectAll("*").remove();
+			d3.select("#bid_viz" + id).selectAll("*").remove();
 
-			let svg = d3.select("#bid_viz"+id)
+			let svg = d3.select("#bid_viz" + id)
 				.append("svg")
 				.attr("width", width)
 				.attr("height", height)
@@ -609,8 +623,8 @@
 				.style("fill", (d, i) => {
 					if (i < data[dim_r]['values'].length) {
 						if (data[dim_r]['values'][i] == "missing value") {
-							d.color = "black";
-							return "black";
+							d.color = "white";
+							return "white";
 						} else {
 							color_count += 1
 							d.color = l_dim_colors[color_count]
@@ -618,25 +632,23 @@
 						}
 					} else {
 						if (data[dim_l]['values'][i - data[dim_r]['values'].length] == "missing value") {
-							d.color = "black"
-							return "black"
+							d.color = "white"
+							return "white"
 						} else {
 							d.color = r_dim_color
 							return r_dim_color
 						}
 					}
-
-					return d.startAngle >= 3 ? d.color = r_dim_color : d.color = l_dim_colors[d.index]
 				})
-				.style("stroke", d => d3.rgb(d.color).darker())
+				.style("stroke", d => d.color == "white" ? "black" :d3.rgb(d.color).darker() )
 				.attr("d", d3.arc().innerRadius(innerRadius).outerRadius(outerRadius))
 				.on('mouseover', d => {
 					node_mouseover(svg, d)
 				})
 				.on('mouseout', d => {
 					node_mouseout(svg, d)
-				});
-
+				})
+				.on("click", d => all_on_click())
 			//Text insert
 			svg.selectAll(".nodes")
 				.selectAll("g")
@@ -664,12 +676,16 @@
 				.enter()
 				.append("path")
 				.attr("d", d3.ribbon().radius(innerRadius))
-				.style("fill", d => d.color = svg.select(`.node-${d.source.index}`)._groups[0][0].firstChild.style.fill)
-				.style("stroke", d => d3.rgb(d.color).darker())
+				.style("fill", d => {
+					d.color = svg.select(`.node-${d.source.index}`)._groups[0][0].firstChild.style.fill
+					return d.color
+				})
+				.style("stroke", d => d.color == "white" ? "black" : d3.rgb(d.color).darker())
 				.attr("class", d => `ribbon-${d.source.index}-${d.target.index}`)
 				.style("opacity", ".80")
 				.on('mouseover', d => chord_mouseover(svg, d))
 				.on('mouseout', d => chord_mouseout(svg, d))
+				.on("click", d => all_on_click())
 		}
 
 		function select_on_change() {
@@ -806,7 +822,7 @@
 			.attr("fill", "white");
 		svg.append("path")
 			.attr("d", "M " + (margin.left - 0.5) + " " + (height + 0.5) + " L " + (margin.left - 0.5) + " " + (height -
-					borderRadius) + " S " + (margin.left - 0.5) + " " + (height + 0.5) + " " + (margin.left +
+				borderRadius) + " S " + (margin.left - 0.5) + " " + (height + 0.5) + " " + (margin.left +
 				borderRadius) + " " + (height + 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
@@ -971,7 +987,7 @@
 		var xAxis = d3.axisBottom(x).ticks(6);
 		var xTicks = x.ticks();
 		if (xTicks[0] < -1000000 || xTicks[xTicks.length - 1] >= 1000000 || xTicks[0] + 0.001 > xTicks[xTicks.length -
-			1]) {
+				1]) {
 			xAxis.tickFormat(d3.format(".1e"));
 		}
 		svg.append("g")
@@ -1003,7 +1019,7 @@
 			.text("Frequency");
 		svg.selectAll(".tick").filter(function (d) {
 			return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr(
-					"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
+				"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
 				/[0-9]+/g)[1] < 5);
 		}).attr("transform", "translate(-1000,-1000)");
 	}
@@ -1069,7 +1085,7 @@
 			.text("Frequency");
 		svg.selectAll(".tick").filter(function (d) {
 			return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr(
-					"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
+				"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
 				/[0-9]+/g)[1] < 5);
 		}).attr("transform", "translate(-1000,-1000)");
 	}

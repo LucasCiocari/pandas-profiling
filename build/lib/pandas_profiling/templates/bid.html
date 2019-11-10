@@ -13,5 +13,10 @@
 <script>
     var data = {{keys}}
     var full_matrix = {{data_array}}
-    plotBidGraph(data,full_matrix)
+
+    plotBidGraph(data,full_matrix, 
+                 document.getElementById('sel_a_bid_viz'+id), 
+                 document.getElementById('sel_b_bid_viz'+id), 
+                 document.getElementById('swap_btn_bid_viz'+id)
+                )          
 </script>
