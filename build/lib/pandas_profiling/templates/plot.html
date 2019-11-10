@@ -427,8 +427,8 @@
 
 		const r_dim_color = "#black"
 		let l_dim_colors = []
-		const width = 650
-		const height = 650
+		const width = 800
+		const height = 800
 
 		const innerRadius = 260
 		const outerRadius = 275
@@ -598,12 +598,13 @@
 
 		function update_viz(dim_l, dim_r) {
 
-			d3.select("#bid_viz").selectAll("*").remove();
+			d3.select("#bid_viz" + id).selectAll("*").remove();
 
-			let svg = d3.select("#bid_viz")
+			let svg = d3.select("#bid_viz" + id)
 				.append("svg")
 				.attr("width", width)
 				.attr("height", height)
+				.attr("viewbox", `0 0 600 600`)
 				.append("g")
 				.attr("transform", `translate(${width / 2},${height / 2})`)
 
