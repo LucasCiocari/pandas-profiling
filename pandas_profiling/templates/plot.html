@@ -5,7 +5,7 @@
 		let cell_width = 90
 		let cell_height = 3
 		let space_btw_columns = 5
-		let space_between_rows = cell_height + 2
+		let space_between_rows = cell_height + 1
 		let padding_top = 10
 		let width = cell_width * data_array[0].length
 		let min_int_bar_size = 2
@@ -396,26 +396,26 @@
 								datatype,
 								colors
 							} = metadata[jdx]
-
+							const missing_val_color = '#838584'
 							if (datatype == 'string') {
 								common
 									.attr("width", `${cell_width - space_btw_columns}`)
-									.attr("fill", i === "missing value" ? "black" : colors[i])
+									.attr("fill", i === "missing value" ? missing_val_color : colors[i])
 									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, i ===
-										"missing value" ? "black" : colors[i]))
+										"missing value" ? missing_val_color : colors[i]))
 
 							} else if (datatype == 'int' || datatype == 'float') {
 								const this_cell_wdth = define_cell_width(min_val, max_val, data_array[idx][jdx],
 									cell_width - space_btw_columns);
-								const lightning_percentage = ((1 - this_cell_wdth / cell_width) * 85) + 15
-								const variable_color = `hsl(120, ${100}%, ${lightning_percentage}%)`
+								const lightning_percentage = 100 - (((this_cell_wdth / cell_width) * 75)) - 10
+								const variable_color = `hsl(203, ${64}%, ${lightning_percentage}%)`
 								common
 									.attr("width", data_array[idx][jdx] == "missing value" ? cell_width -
 										space_btw_columns : this_cell_wdth)
-									.attr("fill", data_array[idx][jdx] == "missing value" ? "black" :
+									.attr("fill", data_array[idx][jdx] == "missing value" ? missing_val_color :
 										variable_color)
 									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, data_array[
-										idx][jdx] == "missing value" ? "black" : variable_color))
+										idx][jdx] == "missing value" ? missing_val_color : variable_color))
 							}
 						}
 					)
