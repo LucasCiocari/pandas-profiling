@@ -1,5 +1,5 @@
 <script>
-	function plotTableGraph(metadata, data_array, svg) {
+	function plotTableGraph(metadata, data_array, svg, label_svg) {
 		let color_palette = []
 
 		let cell_width = 90
@@ -17,6 +17,7 @@
 		const sort_icon = "\uf0b0"
 		const move_left_icon = "\uf0d9"
 		const move_right_icon = "\uf0da"
+		const missing_val_color = 'black'
 
 		function sort_numerical(col_n, asc) {
 			if (asc) {
@@ -164,13 +165,16 @@
 			head_build(svg);
 		}
 
-		function colourIsLight(r, g, b) {
+		function colourIsLight(color) {
 
+			const r = d3.color(color).rgb().r
+			const g = d3.color(color).rgb().g
+			const b = d3.color(color).rgb().b
 			// Counting the perceptive luminance
 			// human eye favors green color... 
 			// See: http://stackoverflow.com/a/1855903/186965
 			let a = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-			return (a < 0.5);
+			return (a < 0.5) ? 'black' : 'white';
 		}
 
 		function create_tooltip(text, jdx, this_row_y, work_row, color) {
@@ -194,7 +198,7 @@
 				.attr("class", "data-text")
 				.attr("End", "true")
 				.attr("fill",
-					`${colourIsLight(d3.color(color).rgb().r, d3.color(color).rgb().g, d3.color(color).rgb().b) ? 'black' : 'white'}`
+					`${colourIsLight(color)}`
 				)
 		}
 
@@ -216,28 +220,21 @@
 			return color_array
 		}
 
-		function head_build(svg) {
+		function build_labels(label_svg, max_number_of_labels) {
+			label_svg.selectAll("*").remove()
 
-			max_number_of_labels = get_max_labels()
+			let height = max_number_of_labels * label_height
 
-			// last label height is for buttons
-			let height = space_between_rows * data_array.length + space_between_rows * 2 + padding_top +
-				max_number_of_labels * label_height + label_height
-
-			svg.selectAll("*").remove();
-
-			svg
+			label_svg
 				.append("svg")
 				.attr("class", "table_viz_style")
 				.attr("style", "overflow:unset;max-width:unset;width:unset;height:unset")
 				.attr("width", `${width}px`)
 				.attr("height", `${height}px`)
 				.append("g")
-				.attr("class", "table")
-				.append("g")
 				.attr("class", 'labels')
 
-			let labels = svg.selectAll(".labels").attr("font-size", "100%")
+			let labels = label_svg.selectAll(".labels").attr("font-size", "75%")
 
 
 			Object.keys(metadata).forEach(
@@ -266,13 +263,13 @@
 								.attr("ry", "1")
 								.attr("width", `${cell_width - space_btw_columns}`)
 								.attr("fill",
-									`${metadata[val]['values'][index] === "missing value" ? "black" : color_list[val2]}`
+									`${val2 === "missing value" ? missing_val_color : color_list[val2]}`
 								)
 							label_item
 								.append("text")
 								.text(`${val2}`)
 								.attr("fill",
-									`${val2 === "missing value" ? 'white' : (colourIsLight(d3.color(color_list[val2]).rgb().r, d3.color(color_list[val2]).rgb().g, d3.color(color_list[val2]).rgb().b) ? 'black' : 'white')}`
+									`${val2 === "missing value" ? colourIsLight(missing_val_color) : colourIsLight(color_list[val2])}`
 								)
 								.attr("x", `${cell_width * index}`)
 								.attr("y", `${label_height * index2 + label_height - 2}`)
@@ -297,6 +294,29 @@
 
 				}
 			)
+		}
+
+		function head_build(svg) {
+
+			max_number_of_labels = get_max_labels()
+
+			// last label height is for buttons
+			let height = space_between_rows * data_array.length + space_between_rows * 2 + padding_top +
+				label_height + label_height
+
+			svg.selectAll("*").remove();
+
+			svg
+				.append("svg")
+				.attr("class", "table_viz_style")
+				.attr("style", "overflow:unset;max-width:unset;width:unset;height:unset")
+				.attr("width", `${width}px`)
+				.attr("height", `${height}px`)
+				.append("g")
+				.attr("class", "table")
+				.append("g")
+
+				build_labels(label_svg, max_number_of_labels)
 
 			let header = svg.selectAll(".table").append("g")
 				.attr("class", 'header')
@@ -309,7 +329,7 @@
 				if (i != Object.keys(metadata).length - 1) {
 					buttons.append("text").attr("font-family", "FontAwesome").text(move_right_icon)
 						.attr("x", `${cell_width * i + cell_width * 3/4 + space_btw_columns}`)
-						.attr("y", `${16 + max_number_of_labels * label_height}`)
+						.attr("y", `${16}`)
 						.attr("class", `right_arrow-${i} btn_table_viz`)
 						.attr("style", "cursor:pointer")
 						.on("click", _ => move_to_right(svg, i))
@@ -318,7 +338,7 @@
 				if (i != 0) {
 					buttons.append("text").attr("font-family", "FontAwesome").text(move_left_icon)
 						.attr("x", `${cell_width * i + cell_width * 0/4}`)
-						.attr("y", `${max_number_of_labels * label_height + 16}`)
+						.attr("y", `${16}`)
 						.attr("class", `left_arrow-${i} btn_table_viz`)
 						.attr("style", "cursor:pointer")
 						.on("click", _ => move_to_left(svg, i))
@@ -327,7 +347,7 @@
 				let image_construct = buttons.append("text").attr("height", "15")
 					.attr("width", "15")
 					.attr("x", `${cell_width * i + cell_width * 1.5/4}`)
-					.attr("y", `${16 + max_number_of_labels * label_height}`)
+					.attr("y", `${16}`)
 					.attr("class", `ascending-${i} sorted_button btn_table_viz`)
 					.attr("style", "cursor:pointer")
 					.on("click", _ => column_name_click(svg, i, max_number_of_labels))
@@ -348,7 +368,7 @@
 					.append("text")
 					.attr("x", `${cell_width * i}`)
 					.attr("y",
-						`${space_between_rows + padding_top + max_number_of_labels * label_height + label_height}`)
+						`${space_between_rows + padding_top  + label_height}`)
 					.attr("fill", "black")
 					.text(metadata[obj]['name'])
 					.attr("class", "header-item")
@@ -374,8 +394,7 @@
 
 
 					// last label height is for buttons
-					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top + label_height *
-						n_of_labels + label_height
+					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top + n_of_labels + label_height
 					item.forEach(
 						(i, jdx) => {
 							let work_row = rows
@@ -396,7 +415,7 @@
 								datatype,
 								colors
 							} = metadata[jdx]
-							const missing_val_color = '#838584'
+
 							if (datatype == 'string') {
 								common
 									.attr("width", `${cell_width - space_btw_columns}`)
@@ -407,7 +426,7 @@
 							} else if (datatype == 'int' || datatype == 'float') {
 								const this_cell_wdth = define_cell_width(min_val, max_val, data_array[idx][jdx],
 									cell_width - space_btw_columns);
-								const lightning_percentage = 100 - (((this_cell_wdth / cell_width) * 75)) - 10
+								const lightning_percentage = 100 - (((this_cell_wdth / cell_width) * 60)) - 10
 								const variable_color = `hsl(203, ${64}%, ${lightning_percentage}%)`
 								common
 									.attr("width", data_array[idx][jdx] == "missing value" ? cell_width -

@@ -1,9 +1,19 @@
- 
-    <div id="table_viz" style="overflow-x: scroll;"></div>
+<p>
+    <a class="btn btn-primary" data-toggle="collapse" href="#collapsetable" role="button" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none;">
+      Show labels
+    </a>
+  </p>
+  <div class="collapse" id="collapsetable">
+    <div class="card card-body">
+        <div id="table_viz_labels" style="overflow-x: scroll;"></div>
+    </div>
+  </div>
+
+<div id="table_viz" style="overflow-x: scroll;"></div>
 
 <script>
     var meta_data_table_viz = {{metadata_table_viz}}
     var data_array_table_viz = {{dataarray_table_viz}} 
-    plotTableGraph(meta_data_table_viz, data_array_table_viz, d3.select("#table_viz"))
+    plotTableGraph(meta_data_table_viz, data_array_table_viz, d3.select("#table_viz"), d3.select("#table_viz_labels"))
 
 </script>
