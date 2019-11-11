@@ -302,7 +302,7 @@
 
 			// last label height is for buttons
 			let height = space_between_rows * data_array.length + space_between_rows * 2 + padding_top +
-				label_height + label_height
+				label_height
 
 			svg.selectAll("*").remove();
 
@@ -324,7 +324,7 @@
 			Object.keys(metadata).forEach((obj, i) => {
 				let headers = header.append("g").attr("class", `header-${i}`)
 
-				buttons = headers.append("g").attr("class", `header-${i}-buttons`)
+				buttons = headers.append("g").attr("class", `header-${i}-buttons`).attr("font-size", "18px")
 
 				if (i != Object.keys(metadata).length - 1) {
 					buttons.append("text").attr("font-family", "FontAwesome").text(move_right_icon)
@@ -394,7 +394,7 @@
 
 
 					// last label height is for buttons
-					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top + n_of_labels + label_height
+					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top + n_of_labels
 					item.forEach(
 						(i, jdx) => {
 							let work_row = rows
