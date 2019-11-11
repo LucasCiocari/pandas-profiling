@@ -88,7 +88,7 @@
 				metadata[clicked_col]['ascend'] = 1
 				svg
 					.selectAll(`.ascending-${clicked_col}`)
-					.text(sort_icon)
+					.text(sort_down_icon)
 			} else if (metadata[clicked_col]['ascend'] == 1) {
 				metadata[clicked_col]['ascend'] = 2
 				svg
@@ -98,7 +98,7 @@
 				metadata[clicked_col]['ascend'] = 1
 				svg
 					.selectAll(`.ascending-${clicked_col}`)
-					.text(sort_down_icon)
+					.text(sort_icon)
 			}
 
 			if (metadata[obj]['datatype'] === 'string') {
@@ -234,7 +234,7 @@
 				.append("g")
 				.attr("class", 'labels')
 
-			let labels = label_svg.selectAll(".labels").attr("font-size", "75%")
+			let labels = label_svg.selectAll(".labels").attr("font-size", "100%")
 
 
 			Object.keys(metadata).forEach(
@@ -316,7 +316,7 @@
 				.attr("class", "table")
 				.append("g")
 
-				build_labels(label_svg, max_number_of_labels)
+			build_labels(label_svg, max_number_of_labels)
 
 			let header = svg.selectAll(".table").append("g")
 				.attr("class", 'header')
@@ -328,7 +328,7 @@
 
 				if (i != Object.keys(metadata).length - 1) {
 					buttons.append("text").attr("font-family", "FontAwesome").text(move_right_icon)
-						.attr("x", `${cell_width * i + cell_width * 3/4 + space_btw_columns}`)
+						.attr("x", `${cell_width * i + cell_width * 3 / 4 + space_btw_columns}`)
 						.attr("y", `${16}`)
 						.attr("class", `right_arrow-${i} btn_table_viz`)
 						.attr("style", "cursor:pointer")
@@ -337,7 +337,7 @@
 
 				if (i != 0) {
 					buttons.append("text").attr("font-family", "FontAwesome").text(move_left_icon)
-						.attr("x", `${cell_width * i + cell_width * 0/4}`)
+						.attr("x", `${cell_width * i + cell_width * 0 / 4}`)
 						.attr("y", `${16}`)
 						.attr("class", `left_arrow-${i} btn_table_viz`)
 						.attr("style", "cursor:pointer")
@@ -346,7 +346,7 @@
 
 				let image_construct = buttons.append("text").attr("height", "15")
 					.attr("width", "15")
-					.attr("x", `${cell_width * i + cell_width * 1.5/4}`)
+					.attr("x", `${cell_width * i + cell_width * 1.5 / 4}`)
 					.attr("y", `${16}`)
 					.attr("class", `ascending-${i} sorted_button btn_table_viz`)
 					.attr("style", "cursor:pointer")
@@ -355,7 +355,7 @@
 
 				if (metadata[i]['ascend'] == 0)
 					image_construct
-					.text(sort_icon)
+						.text(sort_icon)
 				else if (metadata[i]['ascend'] == 1) {
 					image_construct
 						.text(sort_up_icon)
@@ -368,7 +368,7 @@
 					.append("text")
 					.attr("x", `${cell_width * i}`)
 					.attr("y",
-						`${space_between_rows + padding_top  + label_height}`)
+						`${space_between_rows + padding_top + label_height}`)
 					.attr("fill", "black")
 					.text(metadata[obj]['name'])
 					.attr("class", "header-item")
@@ -851,12 +851,12 @@
 		svg.append("path")
 			.attr("d", "M " + (margin.left - 0.5) + " " + (height + 0.5) + " L " + (margin.left - 0.5) + " " + (height -
 				borderRadius) + " S " + (margin.left - 0.5) + " " + (height + 0.5) + " " + (margin.left +
-				borderRadius) + " " + (height + 0.5) + " Z")
+					borderRadius) + " " + (height + 0.5) + " Z")
 			.attr("stroke", "white")
 			.attr("fill", "white");
 		svg.append("path")
 			.attr("d", "M " + (width + margin.right + 0.5) + " " + (height - barHeight - 0.5) + " L " + (width + margin
-					.right + 0.5) + " " + (height - barHeight + borderRadius) + " S " + (width + margin.right + 0.5) +
+				.right + 0.5) + " " + (height - barHeight + borderRadius) + " S " + (width + margin.right + 0.5) +
 				" " + (height - barHeight - 0.5) + " " + (width + margin.right - borderRadius) + " " + (height -
 					barHeight - 0.5) + " Z")
 			.attr("stroke", "white")
@@ -1015,7 +1015,7 @@
 		var xAxis = d3.axisBottom(x).ticks(6);
 		var xTicks = x.ticks();
 		if (xTicks[0] < -1000000 || xTicks[xTicks.length - 1] >= 1000000 || xTicks[0] + 0.001 > xTicks[xTicks.length -
-				1]) {
+			1]) {
 			xAxis.tickFormat(d3.format(".1e"));
 		}
 		svg.append("g")
@@ -1048,7 +1048,7 @@
 		svg.selectAll(".tick").filter(function (d) {
 			return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr(
 				"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
-				/[0-9]+/g)[1] < 5);
+					/[0-9]+/g)[1] < 5);
 		}).attr("transform", "translate(-1000,-1000)");
 	}
 
@@ -1114,7 +1114,7 @@
 		svg.selectAll(".tick").filter(function (d) {
 			return (d3.select(this).attr("transform").match(/[0-9]+/g)[0] > width - 18) || (d3.select(this).attr(
 				"transform").match(/[0-9]+/g)[0] == 0 && d3.select(this).attr("transform").match(
-				/[0-9]+/g)[1] < 5);
+					/[0-9]+/g)[1] < 5);
 		}).attr("transform", "translate(-1000,-1000)");
 	}
 
