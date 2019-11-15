@@ -14,6 +14,11 @@
     var data = {{keys}}
     var full_matrix = {{data_array}}
 
+    d3.select("#sel_b_bid_viz").attr("id", "sel_b_bid_viz" + id);
+    d3.select("#swap_btn_bid_viz").attr("id", "swap_btn_bid_viz" + id);
+    d3.select("#sel_a_bid_viz").attr("id", "sel_a_bid_viz" + id);
+    d3.select("#bid_viz").attr("id", "bid_viz" + id);
+
     plotBidGraph(data,full_matrix, 
                  document.getElementById('sel_a_bid_viz'+id), 
                  document.getElementById('sel_b_bid_viz'+id), 
