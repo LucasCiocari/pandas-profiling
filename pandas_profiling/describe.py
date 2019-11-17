@@ -117,13 +117,12 @@ def bid_data_format(df):
         if df[col].dtype == "object":
             df[col].replace(to_replace=["na", "?", np.nan, "missing", "not available",
                                         "n/a", "missing value"], value="missing value", inplace=True)
-            if df[col].unique().size < 25:
-                considered_cols.append(col)
-                keys[col] = {"values": df[col].unique().tolist(
-                ), "start_i": last_index, "end_i": last_index + df[col].unique().size}
-                last_index = last_index + df[col].unique().size
-                for item in df[col].unique():
-                    count.append([col, item])
+            considered_cols.append(col)
+            keys[col] = {"values": df[col].unique().tolist(
+            ), "start_i": last_index, "end_i": last_index + df[col].unique().size}
+            last_index = last_index + df[col].unique().size
+            for item in df[col].unique():
+                count.append([col, item])
     data_array = np.zeros((len(count), len(count)))
 
     for row in range(df.shape[0]):
