@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+
+<head>
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+
+</head>
+
+<body>
+
+  <select id="sel_a_bid_viz" class="select_item_viz"></select>
+  <button id="swap_btn_bid_viz" class="swap_btn_viz">
+    <svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="exchange-alt"
+      class="svg-inline--fa fa-exchange-alt fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" width=20 height=15
+      viewBox="0 0 512 512">
+      <path fill="currentColor"
+        d="M0 168v-16c0-13.255 10.745-24 24-24h360V80c0-21.367 25.899-32.042 40.971-16.971l80 80c9.372 9.373 9.372 24.569 0 33.941l-80 80C409.956 271.982 384 261.456 384 240v-48H24c-13.255 0-24-10.745-24-24zm488 152H128v-48c0-21.314-25.862-32.08-40.971-16.971l-80 80c-9.372 9.373-9.372 24.569 0 33.941l80 80C102.057 463.997 128 453.437 128 432v-48h360c13.255 0 24-10.745 24-24v-16c0-13.255-10.745-24-24-24z">
+      </path>
+    </svg></button>
+  <select id="sel_b_bid_viz" class="select_item_viz"></select>
+
+  <div id="bid_viz"></div>
+
+  <link rel="stylesheet" href="index.css">
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+    integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+    integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+    integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous">
+    </script>
+  <script src="index.js"></script>
+</body>
+
+<style>
+  .highlight_bid_viz {
+    fill-opacity: 1;
+    stroke-opacity: 1;
+  }
+
+  .fade_bid_viz {
+    fill-opacity: 0.06;
+    stroke-opacity: 0;
+  }
+
+  .select_item_viz {
+    width: 300px;
+    height: 46px;
+    border-radius: 2%;
+    border: 1px black solid;
+    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    cursor: pointer;
+
+  }
+
+  .swap_btn_viz {
+    height: 46px;
+    border-radius: 20%;
+    border: none;
+    background-color: lavender;
+    cursor: pointer;
+  }
+</style>
+
+<script>
+  function plotBidGraph(data, full_matrix, sel_a, sel_b, btn_swap) {
+    let dimensions = Object.keys(data)
+    let labels = [];
+    let matrix = [];
+
+    const r_dim_color = "#black"
+    let l_dim_colors = []
+    const width = 800
+    const height = 800
+
+    const innerRadius = 260
+    const outerRadius = 275
+
+    const entity_padding = 0.05
+    let select_a = sel_a
+    let select_b = sel_b
+    let swap_btn = btn_swap
+    let hold_shown_values = false
+
+    function generate_colors(values) {
+
+      const quantity = (values.find(val => val === "missing value") != undefined) ? values.length - 1 : values.length
+      const divisor = quantity > 0 ? 360 / quantity : 1
+
+      let color_array = []
+      for (let i = 1; i <= quantity; i++) {
+        color_array.push(`hsl(${divisor * i}, 50%, 50%)`)
+      }
+
+      return color_array
+    }
+
+    function zeros(len1, len2) {
+      let arr = [];
+      for (let i = 0; i < len1; i++) {
+        arr.push(0);
+      }
+      let mat = []
+      if (len2 !== undefined) {
+        for (let i = 0; i < len2; i++) {
+          mat.push(arr);
+        }
+        return Array.from(mat);
+      }
+      return Array.from(arr);
+    }
+
+    function concat_matrix(f_mat, s_mat) {
+      let ret_mat = [];
+      for (i = 0; i < f_mat.length; i++) {
+        ret_mat.push(f_mat[i].concat(s_mat[i]));
+      }
+      return Array.from(ret_mat);
+    }
+
+    function join_matrix(f_mat, s_mat) {
+      let ret_mat = f_mat;
+
+      for (i = 0; i < s_mat.length; i++) {
+        ret_mat.push(s_mat[i])
+      }
+
+      return Array.from(ret_mat);
+    }
+
+    function node_mouseover(svg, d) {
+      if (!hold_shown_values) {
+        svg.selectAll('.nodes').classed('fade_bid_viz', true)
+        svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', true)
+        svg.selectAll('.ribbons').classed('fade_bid_viz', true)
+
+
+        for (let i = 0; i < matrix.length; i++) {
+          svg.selectAll(`.ribbon-${d.index}-${i}`).classed('highlight_bid_viz', true).moveToFront()
+          svg.selectAll(`.ribbon-${i}-${d.index}`).classed('highlight_bid_viz', true).moveToFront()
+        }
+
+
+        let numbers = new Set();
+        svg
+          .selectAll(".ribbons")
+          .selectAll("*")
+          .filter(val => val.source.index === d.index || val.source.subindex === d.index || val.target.index ===
+            d.index || val.target.subindex === d.index)
+          ._groups[0]
+          .forEach(
+            (val) => {
+              numbers.add(val.className.baseVal.split(" ")[0].split("-")[1])
+              numbers.add(val.className.baseVal.split(" ")[0].split("-")[2])
+            }
+          )
+
+        for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', true)
+      }
+    }
+
+    function node_mouseout(svg, d) {
+      if (!hold_shown_values) {
+        svg.selectAll('.nodes').classed('fade_bid_viz', false)
+        svg.selectAll(`.node-${d.index}`).classed('highlight_bid_viz', false)
+        svg.selectAll('.ribbons').classed('fade_bid_viz', false)
+        svg.selectAll(`.ribbon-`).classed('highlight_bid_viz', false)
+        for (let i = 0; i < matrix.length; i++) {
+          svg.selectAll(`.ribbon-${d.index}-${i}`).classed('highlight_bid_viz', false)
+          svg.selectAll(`.ribbon-${i}-${d.index}`).classed('highlight_bid_viz', false)
+        }
+
+        let numbers = new Set();
+        let x = document.querySelectorAll(`[class^="ribbon-"]`)
+        for (let i = 0; i < x.length; i++) {
+          if (x[i].className.baseVal.indexOf(d.index.toString()) != -1) {
+            numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[1])
+            numbers.add(x[i].className.baseVal.split(" ")[0].split("-")[2])
+          }
+        }
+
+        for (let item of numbers) svg.selectAll(`.node-${item}`).classed('highlight_bid_viz', false)
+      }
+    }
+
+    function chord_mouseover(svg, d) {
+      if (!hold_shown_values) {
+        svg.selectAll('.ribbons').classed('fade_bid_viz', true)
+        svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', true)
+          .moveToFront()
+        svg.selectAll('.nodes').classed('fade_bid_viz', true)
+        svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', true)
+        svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', true)
+      }
+    }
+
+    function chord_mouseout(svg, d) {
+      if (!hold_shown_values) {
+        svg.selectAll('.ribbons').classed('fade_bid_viz', false)
+        svg.selectAll(`.ribbon-${d.source.index}-${d.target.index}`).classed('highlight_bid_viz', false)
+        svg.selectAll('.nodes').classed('fade_bid_viz', false)
+        svg.selectAll(`.node-${d.source.index}`).classed('highlight_bid_viz', false)
+        svg.selectAll(`.node-${d.target.index}`).classed('highlight_bid_viz', false)
+      }
+    }
+
+    function all_on_click() {
+      console.log(hold_shown_values);
+      hold_shown_values = hold_shown_values ? false : true
+      console.log(hold_shown_values);
+    }
+
+    function def_layout(matrix, entity_padding) {
+      return d3.chord()
+        .padAngle(entity_padding)
+        .sortSubgroups(d3.ascending)
+        (matrix)
+    }
+
+    function update_matrix(dim_l, dim_r) {
+      let new_matrix = []
+
+      for (let i = data[dim_r]['start_i']; i < data[dim_r]['end_i']; i++) {
+        let new_list = []
+        for (let j = data[dim_l]['start_i']; j < data[dim_l]['end_i']; j++) {
+          new_list.push(full_matrix[i][j])
+        }
+        new_matrix.push(new_list)
+        new_list = []
+      }
+
+      const new_matrix_t = new_matrix[0].map((col, i) => new_matrix.map(row => row[i]))
+      const first_zeros = zeros(new_matrix.length, new_matrix.length);
+      const second_zeros = zeros(new_matrix[0].length, new_matrix[0].length);
+      const build_matrix_top = concat_matrix(first_zeros, new_matrix);
+      const build_matrix_bot = concat_matrix(new_matrix_t, second_zeros);
+      const end_matrix = join_matrix(build_matrix_top, build_matrix_bot);
+
+      return end_matrix;
+    }
+
+    function update_viz(dim_l, dim_r) {
+
+      d3.select("#bid_viz").selectAll("*").remove();
+
+      let svg = d3.select("#bid_viz")
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+        .attr("viewbox", `0 0 600 600`)
+        .append("g")
+        .attr("transform", `translate(${width / 2},${height / 2})`)
+
+      let res = def_layout(matrix, entity_padding)
+
+      //Nodes insert
+      let color_count = -1
+      svg
+        .datum(res)
+        .append("g")
+        .attr("class", "nodes")
+        .selectAll("g")
+        .data(d => d.groups)
+        .enter()
+        .append("g")
+        .attr("class", d => `node-${d.index}`)
+        .append("path")
+        .style("fill", (d, i) => {
+          if (i < data[dim_r]['values'].length) {
+            if (data[dim_r]['values'][i] == "missing value") {
+              d.color = "white";
+              return "white";
+            } else {
+              color_count += 1
+              d.color = l_dim_colors[color_count]
+              return l_dim_colors[color_count]
+            }
+          } else {
+            if (data[dim_l]['values'][i - data[dim_r]['values'].length] == "missing value") {
+              d.color = "white"
+              return "white"
+            } else {
+              d.color = r_dim_color
+              return r_dim_color
+            }
+          }
+        })
+        .style("stroke", d => d.color == "white" ? "black" : d3.rgb(d.color).darker())
+        .attr("d", d3.arc().innerRadius(innerRadius).outerRadius(outerRadius))
+        .on('mouseover', d => {
+          node_mouseover(svg, d)
+        })
+        .on('mouseout', d => {
+          node_mouseout(svg, d)
+        })
+        .on("click", d => all_on_click())
+      //Text insert
+      svg.selectAll(".nodes")
+        .selectAll("g")
+        .append("text")
+        .each(d => {
+          d.angle = (d.startAngle + d.endAngle) / 2;
+        })
+        .attr("dy", ".35em")
+        .attr("transform", d => `
+      rotate(${(d.angle * 180 / Math.PI - 90)})
+      translate(${innerRadius + 26})
+      ${d.angle > Math.PI ? "rotate(180)" : ""}
+    `)
+        .attr("text-anchor", d => d.angle > Math.PI ? "end" : null)
+        .text(d => labels[d.index])
+        .attr("font-family", "Roboto")
+
+      //Chords insert
+      svg
+        .datum(res)
+        .append("g")
+        .attr("class", "ribbons")
+        .selectAll("path")
+        .data(d => d)
+        .enter()
+        .append("path")
+        .attr("d", d3.ribbon().radius(innerRadius))
+        .style("fill", d => {
+          d.color = svg.select(`.node-${d.source.index}`)._groups[0][0].firstChild.style.fill
+          return d.color
+        })
+        .style("stroke", d => d.color == "white" ? "black" : d3.rgb(d.color).darker())
+        .attr("class", d => `ribbon-${d.source.index}-${d.target.index}`)
+        .style("opacity", ".80")
+        .on('mouseover', d => chord_mouseover(svg, d))
+        .on('mouseout', d => chord_mouseout(svg, d))
+        .on("click", d => all_on_click())
+    }
+
+    function select_on_change() {
+
+      const dim_l = select_a.value;
+      const dim_r = select_b.value;
+      l_dim_colors = generate_colors(data[dim_r]['values']);
+      update_selects(dim_l, dim_r);
+      labels = data[dim_r]['values'].concat(data[dim_l]['values']);
+      matrix = update_matrix(dim_l, dim_r);
+      update_viz(dim_l, dim_r);
+    }
+
+    function btn_on_click() {
+      const dim_l = select_b.value;
+      const dim_r = select_a.value;
+      l_dim_colors = generate_colors(data[dim_r]['values']);
+      update_selects(dim_l, dim_r);
+      labels = data[dim_r]['values'].concat(data[dim_l]['values']);
+
+      matrix = update_matrix(dim_l, dim_r);
+      update_viz(dim_l, dim_r);
+    }
+
+    function update_selects(dim_l, dim_r) {
+
+      let keep_selected_a = dim_l
+      let keep_selected_b = dim_r
+
+      let values_a = dimensions.filter(value => value !== keep_selected_b)
+      let values_b = dimensions.filter(value => value !== keep_selected_a)
+
+      select_a.innerHTML = ''
+      select_b.innerHTML = ''
+
+      values_a.forEach((item) => {
+        let opt_a = document.createElement('option');
+        opt_a.value = item;
+        opt_a.innerHTML = item;
+        select_a.appendChild(opt_a);
+      })
+
+      values_b.forEach((item) => {
+        let opt_b = document.createElement('option');
+        opt_b.value = item;
+        opt_b.innerHTML = item;
+        select_b.appendChild(opt_b);
+      })
+
+      select_a.value = keep_selected_a
+      select_b.value = keep_selected_b
+    }
+    d3.selection.prototype.moveToFront = function () {
+      return this.each(function () {
+        this.parentNode.appendChild(this)
+      })
+    }
+
+		/*
+		 * Initial code
+		 */
+
+    //Populate Select
+    dimensions.forEach((item, index) => {
+      let opt_a = document.createElement('option')
+      opt_a.value = item
+      opt_a.innerHTML = item
+      const opt_b = opt_a.cloneNode(true)
+      if (index != 1) select_a.appendChild(opt_a)
+      if (index != 0) select_b.appendChild(opt_b)
+    })
+
+    select_a.addEventListener("change", select_on_change);
+    select_b.addEventListener("change", select_on_change);
+    swap_btn.addEventListener("click", btn_on_click);
+    select_on_change();
+  }
+</script>
+<script>
+  let data = {{ data }}
+  let full_matrix = {{ full_matrix }}
+  plotBidGraph(data, full_matrix, document.getElementById('sel_a_bid_viz'), 
+                 document.getElementById('sel_b_bid_viz'), 
+                 document.getElementById('swap_btn_bid_viz'))
+</script>
