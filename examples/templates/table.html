@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"> -->
+
+<head>
+</head>
+
+<body>
+
+	<p>
+		<a class="btn btn-primary" data-toggle="collapse" href="#collapsetable" role="button" aria-expanded="false" aria-controls="collapseExample" style="text-decoration: none;">
+		  Show labels
+		</a>
+	  </p>
+	  <div class="collapse" id="collapsetable">
+		<div class="card card-body">
+			<div id="table_viz_labels" style="overflow-x: scroll;"></div>
+		</div>
+	  </div>
+	
+	<div id="table_viz" style="overflow-x: scroll;"></div>
+
+	<link rel="stylesheet" href="index.css">
+  <script src="https://d3js.org/d3.v5.min.js"></script>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+    integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css"
+    integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+    integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous">
+  </script>
+  <script src="index.js"></script>
+</body>
+
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Roboto&display=swap');
+    @import url('http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css');
+
+	.data-text {
+        font-size: 14px;
+        text-align: center;
+        background-color: black;
+    }
+
+    #table_viz {
+        font-family: 'Roboto', sans-serif;
+        font-size: 12px;
+    }
+</style>
+
+<script>
+	function plotTableGraph(metadata, data_array, svg, label_svg) {
+		let color_palette = []
+
+		let cell_width = 90
+		let cell_height = 3
+		let space_btw_columns = 5
+		let space_between_rows = cell_height + 1
+		let padding_top = 10
+		let width = cell_width * data_array[0].length
+		let min_int_bar_size = 2
+		let label_height = 20
+		let label_spacing = 2
+
+		const sort_up_icon = "\uf161"
+		const sort_down_icon = "\uf160"
+		const sort_icon = "\uf0b0"
+		const move_left_icon = "\uf0d9"
+		const move_right_icon = "\uf0da"
+		const missing_val_color = 'black'
+
+		function sort_numerical(col_n, asc) {
+			if (asc) {
+				data_array.sort(function (a, b) {
+					if (isNaN(a[col_n]))
+						return 1
+					if (isNaN(b[col_n]))
+						return -1
+					return a[col_n] - b[col_n]
+				});
+			} else {
+				data_array.sort(function (a, b) {
+					if (isNaN(a[col_n]))
+						return 1
+					if (isNaN(b[col_n]))
+						return -1
+
+					return b[col_n] - a[col_n]
+				});
+			}
+		}
+
+		function sort_alpha(col_n, asc) {
+			if (asc) {
+				data_array.sort(function (a, b) {
+
+					return a[col_n].localeCompare(b[col_n]);
+
+				})
+			} else {
+				data_array.sort(function (a, b) {
+					return b[col_n].localeCompare(a[col_n]);
+				})
+			}
+		}
+
+		function define_cell_width(min, max, val, full_wdth) {
+			const new_val = (val - min) / (max - min)
+			return new_val != 0 ? ((new_val * full_wdth) > min_int_bar_size ? (new_val * full_wdth) : min_int_bar_size) :
+				min_int_bar_size
+		}
+
+		function get_max_labels() {
+			let count = 2 // starts at 2 because at least two will be needed for int and float labels
+			Object.keys(metadata)
+				.filter(obj => metadata[obj]['datatype'] === 'string')
+				.forEach(obj =>
+					count = metadata[obj]['values'].length > count ? metadata[obj]['values'].length : count
+				)
+			return count
+		}
+
+		function column_name_click(svg, clicked_col, label_qtt) {
+			let obj = Object.keys(metadata)[clicked_col]
+
+			for (i = 0; i < metadata.length; i++) {
+				if (i != clicked_col) {
+					metadata[i]['ascend'] == 0
+				}
+			}
+
+
+			svg
+				.selectAll(".sorted_button")
+				.text(sort_icon)
+
+			if (metadata[clicked_col]['ascend'] == 0) {
+				metadata[clicked_col]['ascend'] = 1
+				svg
+					.selectAll(`.ascending-${clicked_col}`)
+					.text(sort_down_icon)
+			} else if (metadata[clicked_col]['ascend'] == 1) {
+				metadata[clicked_col]['ascend'] = 2
+				svg
+					.selectAll(`.ascending-${clicked_col}`)
+					.text(sort_up_icon)
+			} else if (metadata[clicked_col]['ascend'] == 2) {
+				metadata[clicked_col]['ascend'] = 1
+				svg
+					.selectAll(`.ascending-${clicked_col}`)
+					.text(sort_icon)
+			}
+
+			if (metadata[obj]['datatype'] === 'string') {
+				if (metadata[obj]['ascend'] == 1) {
+					sort_alpha(clicked_col, true)
+				}
+				if (metadata[obj]['ascend'] == 2) {
+					sort_alpha(clicked_col, false)
+				}
+
+			} else {
+				if (metadata[obj]['ascend'] == 1) {
+					sort_numerical(clicked_col, true)
+				}
+				if (metadata[obj]['ascend'] == 2) {
+					sort_numerical(clicked_col, false)
+				}
+			}
+
+			build_table(svg, label_qtt)
+		}
+
+		function move_to_left(svg, clicked_col) {
+
+			for (let i = 0; i < data_array.length; i++) {
+				const helper = data_array[i][clicked_col]
+				data_array[i][clicked_col] = data_array[i][clicked_col - 1]
+				data_array[i][clicked_col - 1] = helper
+			}
+
+			let new_data = Object.keys(metadata).map((val, index) => {
+				if (index === clicked_col - 1) {
+					return metadata[Object.keys(metadata)[clicked_col]]
+				} else if (index === clicked_col) {
+					return metadata[Object.keys(metadata)[clicked_col - 1]]
+				} else {
+					return metadata[val]
+				}
+			})
+			metadata = new_data;
+
+			head_build(svg);
+		}
+
+		function move_to_right(svg, clicked_col) {
+
+			for (let i = 0; i < data_array.length; i++) {
+				const helper = data_array[i][clicked_col]
+				data_array[i][clicked_col] = data_array[i][clicked_col + 1]
+				data_array[i][clicked_col + 1] = helper
+			}
+
+			let new_data = Object.keys(metadata).map((val, index) => {
+				if (index === clicked_col + 1) {
+					return metadata[Object.keys(metadata)[clicked_col]]
+				} else if (index === clicked_col) {
+					return metadata[Object.keys(metadata)[clicked_col + 1]]
+				} else {
+					return metadata[val]
+				}
+			})
+			metadata = new_data;
+
+			head_build(svg);
+		}
+
+		function colourIsLight(color) {
+			
+			const r = d3.color(color).rgb().r
+			const g = d3.color(color).rgb().g
+			const b = d3.color(color).rgb().b
+			// Counting the perceptive luminance
+			// human eye favors green color... 
+			// See: http://stackoverflow.com/a/1855903/186965
+			let a = 1 - (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+			return (a < 0.5) ? 'black' : 'white';
+		}
+
+		function create_tooltip(text, jdx, this_row_y, work_row, color) {
+
+			work_row.append("rect")
+				.attr("x", `${jdx * cell_width + 15}`)
+				.attr("y", `${this_row_y - 20}`)
+				.attr("width", `${10 + 7 * `${text}`.length}`)
+				.attr("height", "18")
+				.attr("class", "back-tooltip")
+				.attr("fill", color)
+				.attr("stroke-width", 1)
+				.attr("stroke", `${d3.color(color).darker()}`)
+				.attr("rx", 5)
+				.attr("ry", 5)
+
+			work_row.append("text")
+				.text(`${text}`)
+				.attr("x", `${jdx * cell_width + 20}`)
+				.attr("y", `${this_row_y - 7}`)
+				.attr("class", "data-text")
+				.attr("End", "true")
+				.attr("fill",
+					`${colourIsLight(color)}`
+				)
+		}
+
+		function destroy_tooltip(svg) {
+			svg.selectAll(".data-text").remove()
+			svg.selectAll(".back-tooltip").remove()
+		}
+
+		function generate_colors(values) {
+
+			const quantity = (values.find(val => val === "missing value") != undefined) ? values.length - 1 : values.length
+			const divisor = quantity > 0 ? 360 / quantity : 1
+
+			let color_array = []
+			for (let i = 1; i <= quantity; i++) {
+				color_array.push(`hsl(${divisor * i}, 50%, 50%)`)
+			}
+
+			return color_array
+		}
+
+		function build_labels(label_svg, max_number_of_labels) {
+			label_svg.selectAll("*").remove()
+
+			let height = max_number_of_labels * label_height
+
+			label_svg
+				.append("svg")
+				.attr("class", "table_viz_style")
+				.attr("style", "overflow:unset;max-width:unset;width:unset;height:unset")
+				.attr("width", `${width}px`)
+				.attr("height", `${height}px`)
+				.append("g")
+				.attr("class", 'labels')
+
+			let labels = label_svg.selectAll(".labels").attr("font-size", "100%")
+
+
+			Object.keys(metadata).forEach(
+				(val, index) => {
+					let adding_labels = labels.append("g").attr("class", `labels-${index}`)
+
+					if (metadata[val]['datatype'] == 'string') {
+						let color_list = {}
+						count = 0
+						metadata[val]['values'].forEach((val2, index2) => {
+							color_palette = generate_colors(metadata[val]['values'])
+							if (val2 != "missing value") {
+
+								color_list[val2] = color_palette[index2]
+							}
+							metadata[val]['colors'] = color_list
+							let label_item = adding_labels
+								.append("g")
+								.attr("class", "label")
+							label_item
+								.append("rect")
+								.attr("x", `${cell_width * index}`)
+								.attr("y", `${label_height * index2 + 5}`)
+								.attr("height", `${label_height - label_spacing}`)
+								.attr("rx", "1")
+								.attr("ry", "1")
+								.attr("width", `${cell_width - space_btw_columns}`)
+								.attr("fill",
+									`${val2 === "missing value" ? missing_val_color : color_list[val2]}`
+								)
+							label_item
+								.append("text")
+								.text(`${val2}`)
+								.attr("fill",
+									`${val2 === "missing value" ? colourIsLight(missing_val_color) : colourIsLight(color_list[val2])}`
+								)
+								.attr("x", `${cell_width * index}`)
+								.attr("y", `${label_height * index2 + label_height - 2}`)
+						})
+					} else {
+						var label_item = adding_labels
+							.append("g")
+							.attr("class", "label")
+						label_item
+							.append("text")
+							.text(`min : ${metadata[val]['min_val']}`)
+							.attr("fill", "black")
+							.attr("x", `${cell_width * index}`)
+							.attr("y", `${label_height * 0 + label_height - 2}`)
+						label_item
+							.append("text")
+							.text(`max : ${metadata[val]['max_val']}`)
+							.attr("fill", "black")
+							.attr("x", `${cell_width * index}`)
+							.attr("y", `${label_height * 1 + label_height - 2}`)
+					}
+
+				}
+			)
+		}
+
+		function head_build(svg) {
+
+			max_number_of_labels = get_max_labels()
+
+			// last label height is for buttons
+			let height = space_between_rows * data_array.length + space_between_rows * 2 + padding_top +
+				label_height
+
+			svg.selectAll("*").remove();
+
+			svg
+				.append("svg")
+				.attr("class", "table_viz_style")
+				.attr("style", "overflow:unset;max-width:unset;width:unset;height:unset")
+				.attr("width", `${width}px`)
+				.attr("height", `${height}px`)
+				.append("g")
+				.attr("class", "table")
+				.append("g")
+
+			build_labels(label_svg, max_number_of_labels)
+
+			let header = svg.selectAll(".table").append("g")
+				.attr("class", 'header')
+
+			Object.keys(metadata).forEach((obj, i) => {
+				let headers = header.append("g").attr("class", `header-${i}`)
+
+				buttons = headers.append("g").attr("class", `header-${i}-buttons`).attr("font-size", "18px")
+
+				if (i != Object.keys(metadata).length - 1) {
+					buttons.append("text").attr("font-family", "FontAwesome").text(move_right_icon)
+						.attr("x", `${cell_width * i + cell_width * 3 / 4 + space_btw_columns}`)
+						.attr("y", `${16}`)
+						.attr("class", `right_arrow-${i} btn_table_viz`)
+						.attr("style", "cursor:pointer")
+						.on("click", _ => move_to_right(svg, i))
+				}
+
+				if (i != 0) {
+					buttons.append("text").attr("font-family", "FontAwesome").text(move_left_icon)
+						.attr("x", `${cell_width * i + cell_width * 0 / 4}`)
+						.attr("y", `${16}`)
+						.attr("class", `left_arrow-${i} btn_table_viz`)
+						.attr("style", "cursor:pointer")
+						.on("click", _ => move_to_left(svg, i))
+				}
+
+				let image_construct = buttons.append("text").attr("height", "15")
+					.attr("width", "15")
+					.attr("x", `${cell_width * i + cell_width * 1.5 / 4}`)
+					.attr("y", `${16}`)
+					.attr("class", `ascending-${i} sorted_button btn_table_viz`)
+					.attr("style", "cursor:pointer")
+					.on("click", _ => column_name_click(svg, i, max_number_of_labels))
+					.attr("font-family", "FontAwesome")
+
+				if (metadata[i]['ascend'] == 0)
+					image_construct
+						.text(sort_icon)
+				else if (metadata[i]['ascend'] == 1) {
+					image_construct
+						.text(sort_up_icon)
+				} else if (metadata[i]['ascend'] == 2) {
+					image_construct
+						.text(sort_down_icon)
+				}
+
+				headers
+					.append("text")
+					.attr("x", `${cell_width * i}`)
+					.attr("y",
+						`${space_between_rows + padding_top + label_height}`)
+					.attr("fill", "black")
+					.text(metadata[obj]['name'])
+					.attr("class", "header-item")
+
+				if (metadata[obj]['datatype'] === 'string') {
+					var color_list = {}
+					metadata[obj]['values'].forEach((object, idx) => {
+						color_palette = generate_colors(metadata[obj]['values'])
+						color_list[object] = color_palette[idx]
+					})
+					metadata[obj]['colors'] = color_list
+				}
+			})
+			build_table(svg, max_number_of_labels)
+		}
+
+		function build_table(svg, n_of_labels) {
+
+			svg.selectAll(".rows").remove();
+			let rows = svg.selectAll(".table").append("g").attr("class", "rows")
+			data_array.forEach(
+				(item, idx) => {
+
+
+					// last label height is for buttons
+					var this_row_y = space_between_rows * idx + space_between_rows + 5 + padding_top  + label_height
+					item.forEach(
+						(i, jdx) => {
+							let work_row = rows
+								.append("g")
+								.attr("class", `row-${idx}`)
+
+							let common = work_row
+								.append("rect")
+								.attr("x", `${jdx * cell_width}`)
+								.attr("y", `${this_row_y}`)
+								.attr("height", `${cell_height}`)
+								.attr("rx", "1").attr("ry", "1")
+								.on("mouseout", _ => destroy_tooltip(svg))
+
+							const {
+								min_val,
+								max_val,
+								datatype,
+								colors
+							} = metadata[jdx]
+
+							if (datatype == 'string') {
+								common
+									.attr("width", `${cell_width - space_btw_columns}`)
+									.attr("fill", i === "missing value" ? missing_val_color : colors[i])
+									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, i ===
+										"missing value" ? missing_val_color : colors[i]))
+
+							} else if (datatype == 'int' || datatype == 'float') {
+								const this_cell_wdth = define_cell_width(min_val, max_val, data_array[idx][jdx],
+									cell_width - space_btw_columns);
+								const lightning_percentage = 100 - (((this_cell_wdth / cell_width) * 60)) - 10
+								const variable_color = `hsl(203, ${64}%, ${lightning_percentage}%)`
+								common
+									.attr("width", data_array[idx][jdx] == "missing value" ? cell_width -
+										space_btw_columns : this_cell_wdth)
+									.attr("fill", data_array[idx][jdx] == "missing value" ? missing_val_color :
+										variable_color)
+									.on("mouseover", _ => create_tooltip(i, jdx, this_row_y, work_row, data_array[
+										idx][jdx] == "missing value" ? missing_val_color : variable_color))
+							}
+						}
+					)
+				}
+			)
+		}
+
+		head_build(svg)
+
+	}
+</script>
+<script>
+	var meta_data_table_viz = {{metadata_table_viz}}
+    var data_array_table_viz = {{dataarray_table_viz}} 
+    plotTableGraph(meta_data_table_viz, data_array_table_viz, d3.select("#table_viz"), d3.select("#table_viz_labels"))
+
+</script>
