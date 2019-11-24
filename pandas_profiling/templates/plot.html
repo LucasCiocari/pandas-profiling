@@ -209,15 +209,25 @@
 
 		function generate_colors(values) {
 
-			const quantity = (values.find(val => val === "missing value") != undefined) ? values.length - 1 : values.length
-			const divisor = quantity > 0 ? 360 / quantity : 1
+		const quantity = (values.find(val => val === "missing value") != undefined) ? values.length - 1 : values.length
+		const divisor = quantity > 0 ? 360 / quantity : 1
 
-			let color_array = []
-			for (let i = 1; i <= quantity; i++) {
+		let color_array = []
+		for (let i = 1; i <= quantity; i++) {
+			
+			if(values[i-1] !== "missing value" ) {
+			color_array.push(`hsl(${divisor * i}, 50%, 50%)`)
+			}
+			else
+			{
+				color_array.push('black')
 				color_array.push(`hsl(${divisor * i}, 50%, 50%)`)
+
 			}
 
-			return color_array
+		}			
+
+		return color_array
 		}
 
 		function build_labels(label_svg, max_number_of_labels) {
@@ -244,12 +254,9 @@
 					if (metadata[val]['datatype'] == 'string') {
 						let color_list = {}
 						count = 0
+						color_palette = generate_colors(metadata[val]['values'])
 						metadata[val]['values'].forEach((val2, index2) => {
-							color_palette = generate_colors(metadata[val]['values'])
-							if (val2 != "missing value") {
-
-								color_list[val2] = color_palette[index2]
-							}
+							color_list[val2] = color_palette[index2]
 							metadata[val]['colors'] = color_list
 							let label_item = adding_labels
 								.append("g")
@@ -375,8 +382,8 @@
 
 				if (metadata[obj]['datatype'] === 'string') {
 					var color_list = {}
+					color_palette = generate_colors(metadata[obj]['values'])
 					metadata[obj]['values'].forEach((object, idx) => {
-						color_palette = generate_colors(metadata[obj]['values'])
 						color_list[object] = color_palette[idx]
 					})
 					metadata[obj]['colors'] = color_list
