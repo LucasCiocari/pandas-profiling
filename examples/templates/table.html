@@ -500,6 +500,7 @@
 <script>
 	var meta_data_table_viz = {{metadata_table_viz}}
     var data_array_table_viz = {{dataarray_table_viz}} 
+	console.time()
     plotTableGraph(meta_data_table_viz, data_array_table_viz, d3.select("#table_viz"), d3.select("#table_viz_labels"))
-
+	console.timeEnd()
 </script>
