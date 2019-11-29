@@ -1,5 +1,5 @@
 <script>
-	function plotTableGraph(metadata, data_array, svg, label_svg) {
+	function plotTableGraph(metadata, data_array, svg, label_svg, compact_btn) {
 		let color_palette = []
 
 		let cell_width = 90
@@ -11,6 +11,7 @@
 		let min_int_bar_size = 2
 		let label_height = 20
 		let label_spacing = 2
+		let compacted = 0
 
 		const sort_up_icon = "\uf161"
 		const sort_down_icon = "\uf160"
@@ -377,7 +378,7 @@
 					.attr("y",
 						`${space_between_rows + padding_top + label_height}`)
 					.attr("fill", "black")
-					.text(metadata[obj]['name'])
+					.text(compacted ? (metadata[obj]['name'].length >= 9 ? metadata[obj]['name'].substring(0, 8) : metadata[obj]['name']) : metadata[obj]['name'])
 					.attr("class", "header-item")
 
 				if (metadata[obj]['datatype'] === 'string') {
@@ -448,7 +449,26 @@
 				}
 			)
 		}
-
+		
+		function compact_table() {
+			if(compacted === 0) {
+				compacted = 1
+				cell_width = 50
+				cell_height = 2
+				space_btw_columns = 2
+				space_between_rows = cell_height + 0
+			}
+			else {
+				compacted = 0
+				cell_width = 90
+				cell_height = 3
+				space_btw_columns = 5
+				space_between_rows = cell_height + 1
+			}
+			head_build(svg)
+		}
+		
+		compact_btn.on("click", _ => compact_table())
 		head_build(svg)
 
 	}
