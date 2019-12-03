@@ -17,7 +17,11 @@
 			<div id="table_viz_labels" style="overflow-x: scroll;"></div>
 		</div>
 	  </div>
-	
+
+	  <a class="btn btn-primary"  id="compact_table_viz" style="text-decoration: none; margin-top: 5px;">
+		Compact Table
+	  </a>
+
 	<div id="table_viz" style="overflow-x: scroll;"></div>
 
 	<link rel="stylesheet" href="index.css">
@@ -50,7 +54,7 @@
 </style>
 
 <script>
-	function plotTableGraph(metadata, data_array, svg, label_svg) {
+	function plotTableGraph(metadata, data_array, svg, label_svg, compact_btn) {
 		let color_palette = []
 
 		let cell_width = 90
@@ -62,6 +66,7 @@
 		let min_int_bar_size = 2
 		let label_height = 20
 		let label_spacing = 2
+		let compacted = 0
 
 		const sort_up_icon = "\uf161"
 		const sort_down_icon = "\uf160"
@@ -217,7 +222,7 @@
 		}
 
 		function colourIsLight(color) {
-			
+
 			const r = d3.color(color).rgb().r
 			const g = d3.color(color).rgb().g
 			const b = d3.color(color).rgb().b
@@ -260,15 +265,25 @@
 
 		function generate_colors(values) {
 
-			const quantity = (values.find(val => val === "missing value") != undefined) ? values.length - 1 : values.length
-			const divisor = quantity > 0 ? 360 / quantity : 1
+		const quantity = (values.find(val => val === "missing value") != undefined) ? values.length - 1 : values.length
+		const divisor = quantity > 0 ? 360 / quantity : 1
 
-			let color_array = []
-			for (let i = 1; i <= quantity; i++) {
+		let color_array = []
+		for (let i = 1; i <= quantity; i++) {
+			
+			if(values[i-1] !== "missing value" ) {
+			color_array.push(`hsl(${divisor * i}, 50%, 50%)`)
+			}
+			else
+			{
+				color_array.push('black')
 				color_array.push(`hsl(${divisor * i}, 50%, 50%)`)
+
 			}
 
-			return color_array
+		}			
+
+		return color_array
 		}
 
 		function build_labels(label_svg, max_number_of_labels) {
@@ -295,12 +310,9 @@
 					if (metadata[val]['datatype'] == 'string') {
 						let color_list = {}
 						count = 0
+						color_palette = generate_colors(metadata[val]['values'])
 						metadata[val]['values'].forEach((val2, index2) => {
-							color_palette = generate_colors(metadata[val]['values'])
-							if (val2 != "missing value") {
-
-								color_list[val2] = color_palette[index2]
-							}
+							color_list[val2] = color_palette[index2]
 							metadata[val]['colors'] = color_list
 							let label_item = adding_labels
 								.append("g")
@@ -421,13 +433,13 @@
 					.attr("y",
 						`${space_between_rows + padding_top + label_height}`)
 					.attr("fill", "black")
-					.text(metadata[obj]['name'])
+					.text(compacted ? (metadata[obj]['name'].length >= 9 ? metadata[obj]['name'].substring(0, 8) : metadata[obj]['name']) : metadata[obj]['name'])
 					.attr("class", "header-item")
 
 				if (metadata[obj]['datatype'] === 'string') {
 					var color_list = {}
+					color_palette = generate_colors(metadata[obj]['values'])
 					metadata[obj]['values'].forEach((object, idx) => {
-						color_palette = generate_colors(metadata[obj]['values'])
 						color_list[object] = color_palette[idx]
 					})
 					metadata[obj]['colors'] = color_list
@@ -492,7 +504,26 @@
 				}
 			)
 		}
-
+		
+		function compact_table() {
+			if(compacted === 0) {
+				compacted = 1
+				cell_width = 50
+				cell_height = 2
+				space_btw_columns = 2
+				space_between_rows = cell_height + 0
+			}
+			else {
+				compacted = 0
+				cell_width = 90
+				cell_height = 3
+				space_btw_columns = 5
+				space_between_rows = cell_height + 1
+			}
+			head_build(svg)
+		}
+		
+		compact_btn.on("click", _ => compact_table())
 		head_build(svg)
 
 	}
@@ -500,7 +531,5 @@
 <script>
 	var meta_data_table_viz = {{metadata_table_viz}}
     var data_array_table_viz = {{dataarray_table_viz}} 
-	console.time()
-    plotTableGraph(meta_data_table_viz, data_array_table_viz, d3.select("#table_viz"), d3.select("#table_viz_labels"))
-	console.timeEnd()
+    plotTableGraph(meta_data_table_viz, data_array_table_viz, d3.select("#table_viz"), d3.select("#table_viz_labels"), d3.select("#compact_table_viz"))
 </script>
