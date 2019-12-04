@@ -299,7 +299,7 @@
 		function build_labels(label_svg, max_number_of_labels) {
 
 			
-			label_svg.selectAll(".labels").remove()
+			label_svg.selectAll("*").remove()
 
 			let height = max_number_of_labels * label_height
 
@@ -342,7 +342,7 @@
 								)
 							label_item
 								.append("text")
-								.text(`${val2}`)
+								.text(val2)
 								.attr("fill",
 									`${val2 === "missing value" ? colourIsLight(missing_val_color) : colourIsLight(color_list[val2])}`
 								)
@@ -379,7 +379,7 @@
 			let height = space_between_rows * data_array.length + space_between_rows * 2 + padding_top +
 				label_height
 
-			svg.selectAll(".header").remove();
+			svg.selectAll("*").remove();
 
 			svg
 				.append("svg")
@@ -445,7 +445,7 @@
 					.attr("y",
 						`${space_between_rows + padding_top + label_height}`)
 					.attr("fill", "black")
-					.text(compacted ? (metadata[obj]['name'].length >= 9 ? metadata[obj]['name'].substring(0, 8) : metadata[obj]['name']) : metadata[obj]['name'])
+					.text(compacted ? (metadata[obj]['name'].length >= 8 ? metadata[obj]['name'].substring(0, 7) : metadata[obj]['name']) : metadata[obj]['name'])
 					.attr("class", "header-item")
 
 				if (metadata[obj]['datatype'] === 'string') {
