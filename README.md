@@ -1,12 +1,12 @@
 Instruções simples para execução do código:
 
-$ python setup.py install
-$ pip install .
-import pandas as pd
-import pandas_profiling
-import numpy as np
-df = pd.read_csv('imports.csv')
-pandas_profiling.ProfileReport(df)
+	$ python setup.py install
+	$ pip install .
+	import pandas as pd
+	import pandas_profiling
+	import numpy as np
+	df = pd.read_csv('imports.csv')
+	pandas_profiling.ProfileReport(df)
 
 ------------------------
 # MAINTAINERS WANTED - Notice of neglect
