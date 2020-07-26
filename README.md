@@ -1,3 +1,14 @@
+Instruções simples para execução do código:
+
+$ python setup.py install
+$ pip install .
+import pandas as pd
+import pandas_profiling
+import numpy as np
+df = pd.read_csv('imports.csv')
+pandas_profiling.ProfileReport(df)
+
+------------------------
 # MAINTAINERS WANTED - Notice of neglect
 This package does not have a current active maintainer. If you are interested to take on the role of main developer, feel free to reach out to @JosPolfliet.
 
